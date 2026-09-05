@@ -31,8 +31,33 @@
     {{ m.barchart(r2, 'count') }}</div></div>
 </div>
 
+{% if seg_summary and not segment %}
 <div class="card">
-  <h2>Funnel by month</h2>
+  <h2>Contracts by venue space
+    <span class="sub">leads and tours are shared across the site; contracts are not</span></h2>
+  <div class="body">
+    <table>
+      <thead><tr><th class="lbl">Space</th><th>PF contracts</th><th>Actual</th><th>Var</th>
+        <th style="border-left:1px solid var(--line)">PF events</th><th>Actual</th><th>Var</th></tr></thead>
+      <tbody>
+      {% for r in seg_summary.rows %}
+      <tr><td class="lbl">{{ r.label }}</td>
+        <td class="plan">{{ r.contracts.plan | count }}</td>
+        <td><b>{{ r.contracts.actual | count }}</b></td>
+        <td class="{{ tone(r.contracts.var.var, 'count') }}">{{ fmt_signed(r.contracts.var.var, 'count') }}</td>
+        <td class="plan" style="border-left:1px solid var(--line)">{{ r.events.plan | count }}</td>
+        <td><b>{{ r.events.actual | count }}</b></td>
+        <td class="{{ tone(r.events.var.var, 'count') }}">{{ fmt_signed(r.events.var.var, 'count') }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>Funnel by month{% if segment %} · {{ view.segment_label }}{% endif %}</h2>
   <div class="scroll">
     <table>
       <thead><tr><th class="lbl">Line</th>

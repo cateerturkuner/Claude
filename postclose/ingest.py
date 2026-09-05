@@ -14,7 +14,7 @@ import difflib
 import re
 from datetime import datetime
 
-from . import analysis, store
+from . import analysis, lines as L, store
 
 # Names finance uses that differ from the model's own labels.
 ALIASES = {
@@ -104,16 +104,20 @@ ALIASES = {
     "ebitda": ["ebitda", "net operating income", "noi"],
 }
 
-# Lines that must be negative in the stored model.
-COST_KEYS = {
-    "food_cogs", "ancillary_cogs", "alcohol_cogs", "other_cogs", "room_cogs",
-    "total_cogs", "sales_payroll", "planning_payroll", "operations_payroll",
-    "ancillary_payroll", "fnb_payroll", "owner_salaries", "payroll_admin",
-    "other_payroll", "total_payroll", "marketing", "maintenance", "utilities",
-    "office", "computer", "automobile", "training", "tax", "travel",
-    "professional", "rent_expense", "insurance", "finance", "personal",
-    "other_opex", "total_opex", "rent", "discounts",
-}
+# Lines the model carries negative. Derived from the venue's own line groups
+# rather than a fixed list, so a venue with an all-inclusive COGS line or a
+# corporate payroll line has them negated too -- a missed cost key silently
+# turns an overspend into a favourable variance.
+COST_GROUPS = ("cogs", "payroll", "opex")
+EXTRA_COST_KEYS = {"rent", "discounts", "total_cogs", "total_payroll",
+                   "total_opex"}
+
+
+def cost_keys(slug):
+    keys = {ln["key"] for ln in analysis.line_meta(slug)
+            if ln["group"] in COST_GROUPS}
+    return keys | EXTRA_COST_KEYS
+
 
 # Lines that are counts or ratios and must never be rescaled or sign-flipped.
 NON_DOLLAR = {"leads", "tours", "contracts", "events", "events_oc", "events_new",
@@ -141,6 +145,13 @@ def _alias_index(slug):
     for key, names in ALIASES.items():
         for name in names:
             idx.setdefault(norm(name), key)
+    # Per-segment contract rows, however the sheet spells the separator.
+    for seg in store.baseline(slug).get("segments", []):
+        for pattern in ("contracts {}", "{} contracts", "contracts - {}",
+                        "contracts \u2013 {}"):
+            for name in (seg["label"], seg["key"]):
+                idx.setdefault(norm(pattern.format(name)),
+                               f"contracts__{seg['key']}")
     return idx
 
 
@@ -269,11 +280,11 @@ def preview(path, slug, sheet=None):
         seen.add(key)
         rows.append({"row": r, "raw": str(raw).strip(), "key": key,
                      "label": next((ln["label"] for ln in analysis.line_meta(slug)
-                                    if ln["key"] == key), key),
+                                    if ln["key"] == key), str(raw).strip()),
                      "confidence": conf, "by_month": values})
 
-    scale = _suggest_scale(rows, base_months)
-    flip = _suggest_flip(rows)
+    scale = _suggest_scale(rows, base_months, events)
+    flip = _suggest_flip(rows, cost_keys(slug))
 
     # A running template carries a column for every month in the model. Only the
     # ones that actually hold a number are worth offering for import.
@@ -300,16 +311,30 @@ def preview(path, slug, sheet=None):
     }
 
 
-def _suggest_scale(rows, base_months):
-    """1 if the file is already in thousands, 0.001 if it is in whole dollars."""
+def _suggest_scale(rows, base_months, events=None):
+    """1 if the file is already in thousands, 0.001 if it is in whole dollars.
+
+    Compares every dollar line against its own proforma value rather than a few
+    named revenue lines -- on a template whose revenue lives on the Events sheet
+    there may be no revenue line here at all, and the P&L sheet would then look
+    like it was already in thousands.
+    """
     ratios = []
     for row in rows:
-        if row["key"] not in ("total_revenue", "room_rental", "total_payroll"):
+        if row["key"] in NON_DOLLAR or row["key"].startswith("contracts__"):
             continue
         for ym, v in row["by_month"].items():
             plan = base_months.get(ym, {}).get("lines", {}).get(row["key"])
             if plan and abs(plan) > 1 and v:
                 ratios.append(abs(v) / abs(plan))
+    # The event list is a second, independent read on the units.
+    if events:
+        for slot in events["months"].values():
+            for cats in slot["ancillary"].values():
+                for payload in cats.values():
+                    for k, v in payload.items():
+                        if k.endswith("_rev") and v:
+                            ratios.append(abs(v) / 10.0)
     if not ratios:
         return 1.0
     ratios.sort()
@@ -317,11 +342,11 @@ def _suggest_scale(rows, base_months):
     return 0.001 if median > 100 else 1.0
 
 
-def _suggest_flip(rows):
+def _suggest_flip(rows, costs):
     """True when cost lines arrive positive and need negating."""
     pos = neg = 0
     for row in rows:
-        if row["key"] not in COST_KEYS:
+        if row["key"] not in costs:
             continue
         for v in row["by_month"].values():
             if v > 0:
@@ -335,23 +360,32 @@ def apply_preview(slug, prev, include_keys, months, scale=1.0, flip_costs=False,
                   filename=None):
     """Commit a confirmed preview into the actuals store, month by month."""
     include = set(include_keys)
-    by_month = {}
+    costs = cost_keys(slug)
+    by_month, seg_by_month = {}, {}
     for row in prev["rows"]:
         if row["key"] not in include:
             continue
+        # "contracts__barn" is a segment figure, not a venue line.
+        seg_key = (row["key"].split("__", 1)[1]
+                   if row["key"].startswith("contracts__") else None)
         for ym, v in row["by_month"].items():
             if ym not in months:
+                continue
+            if seg_key:
+                seg_by_month.setdefault(ym, {}).setdefault(
+                    seg_key, {})["contracts"] = v
                 continue
             value = v
             if row["key"] not in NON_DOLLAR:
                 value *= scale
-                if flip_costs and row["key"] in COST_KEYS and value > 0:
+                if flip_costs and row["key"] in costs and value > 0:
                     value = -value
             by_month.setdefault(ym, {})[row["key"]] = round(value, 6)
 
     written = []
-    for ym in sorted(by_month):
-        store.record(slug, ym, by_month[ym], "upload", note=filename)
+    for ym in sorted(set(by_month) | set(seg_by_month)):
+        store.record(slug, ym, by_month.get(ym, {}), "upload",
+                     segments=seg_by_month.get(ym), note=filename)
         written.append(ym)
     return written
 
@@ -364,23 +398,12 @@ def apply_preview(slug, prev, include_keys, months, scale=1.0, flip_costs=False,
 EVENT_DATE_HEADERS = {"event date", "date", "event"}
 EVENT_TYPE_HEADERS = {"contract type", "type", "contract", "cohort", "source",
                       "oc or new", "original or new"}
+# Which venue or product line the event belongs to, where a site has more than
+# one sharing a cost base.
+EVENT_SEGMENT_HEADERS = {"venue", "segment", "site", "space", "location",
+                         "venue space", "event type", "product"}
 OC_WORDS = ("original", "oc", "assumed", "inherited", "pre close", "preclose",
             "backlog", "seller")
-
-# How an event list rolls up into P&L revenue lines. The six ancillary
-# categories are reported per-category on the Events sheet but land on a single
-# Ancillary Revenue line in the P&L, which is why finance no longer reports these
-# lines separately -- the event list is the source and the two cannot disagree.
-EVENT_REVENUE_LINES = {
-    "room_rental": ["room_rental"],
-    "food": ["food"],
-    "beverage": ["beverage"],
-    "lodging": ["lodging"],
-    "service_charge": ["service_charge"],
-    "ancillary": ["dj", "floral", "bakery", "stationery", "photography",
-                  "other_ancillary"],
-}
-
 
 # Revenue Analysis category -> the names a reporting sheet is likely to use.
 CATEGORY_ALIASES = {
@@ -396,7 +419,12 @@ CATEGORY_ALIASES = {
     "other_ancillary": ["other ancillary", "other", "add ons", "enhancements",
                         "misc ancillary"],
     "service_charge": ["service charge", "service fee", "admin fee"],
+    "elopement": ["elopement", "elopements", "elopement revenue"],
+    "all_inclusive": ["all inclusive", "all-inclusive", "all inclusive package",
+                      "package"],
 }
+
+EVENT_REVENUE_LINES = L.EVENT_REVENUE_LINES
 
 
 def _category_index():
@@ -427,12 +455,25 @@ def find_events_sheet(wb):
                     roles[c] = "date"
                 elif label in EVENT_TYPE_HEADERS and "type" not in roles.values():
                     roles[c] = "type"
+                elif label in EVENT_SEGMENT_HEADERS and "segment" not in roles.values():
+                    roles[c] = "segment"
                 elif label in cat_idx:
                     roles[c] = cat_idx[label]
                     seen_cats += 1
             if "date" in roles.values() and seen_cats >= 2:
                 return ws, r, roles
     return None, None, None
+
+
+def _segment_index(slug):
+    """Every spelling that should resolve to a segment key."""
+    idx = {}
+    for seg in store.baseline(slug).get("segments", []):
+        for name in (seg["label"], seg["key"]):
+            n = norm(name)
+            idx.setdefault(n, seg["key"])
+            idx.setdefault(n.rstrip("s"), seg["key"])
+    return idx
 
 
 def parse_events(slug, wb):
@@ -445,12 +486,19 @@ def parse_events(slug, wb):
     if ws is None:
         return None
 
-    base_months = {m["ym"] for m in store.baseline(slug)["months"]}
+    base = store.baseline(slug)
+    base_months = {m["ym"] for m in base["months"]}
+    seg_idx = _segment_index(slug)
+    segs = base.get("segments", [])
+    default_seg = segs[0]["key"] if len(segs) == 1 else None
+
     date_col = next(c for c, role in roles.items() if role == "date")
     type_col = next((c for c, role in roles.items() if role == "type"), None)
-    cat_cols = {c: role for c, role in roles.items() if role not in ("date", "type")}
+    seg_col = next((c for c, role in roles.items() if role == "segment"), None)
+    cat_cols = {c: role for c, role in roles.items()
+                if role not in ("date", "type", "segment")}
 
-    months, skipped, rows_read = {}, [], 0
+    months, skipped, rows_read, unknown_segments = {}, [], 0, set()
     for r in range(header_row + 1, ws.max_row + 1):
         raw_date = ws.cell(r, date_col).value
         if not isinstance(raw_date, datetime):
@@ -461,14 +509,27 @@ def parse_events(slug, wb):
             skipped.append(ym)
             continue
         cohort = _cohort(ws.cell(r, type_col).value) if type_col else "new"
-        slot = months.setdefault(ym, {"events_oc": 0, "events_new": 0,
-                                      "ancillary": {}})
-        slot[f"events_{cohort}"] += 1
+
+        seg_key = default_seg
+        if seg_col is not None:
+            raw_seg = ws.cell(r, seg_col).value
+            n = norm(raw_seg)
+            seg_key = seg_idx.get(n) or seg_idx.get(n.rstrip("s"))
+            if seg_key is None and raw_seg is not None:
+                unknown_segments.add(str(raw_seg).strip())
+        if seg_key is None:
+            continue
+
+        slot = months.setdefault(ym, {"segments": {}, "ancillary": {}})
+        seg_slot = slot["segments"].setdefault(
+            seg_key, {"events_oc": 0, "events_new": 0, "events": 0})
+        seg_slot[f"events_{cohort}"] += 1
+        seg_slot["events"] += 1
         for c, cat in cat_cols.items():
             v = ws.cell(r, c).value
             if not isinstance(v, (int, float)) or isinstance(v, bool) or v <= 0:
                 continue
-            entry = slot["ancillary"].setdefault(cat, {})
+            entry = slot["ancillary"].setdefault(seg_key, {}).setdefault(cat, {})
             entry[f"{cohort}_events"] = entry.get(f"{cohort}_events", 0) + 1
             entry[f"{cohort}_rev"] = entry.get(f"{cohort}_rev", 0.0) + float(v)
 
@@ -477,6 +538,9 @@ def parse_events(slug, wb):
         "header_row": header_row,
         "categories": sorted(set(cat_cols.values())),
         "has_type_column": type_col is not None,
+        "has_segment_column": seg_col is not None,
+        "segments_needed": len(segs) > 1,
+        "unknown_segments": sorted(unknown_segments),
         "rows_read": rows_read,
         "months": months,
         "months_skipped": sorted(set(skipped)),
@@ -486,35 +550,39 @@ def parse_events(slug, wb):
 def apply_events(slug, parsed, months, scale=1.0, filename=None):
     """Commit parsed event detail. Counts are never scaled; money always is."""
     written = []
+    present = set(parsed["categories"])
     for ym in sorted(parsed["months"]):
         if ym not in months:
             continue
         slot = parsed["months"][ym]
+
         # A category column that exists in the file but holds nothing means
         # nobody bought it -- a real zero. Left absent it would read as "not
         # reported" and the shortfall would disappear from the attachment tab.
-        ancillary = {cat: {"oc_events": 0, "new_events": 0,
-                           "oc_rev": 0.0, "new_rev": 0.0}
-                     for cat in parsed["categories"]}
-        for cat, payload in slot["ancillary"].items():
-            ancillary.setdefault(cat, {}).update(
-                {k: (v * scale if k.endswith("_rev") else v)
-                 for k, v in payload.items()})
-        lines = {"events_oc": slot["events_oc"], "events_new": slot["events_new"],
-                 "events": slot["events_oc"] + slot["events_new"]}
+        ancillary = {}
+        for seg_key in slot["segments"]:
+            base_cats = {cat: {"oc_events": 0, "new_events": 0,
+                               "oc_rev": 0.0, "new_rev": 0.0} for cat in present}
+            for cat, payload in slot["ancillary"].get(seg_key, {}).items():
+                base_cats.setdefault(cat, {}).update(
+                    {k: (v * scale if k.endswith("_rev") else v)
+                     for k, v in payload.items()})
+            ancillary[seg_key] = base_cats
 
-        # Derive the revenue lines the event list covers. Only lines whose
-        # categories are actually present in the file are written, so a partial
-        # event sheet cannot zero out a revenue line reported on the P&L sheet.
-        present = set(parsed["categories"])
+        # Revenue lines the event list covers, summed across every segment --
+        # the P&L is venue-wide even where the events are not.
+        lines = {}
         for line, cats in EVENT_REVENUE_LINES.items():
             if not present.intersection(cats):
                 continue
             total = 0.0
-            for cat in cats:
-                payload = slot["ancillary"].get(cat, {})
-                total += payload.get("oc_rev", 0.0) + payload.get("new_rev", 0.0)
+            for seg_cats in slot["ancillary"].values():
+                for cat in cats:
+                    payload = seg_cats.get(cat, {})
+                    total += payload.get("oc_rev", 0.0) + payload.get("new_rev", 0.0)
             lines[line] = round(total * scale, 6)
-        store.record(slug, ym, lines, "upload", ancillary=ancillary, note=filename)
+
+        store.record(slug, ym, lines, "upload", ancillary=ancillary,
+                     segments=slot["segments"], note=filename)
         written.append(ym)
     return written

@@ -60,8 +60,8 @@
       {% else %}The gap is mostly <b>rate</b> — pricing and attachment, not the funnel.{% endif %}</p>
     {% else %}<p class="note" style="margin:0">Needs reported events and revenue.</p>{% endif %}
   </div></div>
-  <div class="card"><h2>EBITDA gap by block</h2><div class="body">
-    {{ m.waterfall(ebitda_bridge.plan, ebitda_bridge.steps, ebitda_bridge.actual,
+  <div class="card"><h2>Profit gap by block</h2><div class="body">
+    {{ m.waterfall(profit_bridge.plan, profit_bridge.steps, profit_bridge.actual,
                    'usd', 'Proforma', 'Actual') }}
   </div></div>
 </div>

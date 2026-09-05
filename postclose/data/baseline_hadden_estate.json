@@ -3,385 +3,387 @@
  "venue": "Hadden Estate",
  "units": "thousands",
  "source_file": "Hadden_Monthly_Forecast_vF.xlsx",
- "extracted_at": "2026-09-05T12:28:57Z",
+ "source_sheet": "Detailed P&L",
+ "extracted_at": "2026-09-05T14:47:16Z",
  "close_month": "2026-09",
+ "profit_key": "ebitda",
  "lines": [
   {
-   "group": "funnel",
    "key": "leads",
-   "label": "Leads",
+   "group": "funnel",
    "format": "count",
+   "label": "Leads",
    "source_row": 11
   },
   {
-   "group": "funnel",
    "key": "lead_to_tour",
-   "label": "Lead \u2192 Tour Conversion",
+   "group": "funnel",
    "format": "pct",
+   "label": "L->T Conversion",
    "source_row": 13
   },
   {
-   "group": "funnel",
    "key": "tours",
-   "label": "Tours",
+   "group": "funnel",
    "format": "count",
+   "label": "Tours",
    "source_row": 15
   },
   {
-   "group": "funnel",
    "key": "tour_to_contract",
-   "label": "Tour \u2192 Contract Conversion",
+   "group": "funnel",
    "format": "pct",
+   "label": "T->C Conversion",
    "source_row": 17
   },
   {
-   "group": "funnel",
    "key": "contracts",
-   "label": "Contracts",
+   "group": "funnel",
    "format": "count",
+   "label": "Contracts",
    "source_row": 19
   },
   {
-   "group": "funnel",
    "key": "events_oc",
-   "label": "Events \u2013 Original Contracts",
+   "group": "funnel",
    "format": "count",
+   "label": "Original",
    "source_row": 21
   },
   {
-   "group": "funnel",
    "key": "events_new",
-   "label": "Events \u2013 New Contracts",
+   "group": "funnel",
    "format": "count",
+   "label": "New",
    "source_row": 22
   },
   {
-   "group": "funnel",
    "key": "events",
-   "label": "Events",
+   "group": "funnel",
    "format": "count",
+   "label": "Events",
    "source_row": 23
   },
   {
-   "group": "revenue",
    "key": "room_rental",
-   "label": "Room Rental Revenue",
+   "group": "revenue",
    "format": "usd",
+   "label": "Room Rental Revenue",
    "source_row": 27
   },
   {
-   "group": "revenue",
    "key": "food",
-   "label": "Food Revenue",
+   "group": "revenue",
    "format": "usd",
+   "label": "Food Revenue",
    "source_row": 28
   },
   {
-   "group": "revenue",
    "key": "beverage",
-   "label": "Beverage Revenue",
+   "group": "revenue",
    "format": "usd",
+   "label": "Beverage Revenue",
    "source_row": 29
   },
   {
-   "group": "revenue",
    "key": "lodging",
-   "label": "Lodging Revenues",
+   "group": "revenue",
    "format": "usd",
+   "label": "Lodging Revenues",
    "source_row": 30
   },
   {
-   "group": "revenue",
    "key": "ancillary",
-   "label": "Ancillary Revenue",
+   "group": "revenue",
    "format": "usd",
+   "label": "Ancillary Revenue",
    "source_row": 31
   },
   {
-   "group": "revenue",
    "key": "service_charge",
-   "label": "Service Charge",
+   "group": "revenue",
    "format": "usd",
+   "label": "Service Charge",
    "source_row": 32
   },
   {
-   "group": "revenue",
    "key": "cancelled_events",
-   "label": "Cancelled Events",
+   "group": "revenue",
    "format": "usd",
+   "label": "Cancelled Events",
    "source_row": 33
   },
   {
-   "group": "revenue",
    "key": "outside_events",
-   "label": "Outside Events",
+   "group": "revenue",
    "format": "usd",
+   "label": "Outside Events",
    "source_row": 34
   },
   {
-   "group": "revenue",
    "key": "discounts",
-   "label": "Discounts",
+   "group": "revenue",
    "format": "usd",
+   "label": "Discounts",
    "source_row": 35
   },
   {
-   "group": "revenue",
    "key": "other_revenue",
-   "label": "Other Revenue",
+   "group": "revenue",
    "format": "usd",
+   "label": "Other Revenue",
    "source_row": 36
   },
   {
-   "group": "total",
    "key": "total_revenue",
-   "label": "Total Revenue",
+   "group": "total",
    "format": "usd",
+   "label": "Total Revenue",
    "source_row": 38
   },
   {
-   "group": "cogs",
    "key": "food_cogs",
-   "label": "Food COGS",
+   "group": "cogs",
    "format": "usd",
+   "label": "Food COGS",
    "source_row": 41
   },
   {
-   "group": "cogs",
    "key": "ancillary_cogs",
-   "label": "Ancillary COGS",
+   "group": "cogs",
    "format": "usd",
+   "label": "Ancillary COGS",
    "source_row": 42
   },
   {
-   "group": "cogs",
    "key": "alcohol_cogs",
-   "label": "Alcohol COGS",
+   "group": "cogs",
    "format": "usd",
+   "label": "Alcohol COGS",
    "source_row": 43
   },
   {
-   "group": "cogs",
    "key": "other_cogs",
-   "label": "Other COGS",
+   "group": "cogs",
    "format": "usd",
+   "label": "Other COGS",
    "source_row": 44
   },
   {
-   "group": "cogs",
    "key": "room_cogs",
-   "label": "Room COGS",
+   "group": "cogs",
    "format": "usd",
+   "label": "Room COGS",
    "source_row": 45
   },
   {
-   "group": "total",
    "key": "total_cogs",
-   "label": "Total COGS",
+   "group": "total",
    "format": "usd",
+   "label": "Total COGS",
    "source_row": 47
   },
   {
-   "group": "total",
    "key": "gross_margin",
-   "label": "Gross Margin",
+   "group": "total",
    "format": "usd",
+   "label": "Gross Margin",
    "source_row": 49
   },
   {
-   "group": "payroll",
    "key": "sales_payroll",
-   "label": "Sales Team Payroll",
+   "group": "payroll",
    "format": "usd",
+   "label": "Sales Team Payroll",
    "source_row": 52
   },
   {
-   "group": "payroll",
    "key": "planning_payroll",
-   "label": "Planning Team Payroll",
+   "group": "payroll",
    "format": "usd",
+   "label": "Planning Team Payroll",
    "source_row": 53
   },
   {
-   "group": "payroll",
    "key": "operations_payroll",
-   "label": "Operations Team Payroll",
+   "group": "payroll",
    "format": "usd",
+   "label": "Operations Team Payroll",
    "source_row": 54
   },
   {
-   "group": "payroll",
    "key": "ancillary_payroll",
-   "label": "Ancillary Payroll",
+   "group": "payroll",
    "format": "usd",
+   "label": "Ancillary Payroll",
    "source_row": 55
   },
   {
-   "group": "payroll",
    "key": "fnb_payroll",
-   "label": "F&B Team Payroll",
+   "group": "payroll",
    "format": "usd",
+   "label": "F&B Team Payroll",
    "source_row": 56
   },
   {
-   "group": "payroll",
    "key": "owner_salaries",
-   "label": "Owner Salaries",
+   "group": "payroll",
    "format": "usd",
+   "label": "Owner Salaries",
    "source_row": 57
   },
   {
-   "group": "payroll",
    "key": "payroll_admin",
-   "label": "Payroll Admin & Benefit Expenses",
+   "group": "payroll",
    "format": "usd",
+   "label": "Payroll Admin & Benefit Expenses",
    "source_row": 58
   },
   {
-   "group": "payroll",
    "key": "other_payroll",
-   "label": "Other Payroll",
+   "group": "payroll",
    "format": "usd",
+   "label": "Other Payroll",
    "source_row": 59
   },
   {
-   "group": "total",
    "key": "total_payroll",
-   "label": "Total Payroll",
+   "group": "total",
    "format": "usd",
+   "label": "Total Payroll",
    "source_row": 61
   },
   {
-   "group": "opex",
    "key": "marketing",
-   "label": "Marketing Expense",
+   "group": "opex",
    "format": "usd",
+   "label": "Marketing Expense",
    "source_row": 64
   },
   {
-   "group": "opex",
    "key": "maintenance",
-   "label": "Maintenance Expense",
+   "group": "opex",
    "format": "usd",
+   "label": "Maintenance Expense",
    "source_row": 65
   },
   {
-   "group": "opex",
    "key": "utilities",
-   "label": "Utilities Expense",
+   "group": "opex",
    "format": "usd",
+   "label": "Utilities Expense",
    "source_row": 66
   },
   {
-   "group": "opex",
    "key": "office",
-   "label": "Office Expense",
+   "group": "opex",
    "format": "usd",
+   "label": "Office Expense",
    "source_row": 67
   },
   {
-   "group": "opex",
    "key": "computer",
-   "label": "Computer Expense",
+   "group": "opex",
    "format": "usd",
+   "label": "Computer Expense",
    "source_row": 68
   },
   {
-   "group": "opex",
    "key": "automobile",
-   "label": "Automobile Expenses",
+   "group": "opex",
    "format": "usd",
+   "label": "Automobile Expenses",
    "source_row": 69
   },
   {
-   "group": "opex",
    "key": "training",
-   "label": "Training & Development Expense",
+   "group": "opex",
    "format": "usd",
+   "label": "Training & Development Expense",
    "source_row": 70
   },
   {
-   "group": "opex",
    "key": "tax",
-   "label": "Tax Expense",
+   "group": "opex",
    "format": "usd",
+   "label": "Tax Expense",
    "source_row": 71
   },
   {
-   "group": "opex",
    "key": "travel",
-   "label": "Travel Expense",
+   "group": "opex",
    "format": "usd",
+   "label": "Travel Expense",
    "source_row": 72
   },
   {
-   "group": "opex",
    "key": "professional",
-   "label": "Professional Expenses",
+   "group": "opex",
    "format": "usd",
+   "label": "Professional Expenses",
    "source_row": 73
   },
   {
-   "group": "opex",
    "key": "rent_expense",
-   "label": "Rent Expense",
+   "group": "opex",
    "format": "usd",
+   "label": "Rent Expense",
    "source_row": 74
   },
   {
-   "group": "opex",
    "key": "insurance",
-   "label": "Insurance",
+   "group": "opex",
    "format": "usd",
+   "label": "Insurance",
    "source_row": 75
   },
   {
-   "group": "opex",
    "key": "finance",
-   "label": "Finance Expenses",
+   "group": "opex",
    "format": "usd",
+   "label": "Finance Expenses",
    "source_row": 76
   },
   {
-   "group": "opex",
    "key": "personal",
-   "label": "Personal Expenses",
+   "group": "opex",
    "format": "usd",
+   "label": "Personal Expenses",
    "source_row": 77
   },
   {
-   "group": "opex",
    "key": "other_opex",
-   "label": "Other Operating Expenses",
+   "group": "opex",
    "format": "usd",
+   "label": "Other Operating Expenses",
    "source_row": 78
   },
   {
-   "group": "total",
    "key": "total_opex",
-   "label": "Total Operating Expenses",
+   "group": "total",
    "format": "usd",
+   "label": "Total Operating Expenses",
    "source_row": 80
   },
   {
-   "group": "total",
    "key": "ebitdar",
-   "label": "EBITDAR",
+   "group": "total",
    "format": "usd",
+   "label": "EBITDAR",
    "source_row": 82
   },
   {
-   "group": "total",
    "key": "rent",
-   "label": "Rent",
+   "group": "total",
    "format": "usd",
+   "label": "Rent",
    "source_row": 84
   },
   {
-   "group": "total",
    "key": "ebitda",
-   "label": "EBITDA",
+   "group": "total",
    "format": "usd",
+   "label": "EBITDA",
    "source_row": 86
   }
  ],
@@ -390,7 +392,6 @@
    "ym": "2026-09",
    "date": "2026-09-30",
    "post_close_year": 1,
-   "event_share": 0.097389,
    "lines": {
     "leads": 90.0,
     "lead_to_tour": 0.166667,
@@ -446,13 +447,20 @@
     "ebitdar": 75.007702,
     "rent": -23.75,
     "ebitda": 51.257702
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 5.0,
+     "events_oc": 6.0,
+     "events_new": 0.0,
+     "events": 6.0
+    }
    }
   },
   {
    "ym": "2026-10",
    "date": "2026-10-31",
    "post_close_year": 1,
-   "event_share": 0.11296,
    "lines": {
     "leads": 115.0,
     "lead_to_tour": 0.130435,
@@ -508,13 +516,20 @@
     "ebitdar": 75.007702,
     "rent": -23.75,
     "ebitda": 51.257702
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 5.0,
+     "events_oc": 6.0,
+     "events_new": 0.0,
+     "events": 6.0
+    }
    }
   },
   {
    "ym": "2026-11",
    "date": "2026-11-30",
    "post_close_year": 1,
-   "event_share": 0.099464,
    "lines": {
     "leads": 110.0,
     "lead_to_tour": 0.172727,
@@ -570,13 +585,20 @@
     "ebitdar": -0.47847,
     "rent": -23.75,
     "ebitda": -24.22847
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 5.0,
+     "events_oc": 2.0,
+     "events_new": 0.0,
+     "events": 2.0
+    }
    }
   },
   {
    "ym": "2026-12",
    "date": "2026-12-31",
    "post_close_year": 1,
-   "event_share": 0.079707,
    "lines": {
     "leads": 110.0,
     "lead_to_tour": 0.245455,
@@ -632,13 +654,20 @@
     "ebitdar": -0.47847,
     "rent": -23.75,
     "ebitda": -24.22847
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 7.0,
+     "events_oc": 0.0,
+     "events_new": 2.0,
+     "events": 2.0
+    }
    }
   },
   {
    "ym": "2027-01",
    "date": "2027-01-31",
    "post_close_year": 1,
-   "event_share": 0.044983,
    "lines": {
     "leads": 175.0,
     "lead_to_tour": 0.314286,
@@ -694,13 +723,20 @@
     "ebitdar": -38.221556,
     "rent": -23.75,
     "ebitda": -61.971556
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 14.0,
+     "events_oc": 0.0,
+     "events_new": 0.0,
+     "events": 0.0
+    }
    }
   },
   {
    "ym": "2027-02",
    "date": "2027-02-28",
    "post_close_year": 1,
-   "event_share": 0.058017,
    "lines": {
     "leads": 142.105263,
     "lead_to_tour": 0.218148,
@@ -756,13 +792,20 @@
     "ebitdar": -38.221556,
     "rent": -23.75,
     "ebitda": -61.971556
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 8.0,
+     "events_oc": 0.0,
+     "events_new": 0.0,
+     "events": 0.0
+    }
    }
   },
   {
    "ym": "2027-03",
    "date": "2027-03-31",
    "post_close_year": 1,
-   "event_share": 0.078704,
    "lines": {
     "leads": 126.315789,
     "lead_to_tour": 0.21375,
@@ -818,13 +861,20 @@
     "ebitdar": -19.350013,
     "rent": -23.75,
     "ebitda": -43.100013
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 7.0,
+     "events_oc": 1.0,
+     "events_new": 0.0,
+     "events": 1.0
+    }
    }
   },
   {
    "ym": "2027-04",
    "date": "2027-04-30",
    "post_close_year": 1,
-   "event_share": 0.078777,
    "lines": {
     "leads": 126.315789,
     "lead_to_tour": 0.182083,
@@ -880,13 +930,20 @@
     "ebitdar": 37.264616,
     "rent": -23.75,
     "ebitda": 13.514616
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 6.0,
+     "events_oc": 2.0,
+     "events_new": 2.0,
+     "events": 4.0
+    }
    }
   },
   {
    "ym": "2027-05",
    "date": "2027-05-31",
    "post_close_year": 1,
-   "event_share": 0.092624,
    "lines": {
     "leads": 126.315789,
     "lead_to_tour": 0.150417,
@@ -942,13 +999,20 @@
     "ebitdar": 112.750788,
     "rent": -23.75,
     "ebitda": 89.000788
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 5.0,
+     "events_oc": 4.0,
+     "events_new": 4.0,
+     "events": 8.0
+    }
    }
   },
   {
    "ym": "2027-06",
    "date": "2027-06-30",
    "post_close_year": 1,
-   "event_share": 0.097321,
    "lines": {
     "leads": 126.315789,
     "lead_to_tour": 0.182083,
@@ -1004,13 +1068,20 @@
     "ebitdar": 56.136159,
     "rent": -23.75,
     "ebitda": 32.386159
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 6.0,
+     "events_oc": 3.0,
+     "events_new": 2.0,
+     "events": 5.0
+    }
    }
   },
   {
    "ym": "2027-07",
    "date": "2027-07-31",
    "post_close_year": 1,
-   "event_share": 0.079424,
    "lines": {
     "leads": 126.315789,
     "lead_to_tour": 0.182083,
@@ -1066,13 +1137,20 @@
     "ebitdar": -0.47847,
     "rent": -23.75,
     "ebitda": -24.22847
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 6.0,
+     "events_oc": 0.0,
+     "events_new": 2.0,
+     "events": 2.0
+    }
    }
   },
   {
    "ym": "2027-08",
    "date": "2027-08-31",
    "post_close_year": 1,
-   "event_share": 0.080631,
    "lines": {
     "leads": 126.315789,
     "lead_to_tour": 0.182083,
@@ -1128,13 +1206,20 @@
     "ebitdar": 37.264616,
     "rent": -23.75,
     "ebitda": 13.514616
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 6.0,
+     "events_oc": 0.0,
+     "events_new": 4.0,
+     "events": 4.0
+    }
    }
   },
   {
    "ym": "2027-09",
    "date": "2027-09-30",
    "post_close_year": 2,
-   "event_share": 0.097389,
    "lines": {
     "leads": 140.0,
     "lead_to_tour": 0.214286,
@@ -1190,13 +1275,20 @@
     "ebitdar": 86.947849,
     "rent": -23.75,
     "ebitda": 63.197849
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 5.0,
+     "events_oc": 0.0,
+     "events_new": 6.0,
+     "events": 6.0
+    }
    }
   },
   {
    "ym": "2027-10",
    "date": "2027-10-31",
    "post_close_year": 2,
-   "event_share": 0.11296,
    "lines": {
     "leads": 140.0,
     "lead_to_tour": 0.214286,
@@ -1252,13 +1344,20 @@
     "ebitdar": 109.000959,
     "rent": -23.75,
     "ebitda": 85.250959
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 8.0,
+     "events_oc": 1.0,
+     "events_new": 6.0,
+     "events": 7.0
+    }
    }
   },
   {
    "ym": "2027-11",
    "date": "2027-11-30",
    "post_close_year": 2,
-   "event_share": 0.099464,
    "lines": {
     "leads": 123.0,
     "lead_to_tour": 0.268293,
@@ -1314,13 +1413,20 @@
     "ebitdar": 86.947849,
     "rent": -23.75,
     "ebitda": 63.197849
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 6.0,
+     "events_oc": 0.0,
+     "events_new": 6.0,
+     "events": 6.0
+    }
    }
   },
   {
    "ym": "2027-12",
    "date": "2027-12-31",
    "post_close_year": 2,
-   "event_share": 0.079707,
    "lines": {
     "leads": 123.0,
     "lead_to_tour": 0.284553,
@@ -1376,13 +1482,20 @@
     "ebitdar": 64.894739,
     "rent": -23.75,
     "ebitda": 41.144739
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 9.0,
+     "events_oc": 0.0,
+     "events_new": 5.0,
+     "events": 5.0
+    }
    }
   },
   {
    "ym": "2028-01",
    "date": "2028-01-31",
    "post_close_year": 2,
-   "event_share": 0.044983,
    "lines": {
     "leads": 226.0,
     "lead_to_tour": 0.181416,
@@ -1438,13 +1551,20 @@
     "ebitdar": 20.788518,
     "rent": -23.75,
     "ebitda": -2.961482
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 11.0,
+     "events_oc": 0.0,
+     "events_new": 3.0,
+     "events": 3.0
+    }
    }
   },
   {
    "ym": "2028-02",
    "date": "2028-02-29",
    "post_close_year": 2,
-   "event_share": 0.058017,
    "lines": {
     "leads": 158.0,
     "lead_to_tour": 0.183544,
@@ -1500,13 +1620,20 @@
     "ebitdar": 42.841628,
     "rent": -23.75,
     "ebitda": 19.091628
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 9.0,
+     "events_oc": 0.0,
+     "events_new": 4.0,
+     "events": 4.0
+    }
    }
   },
   {
    "ym": "2028-03",
    "date": "2028-03-31",
    "post_close_year": 2,
-   "event_share": 0.078704,
    "lines": {
     "leads": 140.0,
     "lead_to_tour": 0.192857,
@@ -1562,13 +1689,20 @@
     "ebitdar": 64.894739,
     "rent": -23.75,
     "ebitda": 41.144739
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 8.0,
+     "events_oc": 0.0,
+     "events_new": 5.0,
+     "events": 5.0
+    }
    }
   },
   {
    "ym": "2028-04",
    "date": "2028-04-30",
    "post_close_year": 2,
-   "event_share": 0.078777,
    "lines": {
     "leads": 140.0,
     "lead_to_tour": 0.164286,
@@ -1624,13 +1758,20 @@
     "ebitdar": 64.894739,
     "rent": -23.75,
     "ebitda": 41.144739
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 7.0,
+     "events_oc": 0.0,
+     "events_new": 5.0,
+     "events": 5.0
+    }
    }
   },
   {
    "ym": "2028-05",
    "date": "2028-05-31",
    "post_close_year": 2,
-   "event_share": 0.092624,
    "lines": {
     "leads": 140.0,
     "lead_to_tour": 0.15,
@@ -1686,13 +1827,20 @@
     "ebitdar": 131.05407,
     "rent": -23.75,
     "ebitda": 107.30407
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 6.0,
+     "events_oc": 0.0,
+     "events_new": 8.0,
+     "events": 8.0
+    }
    }
   },
   {
    "ym": "2028-06",
    "date": "2028-06-30",
    "post_close_year": 2,
-   "event_share": 0.097321,
    "lines": {
     "leads": 140.0,
     "lead_to_tour": 0.178571,
@@ -1748,13 +1896,20 @@
     "ebitdar": 86.947849,
     "rent": -23.75,
     "ebitda": 63.197849
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 7.0,
+     "events_oc": 0.0,
+     "events_new": 6.0,
+     "events": 6.0
+    }
    }
   },
   {
    "ym": "2028-07",
    "date": "2028-07-31",
    "post_close_year": 2,
-   "event_share": 0.079424,
    "lines": {
     "leads": 140.0,
     "lead_to_tour": 0.214286,
@@ -1810,13 +1965,20 @@
     "ebitdar": 64.894739,
     "rent": -23.75,
     "ebitda": 41.144739
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 7.0,
+     "events_oc": 0.0,
+     "events_new": 5.0,
+     "events": 5.0
+    }
    }
   },
   {
    "ym": "2028-08",
    "date": "2028-08-31",
    "post_close_year": 2,
-   "event_share": 0.080631,
    "lines": {
     "leads": 140.0,
     "lead_to_tour": 0.185714,
@@ -1872,13 +2034,20 @@
     "ebitdar": 64.894739,
     "rent": -23.75,
     "ebitda": 41.144739
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 7.0,
+     "events_oc": 0.0,
+     "events_new": 5.0,
+     "events": 5.0
+    }
    }
   },
   {
    "ym": "2028-09",
    "date": "2028-09-30",
    "post_close_year": 3,
-   "event_share": 0.097389,
    "lines": {
     "leads": 160.0,
     "lead_to_tour": 0.2125,
@@ -1934,13 +2103,20 @@
     "ebitdar": 156.652253,
     "rent": -24.7,
     "ebitda": 131.952253
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 7.0,
+     "events_oc": 0.0,
+     "events_new": 8.0,
+     "events": 8.0
+    }
    }
   },
   {
    "ym": "2028-10",
    "date": "2028-10-31",
    "post_close_year": 3,
-   "event_share": 0.11296,
    "lines": {
     "leads": 160.0,
     "lead_to_tour": 0.2125,
@@ -1996,13 +2172,20 @@
     "ebitdar": 182.610755,
     "rent": -24.7,
     "ebitda": 157.910755
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 9.0,
+     "events_oc": 0.0,
+     "events_new": 9.0,
+     "events": 9.0
+    }
    }
   },
   {
    "ym": "2028-11",
    "date": "2028-11-30",
    "post_close_year": 3,
-   "event_share": 0.099464,
    "lines": {
     "leads": 140.0,
     "lead_to_tour": 0.271429,
@@ -2058,13 +2241,20 @@
     "ebitdar": 156.652253,
     "rent": -24.7,
     "ebitda": 131.952253
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 7.0,
+     "events_oc": 0.0,
+     "events_new": 8.0,
+     "events": 8.0
+    }
    }
   },
   {
    "ym": "2028-12",
    "date": "2028-12-31",
    "post_close_year": 3,
-   "event_share": 0.079707,
    "lines": {
     "leads": 140.0,
     "lead_to_tour": 0.285714,
@@ -2120,13 +2310,20 @@
     "ebitdar": 104.735249,
     "rent": -24.7,
     "ebitda": 80.035249
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 10.0,
+     "events_oc": 0.0,
+     "events_new": 6.0,
+     "events": 6.0
+    }
    }
   },
   {
    "ym": "2029-01",
    "date": "2029-01-31",
    "post_close_year": 3,
-   "event_share": 0.044983,
    "lines": {
     "leads": 260.0,
     "lead_to_tour": 0.180769,
@@ -2182,13 +2379,20 @@
     "ebitdar": 52.818245,
     "rent": -24.7,
     "ebitda": 28.118245
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 12.0,
+     "events_oc": 0.0,
+     "events_new": 4.0,
+     "events": 4.0
+    }
    }
   },
   {
    "ym": "2029-02",
    "date": "2029-02-28",
    "post_close_year": 3,
-   "event_share": 0.058017,
    "lines": {
     "leads": 180.0,
     "lead_to_tour": 0.183333,
@@ -2244,13 +2448,20 @@
     "ebitdar": 78.776747,
     "rent": -24.7,
     "ebitda": 54.076747
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 10.0,
+     "events_oc": 0.0,
+     "events_new": 5.0,
+     "events": 5.0
+    }
    }
   },
   {
    "ym": "2029-03",
    "date": "2029-03-31",
    "post_close_year": 3,
-   "event_share": 0.078704,
    "lines": {
     "leads": 160.0,
     "lead_to_tour": 0.19375,
@@ -2306,13 +2517,20 @@
     "ebitdar": 104.735249,
     "rent": -24.7,
     "ebitda": 80.035249
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 8.0,
+     "events_oc": 0.0,
+     "events_new": 6.0,
+     "events": 6.0
+    }
    }
   },
   {
    "ym": "2029-04",
    "date": "2029-04-30",
    "post_close_year": 3,
-   "event_share": 0.078777,
    "lines": {
     "leads": 160.0,
     "lead_to_tour": 0.16875,
@@ -2368,13 +2586,20 @@
     "ebitdar": 104.735249,
     "rent": -24.7,
     "ebitda": 80.035249
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 8.0,
+     "events_oc": 0.0,
+     "events_new": 6.0,
+     "events": 6.0
+    }
    }
   },
   {
    "ym": "2029-05",
    "date": "2029-05-31",
    "post_close_year": 3,
-   "event_share": 0.092624,
    "lines": {
     "leads": 160.0,
     "lead_to_tour": 0.15,
@@ -2430,13 +2655,20 @@
     "ebitdar": 156.652253,
     "rent": -24.7,
     "ebitda": 131.952253
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 7.0,
+     "events_oc": 0.0,
+     "events_new": 8.0,
+     "events": 8.0
+    }
    }
   },
   {
    "ym": "2029-06",
    "date": "2029-06-30",
    "post_close_year": 3,
-   "event_share": 0.097321,
    "lines": {
     "leads": 160.0,
     "lead_to_tour": 0.175,
@@ -2492,13 +2724,20 @@
     "ebitdar": 156.652253,
     "rent": -24.7,
     "ebitda": 131.952253
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 7.0,
+     "events_oc": 0.0,
+     "events_new": 8.0,
+     "events": 8.0
+    }
    }
   },
   {
    "ym": "2029-07",
    "date": "2029-07-31",
    "post_close_year": 3,
-   "event_share": 0.079424,
    "lines": {
     "leads": 160.0,
     "lead_to_tour": 0.2125,
@@ -2554,13 +2793,20 @@
     "ebitdar": 104.735249,
     "rent": -24.7,
     "ebitda": 80.035249
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 7.0,
+     "events_oc": 0.0,
+     "events_new": 6.0,
+     "events": 6.0
+    }
    }
   },
   {
    "ym": "2029-08",
    "date": "2029-08-31",
    "post_close_year": 3,
-   "event_share": 0.080631,
    "lines": {
     "leads": 160.0,
     "lead_to_tour": 0.1875,
@@ -2616,13 +2862,20 @@
     "ebitdar": 104.735249,
     "rent": -24.7,
     "ebitda": 80.035249
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 8.0,
+     "events_oc": 0.0,
+     "events_new": 6.0,
+     "events": 6.0
+    }
    }
   },
   {
    "ym": "2029-09",
    "date": "2029-09-30",
    "post_close_year": 4,
-   "event_share": 0.097389,
    "lines": {
     "leads": 160.0,
     "lead_to_tour": 0.2125,
@@ -2678,13 +2931,20 @@
     "ebitdar": 156.652253,
     "rent": -25.688,
     "ebitda": 130.964253
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 7.0,
+     "events_oc": 0.0,
+     "events_new": 8.0,
+     "events": 8.0
+    }
    }
   },
   {
    "ym": "2029-10",
    "date": "2029-10-31",
    "post_close_year": 4,
-   "event_share": 0.11296,
    "lines": {
     "leads": 160.0,
     "lead_to_tour": 0.2125,
@@ -2740,13 +3000,20 @@
     "ebitdar": 182.610755,
     "rent": -25.688,
     "ebitda": 156.922755
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 9.0,
+     "events_oc": 0.0,
+     "events_new": 9.0,
+     "events": 9.0
+    }
    }
   },
   {
    "ym": "2029-11",
    "date": "2029-11-30",
    "post_close_year": 4,
-   "event_share": 0.099464,
    "lines": {
     "leads": 140.0,
     "lead_to_tour": 0.271429,
@@ -2802,13 +3069,20 @@
     "ebitdar": 156.652253,
     "rent": -25.688,
     "ebitda": 130.964253
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 7.0,
+     "events_oc": 0.0,
+     "events_new": 8.0,
+     "events": 8.0
+    }
    }
   },
   {
    "ym": "2029-12",
    "date": "2029-12-31",
    "post_close_year": 4,
-   "event_share": 0.079707,
    "lines": {
     "leads": 140.0,
     "lead_to_tour": 0.285714,
@@ -2864,9 +3138,633 @@
     "ebitdar": 104.735249,
     "rent": -25.688,
     "ebitda": 79.047249
+   },
+   "segments": {
+    "hadden_estate": {
+     "contracts": 10.0,
+     "events_oc": 0.0,
+     "events_new": 6.0,
+     "events": 6.0
+    }
    }
   }
  ],
+ "segments": [
+  {
+   "key": "hadden_estate",
+   "label": "Hadden Estate",
+   "roles": [
+    "contracts",
+    "events",
+    "events_new",
+    "events_oc"
+   ],
+   "implicit": true,
+   "ra_sheet": "Revenue Analysis",
+   "drivers": {
+    "years": {
+     "1": {
+      "events_oc": 24.0,
+      "events_new": 16.0,
+      "events_total": 40.0,
+      "revenue_oc": 546.4,
+      "revenue_oc_new": 0.0,
+      "revenue_new": 349.028923,
+      "revenue_total": 895.428923,
+      "rev_per_event_oc": 22.766667,
+      "rev_per_event_oc_new": 0.0,
+      "rev_per_event_new": 21.814308,
+      "rev_per_event_total": 22.385723
+     },
+     "2": {
+      "events_oc": 1.0,
+      "events_new": 64.0,
+      "events_total": 65.0,
+      "revenue_oc": 19.5,
+      "revenue_oc_new": 0.0,
+      "revenue_new": 1723.068709,
+      "revenue_total": 1742.568709,
+      "rev_per_event_oc": 19.5,
+      "rev_per_event_oc_new": 0.0,
+      "rev_per_event_new": 26.922949,
+      "rev_per_event_total": 26.808749
+     },
+     "3": {
+      "events_oc": 0.0,
+      "events_new": 80.0,
+      "events_total": 80.0,
+      "revenue_oc": 0.0,
+      "revenue_oc_new": 0.0,
+      "revenue_new": 2598.909218,
+      "revenue_total": 2598.909218,
+      "rev_per_event_oc": 0.0,
+      "rev_per_event_oc_new": 0.0,
+      "rev_per_event_new": 32.486365,
+      "rev_per_event_total": 32.486365
+     }
+    },
+    "categories": [
+     {
+      "key": "room_rental",
+      "label": "Room Rental",
+      "comment": "<- $18.5k venue rental fee on average, less 22% service charge",
+      "benchmark": {
+       "venue": 6.720759,
+       "region": 6.720759,
+       "wh_avg": 5.146752
+      },
+      "oc": {
+       "attach_rate": {
+        "1": 1.0,
+        "2": 1.0,
+        "3": 1.0
+       },
+       "attach_events": {
+        "1": 24.0,
+        "2": 1.0,
+        "3": 0.0
+       },
+       "revenue": {
+        "1": 485.35,
+        "2": 19.5,
+        "3": 0.0
+       },
+       "rev_per_event": {
+        "1": 22.766667,
+        "2": 19.5,
+        "3": 0.0
+       }
+      },
+      "new": {
+       "attach_rate": {
+        "1": 1.0,
+        "2": 1.0,
+        "3": 1.0
+       },
+       "attach_events": {
+        "1": 16.0,
+        "2": 64.0,
+        "3": 80.0
+       },
+       "revenue": {
+        "1": 242.622951,
+        "2": 970.491803,
+        "3": 1213.114754
+       },
+       "rev_per_event": {
+        "1": 15.163934,
+        "2": 15.163934,
+        "3": 15.163934
+       }
+      }
+     },
+     {
+      "key": "food",
+      "label": "Food",
+      "comment": "<- will need to build out their catering kitchen, assume we can do that in the next 6mo to start selling / attaching by beginning of Y2, assuming ~50% ramp up from then to 75% in Y3",
+      "benchmark": {
+       "venue": 7.068467,
+       "region": 7.068467,
+       "wh_avg": 5.052333
+      },
+      "oc": {
+       "attach_rate": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "attach_events": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "revenue": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "rev_per_event": {
+        "1": null,
+        "2": null,
+        "3": null
+       }
+      },
+      "new": {
+       "attach_rate": {
+        "1": 0.0,
+        "2": 0.5,
+        "3": 1.0
+       },
+       "attach_events": {
+        "1": 0.0,
+        "2": 32.0,
+        "3": 80.0
+       },
+       "revenue": {
+        "1": 0.0,
+        "2": 161.674648,
+        "3": 404.18662
+       },
+       "rev_per_event": {
+        "1": 0.0,
+        "2": 5.052333,
+        "3": 5.052333
+       }
+      }
+     },
+     {
+      "key": "beverage",
+      "label": "Beverage",
+      "comment": "<- Assuming we can start selling now for 2027 events, so assuming 50% of Y2 then 75% of Y3 as it likely won't be required",
+      "benchmark": {
+       "venue": 4.001998,
+       "region": 4.001998,
+       "wh_avg": 3.083068
+      },
+      "oc": {
+       "attach_rate": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "attach_events": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "revenue": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "rev_per_event": {
+        "1": null,
+        "2": null,
+        "3": null
+       }
+      },
+      "new": {
+       "attach_rate": {
+        "1": 0.5,
+        "2": 0.75,
+        "3": 1.0
+       },
+       "attach_events": {
+        "1": 8.0,
+        "2": 48.0,
+        "3": 80.0
+       },
+       "revenue": {
+        "1": 6.0,
+        "2": 36.0,
+        "3": 60.0
+       },
+       "rev_per_event": {
+        "1": 0.75,
+        "2": 0.75,
+        "3": 0.75
+       }
+      }
+     },
+     {
+      "key": "lodging",
+      "label": "Lodging",
+      "comment": "<- ~50% LTM, team thinks this will increase as we're starting to include in all packages so assuming 75%",
+      "benchmark": {
+       "venue": null,
+       "region": null,
+       "wh_avg": null
+      },
+      "oc": {
+       "attach_rate": {
+        "1": 0.5,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "attach_events": {
+        "1": 12.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "revenue": {
+        "1": 54.9,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "rev_per_event": {
+        "1": 4.575,
+        "2": 0.0,
+        "3": 0.0
+       }
+      },
+      "new": {
+       "attach_rate": {
+        "1": 0.5,
+        "2": 0.5,
+        "3": 0.5
+       },
+       "attach_events": {
+        "1": 8.0,
+        "2": 32.0,
+        "3": 40.0
+       },
+       "revenue": {
+        "1": 24.0,
+        "2": 96.0,
+        "3": 120.0
+       },
+       "rev_per_event": {
+        "1": 3.0,
+        "2": 3.0,
+        "3": 3.0
+       }
+      }
+     },
+     {
+      "key": "dj",
+      "label": "DJ",
+      "comment": "<- start selling in September for events to occur in November 2026+ - 15% // 50% // 80% of ATL Average - people want bands more here so not hitting 100%",
+      "benchmark": {
+       "venue": 2.519282,
+       "region": 2.519282,
+       "wh_avg": 1.686575
+      },
+      "oc": {
+       "attach_rate": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "attach_events": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "revenue": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "rev_per_event": {
+        "1": null,
+        "2": null,
+        "3": null
+       }
+      },
+      "new": {
+       "attach_rate": {
+        "1": 0.115102,
+        "2": 0.383673,
+        "3": 0.613878
+       },
+       "attach_events": {
+        "1": 1.841633,
+        "2": 24.555102,
+        "3": 49.110204
+       },
+       "revenue": {
+        "1": 3.106052,
+        "2": 41.414026,
+        "3": 82.828051
+       },
+       "rev_per_event": {
+        "1": 1.686575,
+        "2": 1.686575,
+        "3": 1.686575
+       }
+      }
+     },
+     {
+      "key": "floral",
+      "label": "Floral",
+      "comment": "<- start selling in September for events to occur as soon as we have packaging - assuming November 2026+ - 15% // 50% // 100% of ATL Average",
+      "benchmark": {
+       "venue": 3.080958,
+       "region": 3.080958,
+       "wh_avg": 3.256331
+      },
+      "oc": {
+       "attach_rate": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "attach_events": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "revenue": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "rev_per_event": {
+        "1": null,
+        "2": null,
+        "3": null
+       }
+      },
+      "new": {
+       "attach_rate": {
+        "1": 0.071633,
+        "2": 0.238776,
+        "3": 0.477551
+       },
+       "attach_events": {
+        "1": 1.146122,
+        "2": 15.281633,
+        "3": 38.204082
+       },
+       "revenue": {
+        "1": 3.732154,
+        "2": 49.762048,
+        "3": 124.40512
+       },
+       "rev_per_event": {
+        "1": 3.256331,
+        "2": 3.256331,
+        "3": 3.256331
+       }
+      }
+     },
+     {
+      "key": "bakery",
+      "label": "Bakery",
+      "comment": "<- start selling in September for events to occur as soon as we have packaging - assuming November 2026+ - 15% // 50% // 100% of ATL Average",
+      "benchmark": {
+       "venue": 1.252557,
+       "region": 1.252557,
+       "wh_avg": 1.12876
+      },
+      "oc": {
+       "attach_rate": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "attach_events": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "revenue": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "rev_per_event": {
+        "1": null,
+        "2": null,
+        "3": null
+       }
+      },
+      "new": {
+       "attach_rate": {
+        "1": 0.048367,
+        "2": 0.161224,
+        "3": 0.322449
+       },
+       "attach_events": {
+        "1": 0.773878,
+        "2": 10.318367,
+        "3": 25.795918
+       },
+       "revenue": {
+        "1": 0.873522,
+        "2": 11.646959,
+        "3": 29.117397
+       },
+       "rev_per_event": {
+        "1": 1.12876,
+        "2": 1.12876,
+        "3": 1.12876
+       }
+      }
+     },
+     {
+      "key": "stationery",
+      "label": "Stationery",
+      "comment": "<- start selling in September for events to occur in November 2026+ - 15% // 50% // 100% of ATL Average",
+      "benchmark": {
+       "venue": 0.812569,
+       "region": 0.812569,
+       "wh_avg": 0.79107
+      },
+      "oc": {
+       "attach_rate": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "attach_events": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "revenue": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "rev_per_event": {
+        "1": null,
+        "2": null,
+        "3": null
+       }
+      },
+      "new": {
+       "attach_rate": {
+        "1": 0.116939,
+        "2": 0.389796,
+        "3": 0.779592
+       },
+       "attach_events": {
+        "1": 1.87102,
+        "2": 24.946939,
+        "3": 62.367347
+       },
+       "revenue": {
+        "1": 1.480109,
+        "2": 19.734784,
+        "3": 49.33696
+       },
+       "rev_per_event": {
+        "1": 0.79107,
+        "2": 0.79107,
+        "3": 0.79107
+       }
+      }
+     },
+     {
+      "key": "photography",
+      "label": "Photography",
+      "comment": "<- start selling in September for events to occur in November 2026+ - 15% // 50% // 100% of ATL Average",
+      "benchmark": {
+       "venue": 1.178,
+       "region": 1.178,
+       "wh_avg": 1.110567
+      },
+      "oc": {
+       "attach_rate": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "attach_events": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "revenue": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "rev_per_event": {
+        "1": null,
+        "2": null,
+        "3": null
+       }
+      },
+      "new": {
+       "attach_rate": {
+        "1": 0.051429,
+        "2": 0.171429,
+        "3": 0.342857
+       },
+       "attach_events": {
+        "1": 0.822857,
+        "2": 10.971429,
+        "3": 27.428571
+       },
+       "revenue": {
+        "1": 0.913838,
+        "2": 12.184511,
+        "3": 30.461276
+       },
+       "rev_per_event": {
+        "1": 1.110567,
+        "2": 1.110567,
+        "3": 1.110567
+       }
+      }
+     },
+     {
+      "key": "other_ancillary",
+      "label": "Other Ancillary",
+      "comment": "<- ~33% LTM, discuss if we think this will be higher",
+      "benchmark": {
+       "venue": 0.467747,
+       "region": 0.467747,
+       "wh_avg": 0.666409
+      },
+      "oc": {
+       "attach_rate": {
+        "1": 0.333333,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "attach_events": {
+        "1": 8.0,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "revenue": {
+        "1": 6.15,
+        "2": 0.0,
+        "3": 0.0
+       },
+       "rev_per_event": {
+        "1": 0.630123,
+        "2": 0.630123,
+        "3": 0.630123
+       }
+      },
+      "new": {
+       "attach_rate": {
+        "1": 0.333333,
+        "2": 0.333333,
+        "3": 0.333333
+       },
+       "attach_events": {
+        "1": 5.333333,
+        "2": 21.333333,
+        "3": 26.666667
+       },
+       "revenue": {
+        "1": 3.360656,
+        "2": 13.442623,
+        "3": 16.803279
+       },
+       "rev_per_event": {
+        "1": 0.630123,
+        "2": 0.630123,
+        "3": 0.630123
+       }
+      }
+     }
+    ],
+    "service_charge": {
+     "label": "Service Charge",
+     "comment": null,
+     "new": {
+      "rate": {
+       "1": 0.22,
+       "2": 0.22,
+       "3": 0.22
+      },
+      "revenue": {
+       "1": 62.939642,
+       "2": 310.717308,
+       "3": 468.655761
+      }
+     }
+    }
+   }
+  }
+ ],
+ "rollups_ignored": [],
  "drivers": {
   "years": {
    "1": {
@@ -2874,9 +3772,11 @@
     "events_new": 16.0,
     "events_total": 40.0,
     "revenue_oc": 546.4,
+    "revenue_oc_new": 0.0,
     "revenue_new": 349.028923,
     "revenue_total": 895.428923,
     "rev_per_event_oc": 22.766667,
+    "rev_per_event_oc_new": 0.0,
     "rev_per_event_new": 21.814308,
     "rev_per_event_total": 22.385723
    },
@@ -2885,9 +3785,11 @@
     "events_new": 64.0,
     "events_total": 65.0,
     "revenue_oc": 19.5,
+    "revenue_oc_new": 0.0,
     "revenue_new": 1723.068709,
     "revenue_total": 1742.568709,
     "rev_per_event_oc": 19.5,
+    "rev_per_event_oc_new": 0.0,
     "rev_per_event_new": 26.922949,
     "rev_per_event_total": 26.808749
    },
@@ -2896,9 +3798,11 @@
     "events_new": 80.0,
     "events_total": 80.0,
     "revenue_oc": 0.0,
+    "revenue_oc_new": 0.0,
     "revenue_new": 2598.909218,
     "revenue_total": 2598.909218,
     "rev_per_event_oc": 0.0,
+    "rev_per_event_oc_new": 0.0,
     "rev_per_event_new": 32.486365,
     "rev_per_event_total": 32.486365
    }
@@ -3445,7 +4349,6 @@
     }
    }
   ],
-  "benchmarks": {},
   "service_charge": {
    "label": "Service Charge",
    "comment": null,
@@ -3462,5 +4365,19 @@
     }
    }
   }
- }
+ },
+ "unmatched_labels": [
+  {
+   "row": 5,
+   "label": "Hadden Estate"
+  },
+  {
+   "row": 6,
+   "label": "PF P&L Analysis"
+  },
+  {
+   "row": 24,
+   "label": "% of Annual Events"
+  }
+ ]
 }

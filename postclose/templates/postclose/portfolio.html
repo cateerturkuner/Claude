@@ -11,7 +11,7 @@
     <table>
       <thead><tr><th class="lbl">Venue</th><th style="text-align:left">Closed</th>
         <th>Year</th><th>Months reported</th>
-        <th>Revenue gap</th><th>Events gap</th><th>EBITDA gap</th><th></th></tr></thead>
+        <th>Revenue gap</th><th>Events gap</th><th>Profit gap</th><th></th></tr></thead>
       <tbody>
       {% for v in data.venues %}
       <tr><td class="lbl">{{ v.venue }}</td>
@@ -22,7 +22,7 @@
           <td class="{{ tone(v.revenue_var.var) }}">{{ fmt_signed(v.revenue_var.var) }}
             <span class="note">{{ ('%+.0f%%' % (v.revenue_var.pct*100)) if v.revenue_var.pct is not none }}</span></td>
           <td class="{{ tone(v.events_var.var, 'count') }}">{{ fmt_signed(v.events_var.var, 'count') }}</td>
-          <td class="{{ tone(v.ebitda_var.var) }}">{{ fmt_signed(v.ebitda_var.var) }}</td>
+          <td class="{{ tone(v.profit_var.var) }}">{{ fmt_signed(v.profit_var.var) }}</td>
         {% else %}<td colspan="3" class="note" style="text-align:center">no actuals reported</td>{% endif %}
         <td><a href="{{ url_for('postclose.venue_signals', slug=v.slug, year=v.year) }}">Signals →</a></td>
       </tr>
@@ -55,12 +55,16 @@
         <td>{{ c.n }}</td>
         <td>{% if c.agree %}<span class="chip {{ 'bad' if c.mean_pct < 0 else 'good' }}">
               all {{ 'below' if c.mean_pct < 0 else 'above' }}</span>
+            {% elif c.only_venue %}<span class="chip flat"
+              title="Only one venue carries this line, so there is nothing to agree with yet.">one venue</span>
             {% else %}<span class="chip flat">mixed</span>{% endif %}</td>
-        <td class="{{ tone(c.mean_pct, 'pct') }}">{{ '%+.0f%%' % (c.mean_pct * 100) }}</td>
+        <td class="{{ tone(c.mean_pct, 'pct') }}">
+          {{ ('%+.0f%%' % (c.mean_pct * 100)) if c.show_pct else '—' }}</td>
         <td class="{{ tone(c.total_var, c.format) }}">{{ fmt_signed(c.total_var, c.format) }}</td>
         <td style="text-align:left;white-space:normal">
           {% for v in c.venues %}<span class="chip {{ tone(v.pct, 'pct') }}"
-            style="margin-right:4px">{{ v.venue }} {{ '%+.0f%%' % (v.pct*100) }}</span>{% endfor %}
+            style="margin-right:4px">{{ v.venue }}
+            {{ ('%+.0f%%' % (v.pct*100)) if (v.pct | abs) <= 5 else fmt_signed(v.var, c.format) }}</span>{% endfor %}
         </td></tr>
       {% endfor %}
       </tbody>

@@ -3,10 +3,24 @@
 {% block title %}{{ view.venue }} · Y{{ view.year }} Attachment{% endblock %}
 {% block content %}
 
+{% if anc.segments | length > 1 %}
+<div class="card"><div class="body" style="display:flex;gap:10px;align-items:center">
+  <span class="note" style="font-weight:700;text-transform:uppercase;font-size:10.5px">Venue space</span>
+  {% for s in anc.segments %}
+  <a class="btn ghost" style="padding:4px 12px;font-size:12px;
+     {{ 'background:var(--teal-050);border-color:var(--teal-500)' if s.key == anc.segment }}"
+     href="{{ url_for('postclose.ancillary', slug=slug, year=year, segment=s.key) }}">{{ s.label }}</a>
+  {% endfor %}
+  <span class="note" style="margin-left:auto">Each space has its own attachment
+    assumptions in the model.</span>
+</div></div>
+{% endif %}
+
 <div class="card">
   <h2>Attachment rate and $ per attached event
-    <span class="sub">the proforma states these annually — actuals are rolled to
-      year-to-date across {{ anc.reported_months|length }} reported month(s)</span></h2>
+    <span class="sub">{{ anc.segment_label }} · the proforma states these annually —
+      actuals are rolled to year-to-date across
+      {{ anc.reported_months|length }} reported month(s)</span></h2>
   <div class="body">
     <div style="display:flex;gap:26px;flex-wrap:wrap">
       <div><div class="k note" style="font-weight:700;text-transform:uppercase;font-size:10.5px">

@@ -86,15 +86,22 @@ def save_actuals(slug, data):
 
 
 def month_slot(data, ym):
-    """Get (creating if needed) the record for one actual month."""
+    """Get (creating if needed) the record for one actual month.
+
+    `segments` and `ancillary` are both keyed by segment, because a venue like
+    Firefly is really two venues sharing a cost base: events, contracts and
+    attachment belong to the Barn or the Chapel, while every expense line is
+    venue-wide.
+    """
     slot = data["months"].setdefault(ym, {})
     slot.setdefault("lines", {})
+    slot.setdefault("segments", {})
     slot.setdefault("ancillary", {})
     slot.setdefault("field_source", {})
     return slot
 
 
-def record(slug, ym, lines, source, ancillary=None, note=None):
+def record(slug, ym, lines, source, ancillary=None, segments=None, note=None):
     """Merge a month of reported values in.
 
     `source` is 'upload' or 'manual'. Per-field provenance is kept so the UI can
@@ -110,19 +117,32 @@ def record(slug, ym, lines, source, ancillary=None, note=None):
             continue
         slot["lines"][key] = value
         slot["field_source"][key] = {"source": source, "at": stamp}
-    if ancillary:
-        for cat, payload in ancillary.items():
-            entry = slot["ancillary"].setdefault(cat, {})
+    for seg_key, roles in (segments or {}).items():
+        entry = slot["segments"].setdefault(seg_key, {})
+        for role, value in roles.items():
+            if value is None:
+                entry.pop(role, None)
+            else:
+                entry[role] = value
+        if not entry:
+            slot["segments"].pop(seg_key, None)
+
+    for seg_key, cats in (ancillary or {}).items():
+        seg_entry = slot["ancillary"].setdefault(seg_key, {})
+        for cat, payload in cats.items():
+            entry = seg_entry.setdefault(cat, {})
             for k, v in payload.items():
                 if v is None:
                     entry.pop(k, None)
                 else:
                     entry[k] = v
             if not entry:
-                slot["ancillary"].pop(cat, None)
+                seg_entry.pop(cat, None)
+        if not seg_entry:
+            slot["ancillary"].pop(seg_key, None)
     slot["updated_at"] = stamp
     # An attachment-only save must not relabel a month that came from finance.
-    if lines:
+    if lines or segments:
         slot["source"] = source
     else:
         slot.setdefault("source", source)

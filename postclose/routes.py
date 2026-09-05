@@ -93,7 +93,6 @@ bp.add_app_template_global(fmt_by, "fmt_by")
 bp.add_app_template_global(fmt_signed, "fmt_signed")
 bp.add_app_template_global(tone, "tone")
 bp.add_app_template_global(analysis.GROUP_LABELS, "GROUP_LABELS")
-bp.add_app_template_global(analysis.HEADLINES, "HEADLINES")
 bp.add_app_template_global(TAB_ENDPOINTS, "TAB_ENDPOINTS")
 
 
@@ -109,9 +108,16 @@ def _ctx(slug):
     # rather than seven mostly-empty ones. Nothing is rebuilt when they unlock;
     # the routes exist throughout.
     n_reported = len(analysis.reported_months(slug, year))
+    segs = analysis.segments(slug)
+    segment = request.args.get("segment")
+    if segment not in {s["key"] for s in segs}:
+        segment = None
     return {"slug": slug, "venues": vs, "year": year,
             "venue": next(v for v in vs if v["slug"] == slug),
             "n_reported": n_reported,
+            "segments": segs,
+            "segment": segment,
+            "multi_segment": len(segs) > 1,
             "show_signals": n_reported >= signals.PERSISTENT_MONTHS,
             "show_attachment": analysis.has_attachment(slug, year),
             "show_portfolio": len(vs) > 1}
@@ -137,17 +143,22 @@ def overview(slug):
     view = analysis.build(slug, ctx["year"])
     anc = None
     if ctx["show_attachment"]:
-        anc = analysis.ancillary(slug, ctx["year"])
-        anc["top"] = signals.headline_categories(anc)
+        anc = analysis.ancillary(slug, ctx["year"], ctx["segment"])
+        if anc:
+            anc["top"] = signals.headline_categories(anc)
     return render_template("postclose/overview.html", tab="overview", view=view,
-                           bridge=signals.revenue_bridge(view), anc=anc, **ctx)
+                           bridge=signals.revenue_bridge(view), anc=anc,
+                           seg_summary=analysis.segment_summary(slug, ctx["year"]),
+                           **ctx)
 
 
 @bp.route("/<slug>/funnel")
 def funnel(slug):
     ctx = _ctx(slug)
-    view = analysis.build(slug, ctx["year"])
-    return render_template("postclose/funnel.html", tab="funnel", view=view, **ctx)
+    view = analysis.build(slug, ctx["year"], segment=ctx["segment"])
+    return render_template("postclose/funnel.html", tab="funnel", view=view,
+                           seg_summary=analysis.segment_summary(slug, ctx["year"]),
+                           **ctx)
 
 
 @bp.route("/<slug>/pnl")
@@ -162,8 +173,9 @@ def pnl(slug):
 def ancillary(slug):
     ctx = _ctx(slug)
     return render_template("postclose/ancillary.html", tab="ancillary",
-                           view=analysis.build(slug, ctx["year"]),
-                           anc=analysis.ancillary(slug, ctx["year"]), **ctx)
+                           view=analysis.build(slug, ctx["year"], segment=ctx["segment"]),
+                           anc=analysis.ancillary(slug, ctx["year"], ctx["segment"]),
+                           **ctx)
 
 
 @bp.route("/<slug>/signals")
@@ -198,12 +210,20 @@ def data(slug):
                    else view["months"][0]["ym"])
     edit_month = next(mo for mo in view["months"] if mo["ym"] == edit_ym)
 
+    base = store.baseline(slug)
+    segs = base.get("segments", [])
+    anc_seg = next((s for s in segs if s["key"] == ctx["segment"] and s["drivers"]),
+                   next((s for s in segs if s["drivers"]), None))
+    month_record = act["months"].get(edit_ym, {})
     return render_template(
         "postclose/data.html", tab="data", view=view, actuals=act,
         preview=store.get_preview(session.get(PREVIEW_KEY, {}).get(slug)),
         edit_ym=edit_ym, edit_month=edit_month,
-        edit_month_anc=act["months"].get(edit_ym, {}).get("ancillary", {}),
-        categories=store.baseline(slug)["drivers"]["categories"], **ctx)
+        edit_month_segs=month_record.get("segments", {}),
+        anc_seg=anc_seg,
+        edit_month_anc=(month_record.get("ancillary", {}) or {}).get(
+            anc_seg["key"], {}) if anc_seg else {},
+        categories=anc_seg["drivers"]["categories"] if anc_seg else [], **ctx)
 
 
 @bp.route("/<slug>/upload", methods=["POST"])
@@ -287,9 +307,9 @@ def manual(slug):
         flash("Pick a month.", "error")
         return redirect(url_for("postclose.data", slug=slug, year=ctx["year"]))
 
-    lines, ancillary_in = {}, {}
+    lines, ancillary_in, segments_in = {}, {}, {}
     for field, raw in request.form.items():
-        if not field.startswith(("line__", "anc__")):
+        if not field.startswith(("line__", "anc__", "seg__")):
             continue
         raw = (raw or "").strip().replace(",", "").replace("$", "")
         value = None
@@ -301,12 +321,22 @@ def manual(slug):
                 continue
         if field.startswith("line__"):
             lines[field[len("line__"):]] = value
+        elif field.startswith("seg__"):
+            _, seg_key, role = field.split("__", 2)
+            segments_in.setdefault(seg_key, {})[role] = value
         else:
-            _, cat, metric = field.split("__", 2)
-            ancillary_in.setdefault(cat, {})[metric] = value
+            _, seg_key, cat, metric = field.split("__", 3)
+            ancillary_in.setdefault(seg_key, {}).setdefault(cat, {})[metric] = value
+
+    # Events are the sum of the two cohorts; storing a third, editable number
+    # would let the funnel contradict itself.
+    for roles in segments_in.values():
+        oc, new = roles.get("events_oc"), roles.get("events_new")
+        if oc is not None or new is not None:
+            roles["events"] = (oc or 0) + (new or 0)
 
     store.record(slug, ym, lines, "manual", ancillary=ancillary_in,
-                 note=request.form.get("note") or None)
+                 segments=segments_in, note=request.form.get("note") or None)
     flash(f"Saved {analysis.ym_label(ym)}.", "ok")
     return redirect(url_for("postclose.data", slug=slug, year=ctx["year"]))
 

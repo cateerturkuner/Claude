@@ -158,8 +158,21 @@ details.hint summary{cursor:pointer;color:var(--teal-700);font-size:12px;font-we
       </div>
     </div>
     {% endif %}
+    {% if multi_segment and tab in ('overview', 'funnel', 'ancillary') %}
+    <div class="pick">
+      <label>Venue space</label>
+      <div class="yearseg">
+        <a class="{{ 'on' if not segment }}"
+           href="{{ url_for(TAB_ENDPOINTS.get(tab, 'postclose.overview'), slug=slug, year=year) }}">All</a>
+        {% for s in segments %}
+        <a class="{{ 'on' if segment == s.key }}"
+           href="{{ url_for(TAB_ENDPOINTS.get(tab, 'postclose.overview'), slug=slug, year=year, segment=s.key) }}">{{ s.label }}</a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
     <div class="spacer"></div>
-    {% if venue and venue.close_month %}
+    {% if venue and venue.close_month and tab != 'portfolio' %}
     <div class="pick"><label>Closed</label>
       <span style="font-weight:700">{{ venue.close_month }}</span></div>
     {% endif %}

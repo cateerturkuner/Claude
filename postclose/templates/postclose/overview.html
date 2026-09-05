@@ -7,8 +7,8 @@
   {{ m.tile('Total Revenue', view.ytd.actual.get('total_revenue'),
             view.ytd.plan.get('total_revenue'), view.ytd.var.get('total_revenue'),
             'usd', sub='Y%d to date' % view.year) }}
-  {{ m.tile('EBITDA', view.ytd.actual.get('ebitda'), view.ytd.plan.get('ebitda'),
-            view.ytd.var.get('ebitda'), 'usd', sub='Y%d to date' % view.year) }}
+  {{ m.tile(view.profit_label, view.ytd.actual.get('profit'), view.ytd.plan.get('profit'),
+            view.ytd.var.get('profit'), 'usd', sub='Y%d to date' % view.year) }}
   {{ m.tile('Events', view.ytd.actual.get('events'), view.ytd.plan.get('events'),
             view.ytd.var.get('events'), 'count', sub='Y%d to date' % view.year) }}
   {{ m.tile('Revenue / Event', view.ytd.actual.get('rev_per_event'),
@@ -19,8 +19,10 @@
 {% if not view.n_reported %}{{ m.nodata(view) }}{% endif %}
 
 <div class="card">
-  <h2>Year {{ view.year }} position
-    <span class="sub">{{ view.n_reported }} of {{ view.n_months }} months reported
+  <h2>Year {{ view.year }} position{% if segment %} · {{ view.segment_label }}{% endif %}
+    <span class="sub">{% if segment %}events and contracts for
+      {{ view.segment_label }}; costs are site-wide ·{% endif %}
+      {{ view.n_reported }} of {{ view.n_months }} months reported
       {%- if view.reported_months %} · through
       {{ view.reported_months[-1] | replace('-', '/') }}{% endif %} · $ thousands</span>
     <a class="btn ghost" style="margin-left:auto;padding:4px 11px;font-size:11.5px"
@@ -74,9 +76,12 @@
       {{ posrow('gross_margin', 'Gross Margin', 'usd', none, true) }}
       {{ posrow('total_payroll', 'Total Payroll', 'usd', 'payroll') }}
       {{ posrow('total_opex', 'Total Operating Expenses', 'usd', 'opex') }}
-      {{ posrow('rent', 'Rent', 'usd') }}
-      {{ posrow('ebitda', 'EBITDA', 'usd', none, true) }}
-      {{ posrow('ebitda_margin', 'EBITDA Margin', 'pct') }}
+      {% if 'rent' in view.line_keys %}{{ posrow('rent', 'Rent', 'usd') }}{% endif %}
+      {% if view.fy.plan.get('total_other_adj') or view.ytd.actual.get('total_other_adj') %}
+        {{ posrow('total_other_adj', 'Total Other Adjustments', 'usd', 'adjust') }}
+      {% endif %}
+      {{ posrow(view.profit_key, view.profit_label, 'usd', none, true) }}
+      {{ posrow('profit_margin', view.profit_label ~ ' Margin', 'pct') }}
       </tbody>
     </table>
     <p class="note" style="margin:10px 0 0">Click a block to open its lines. Costs are
@@ -118,10 +123,55 @@
   </div>
 </div>
 
+{% if seg_summary and not segment %}
+<div class="card">
+  <h2>By venue space
+    <span class="sub">events and contracts are separate; every expense line is
+      shared across the site</span></h2>
+  <div class="body">
+    <table>
+      <thead><tr><th class="lbl">Space</th>
+        <th>Contracts</th><th>vs PF</th>
+        <th style="border-left:1px solid var(--line)">Events</th><th>vs PF</th>
+        <th>Original</th><th>New</th>
+        <th style="border-left:1px solid var(--line)">Revenue</th>
+        <th>$/event</th><th>PF $/event</th><th>vs PF</th></tr></thead>
+      <tbody>
+      {% for r in seg_summary.rows %}
+      <tr><td class="lbl">{{ r.label }}
+          {% if not r.has_attachment %}<span class="chip flat"
+            title="This space has no Revenue Analysis tab in the model, so there is no attachment or $/event assumption to compare against.">no PF rate</span>{% endif %}</td>
+        <td><b>{{ r.contracts.actual | count }}</b></td>
+        <td class="{{ tone(r.contracts.var.var, 'count') }}">{{ fmt_signed(r.contracts.var.var, 'count') }}</td>
+        <td style="border-left:1px solid var(--line)"><b>{{ r.events.actual | count }}</b></td>
+        <td class="{{ tone(r.events.var.var, 'count') }}">{{ fmt_signed(r.events.var.var, 'count') }}</td>
+        <td class="plan">{{ r.events_oc | count }}</td>
+        <td class="plan">{{ r.events_new | count }}</td>
+        <td style="border-left:1px solid var(--line)">{{ r.revenue | num }}
+          {% if r.outside_rate %}<span class="note"
+            title="Revenue on lines the proforma's $/event rate does not cover — all-inclusive packages and elopements are modelled as their own P&L lines.">
+            (incl. {{ r.outside_rate | num }} outside the PF rate)</span>{% endif %}</td>
+        <td><b>{{ r.rev_per_event | num(2) }}</b></td>
+        <td class="plan">{{ r.plan_rev_per_event | num(2) }}</td>
+        <td class="{{ tone(r.rate_var.var) }}">{{ fmt_signed(r.rate_var.var, 'usd', 2) }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <p class="note" style="margin:10px 0 0">Revenue is compared as <b>$ per event</b>,
+      not as a level: the model splits revenue by space only annually, so a monthly
+      plan level would have to be invented. Revenue on lines outside the proforma's
+      $/event rate is called out rather than folded in.</p>
+  </div>
+</div>
+{% endif %}
+
 {% if anc and anc.has_detail %}
 <div class="card">
-  <h2>Attachment — new contracts
-    <span class="sub">{{ anc.events_actual.new | count }} events sold since close</span>
+  <h2>Attachment — new contracts{% if multi_segment %} · {{ anc.segment_label }}{% endif %}
+    <span class="sub">{{ anc.events_actual.new | count }} events sold since close{%
+      if multi_segment and not segment %} · each space has its own assumptions;
+      switch with Venue Space above, or see them all on the Attachment tab{% endif %}</span>
     <a class="btn ghost" style="margin-left:auto;padding:4px 11px;font-size:11.5px"
        href="{{ url_for('postclose.ancillary', slug=slug, year=year) }}">All categories →</a>
   </h2>

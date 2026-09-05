@@ -10,6 +10,7 @@ baseline workbook itself rather than recomputed.
 """
 from datetime import date
 
+from . import lines as lines_module
 from . import store
 
 MONTH_ABBR = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -31,43 +32,16 @@ DERIVED = {
     "tour_to_contract": ("contracts", "tours"),
 }
 
-REVENUE_KEYS = ["room_rental", "food", "beverage", "lodging", "ancillary",
-                "service_charge", "cancelled_events", "outside_events",
-                "discounts", "other_revenue"]
-COGS_KEYS = ["food_cogs", "ancillary_cogs", "alcohol_cogs", "other_cogs",
-             "room_cogs"]
-PAYROLL_KEYS = ["sales_payroll", "planning_payroll", "operations_payroll",
-                "ancillary_payroll", "fnb_payroll", "owner_salaries",
-                "payroll_admin", "other_payroll"]
-OPEX_KEYS = ["marketing", "maintenance", "utilities", "office", "computer",
-             "automobile", "training", "tax", "travel", "professional",
-             "rent_expense", "insurance", "finance", "personal", "other_opex"]
-
-
-# Subtotals derived from their components when finance does not report them.
-# A reported subtotal always wins -- finance's own total is authoritative, and
-# silently recomputing it would hide a mapping mistake rather than expose it.
-SUBTOTALS = [
-    ("events", lambda g: _sum([g("events_oc"), g("events_new")])),
-    ("total_revenue", lambda g: _sum(g(k) for k in REVENUE_KEYS)),
-    ("total_cogs", lambda g: _sum(g(k) for k in COGS_KEYS)),
-    ("gross_margin", lambda g: _sum([g("total_revenue"), g("total_cogs")])),
-    ("total_payroll", lambda g: _sum(g(k) for k in PAYROLL_KEYS)),
-    ("total_opex", lambda g: _sum(g(k) for k in OPEX_KEYS)),
-    ("ebitdar", lambda g: _sum([g("gross_margin"), g("total_payroll"),
-                                g("total_opex")])),
-    ("ebitda", lambda g: _sum([g("ebitdar"), g("rent")])),
-]
-
-# Headline metrics surfaced as tiles, in display order.
-HEADLINES = [
-    ("total_revenue", "Total Revenue", "usd"),
-    ("ebitda", "EBITDA", "usd"),
-    ("events", "Events", "count"),
-    ("rev_per_event", "Revenue / Event", "usd"),
-    ("contracts", "Contracts", "count"),
-    ("leads", "Leads", "count"),
-]
+def headlines(base):
+    """Tiles for the overview. The profit line differs by venue -- Hadden ends at
+    EBITDA, Firefly at Adjusted EBITDAR -- so it is read from the baseline."""
+    profit = base.get("profit_key") or "ebitdar"
+    label = next((ln["label"] for ln in base["lines"] if ln["key"] == profit),
+                 "Profit")
+    return [("total_revenue", "Total Revenue", "usd"),
+            (profit, label, "usd"),
+            ("events", "Events", "count"),
+            ("rev_per_event", "Revenue / Event", "usd")]
 
 
 def ym_label(ym):
@@ -86,34 +60,58 @@ def _sum(values):
     return sum(vals) if vals else None
 
 
-def fill_subtotals(bucket, derived_keys=None):
+def subtotal_rules(lines_meta):
+    """(key, component keys) pairs for this venue, in dependency order.
+
+    Built from the baseline's own line groups rather than a fixed list, so a
+    venue that carries all-inclusive revenue, a corporate payroll line or an
+    adjustments block rolls those into the right subtotal without a code change.
+    """
+    present = {ln["key"] for ln in lines_meta}
+    by_group = {}
+    for ln in lines_meta:
+        by_group.setdefault(ln["group"], []).append(ln["key"])
+
+    rules = []
+    for key, group in lines_module.SUBTOTAL_GROUPS:
+        members = by_group.get(group, [])
+        if members:
+            rules.append((key, members))
+    for key, components in lines_module.SUBTOTAL_SUMS:
+        if all(c in present or any(c == k for k, _ in rules) for c in components):
+            rules.append((key, components))
+
+    order = [k for k, _ in lines_module.SUBTOTAL_GROUPS]
+    order += [k for k, _ in lines_module.SUBTOTAL_SUMS]
+    rules.sort(key=lambda r: order.index(r[0]))
+    return rules
+
+
+def fill_subtotals(bucket, rules, derived_keys=None):
     """Compute any subtotal the source did not supply, from its components.
 
     Finance packages routinely omit Gross Margin or EBITDA, or stop at Total
     Revenue. Without this, those rows read as "not reported" even though every
-    component arrived. Subtotals are filled in dependency order so EBITDA can be
-    built on a Gross Margin that was itself just derived.
+    component arrived. Rules are in dependency order, so EBITDA can be built on
+    a Gross Margin that was itself just derived.
     """
     derived = derived_keys if derived_keys is not None else set()
-
-    def get(key):
-        return bucket.get(key)
-
-    for key, rule in SUBTOTALS:
+    for key, components in rules:
         if bucket.get(key) is not None:
             continue
-        value = rule(get)
+        value = _sum(bucket.get(c) for c in components)
         if value is not None:
             bucket[key] = value
             derived.add(key)
     return bucket
 
 
-def add_derived(bucket):
+def add_derived(bucket, profit_key="ebitda"):
     """Attach ratio metrics that are computed from other lines, not summed."""
     bucket["rev_per_event"] = _safe_div(bucket.get("total_revenue"),
                                         bucket.get("events"))
-    bucket["ebitda_margin"] = _safe_div(bucket.get("ebitda"),
+    bucket["profit"] = bucket.get(profit_key)
+    bucket["profit_margin"] = _safe_div(bucket.get(profit_key),
                                         bucket.get("total_revenue"))
     bucket["gm_margin"] = _safe_div(bucket.get("gross_margin"),
                                     bucket.get("total_revenue"))
@@ -169,25 +167,69 @@ def has_attachment(slug, year):
                for ym in reported_months(slug, year))
 
 
-def build(slug, year):
-    """Everything the month / YTD / full-year views need for one post-close year."""
+def has_segments(slug):
+    """True when the venue is really more than one venue sharing a cost base."""
+    segs = store.baseline(slug).get("segments", [])
+    return len(segs) > 1
+
+
+def segments(slug):
+    return store.baseline(slug).get("segments", [])
+
+
+def build(slug, year, segment=None):
+    """Everything the month / YTD / full-year views need for one post-close year.
+
+    `segment` restricts the funnel and event counts to one segment. Costs are
+    always venue-level -- Firefly's Barn and Chapel share a single cost base --
+    so a segmented view carries segment events against venue expenses, and the
+    UI is responsible for not implying otherwise.
+    """
     base = store.baseline(slug)
     act = store.actuals(slug)
     keys = [ln["key"] for ln in base["lines"]]
+    profit_key = base.get("profit_key") or "ebitdar"
+    rules = subtotal_rules(base["lines"])
+    segs = base.get("segments", [])
+    seg_keys = [s["key"] for s in segs]
 
     months = []
     for m in base["months"]:
         if m["post_close_year"] != year:
             continue
         reported = act["months"].get(m["ym"], {})
-        plan = add_derived({k: m["lines"].get(k) for k in keys})
-        actual_lines = reported.get("lines", {})
+        plan_lines = {k: m["lines"].get(k) for k in keys}
+        actual_lines = dict(reported.get("lines", {}))
         has_actual = bool(actual_lines)
+
+        # Firefly carries no venue-level Events row -- every event belongs to
+        # the Barn, the Chapel or an elopement. Where the model has no venue
+        # total, it is the sum of the segments.
+        for role in ("contracts", "events_oc", "events_new", "events"):
+            if plan_lines.get(role) is None and seg_keys:
+                plan_lines[role] = _sum(
+                    (m.get("segments", {}).get(k) or {}).get(role) for k in seg_keys)
+            if has_actual and actual_lines.get(role) is None:
+                rep_segs = reported.get("segments", {}) or {}
+                actual_lines[role] = _sum(
+                    (rep_segs.get(k) or {}).get(role) for k in seg_keys)
+
+        # A segment view swaps the venue-wide funnel counts for that segment's.
+        if segment:
+            for role, value in (m.get("segments", {}).get(segment) or {}).items():
+                plan_lines[role] = value
+            rep_seg = (reported.get("segments", {}) or {}).get(segment, {})
+            for role in ("contracts", "events_oc", "events_new", "events"):
+                actual_lines.pop(role, None)
+                if rep_seg.get(role) is not None:
+                    actual_lines[role] = rep_seg[role]
+
+        plan = add_derived(plan_lines, profit_key)
         derived_keys = set()
         actual = {}
         if has_actual:
             actual = add_derived(
-                fill_subtotals({k: actual_lines.get(k) for k in keys}, derived_keys))
+                fill_subtotals(actual_lines, rules, derived_keys), profit_key)
         months.append({
             "ym": m["ym"],
             "label": ym_label(m["ym"]),
@@ -201,29 +243,43 @@ def build(slug, year):
             "field_source": reported.get("field_source", {}),
             "derived_keys": sorted(derived_keys),
             "n_reported_lines": len(actual_lines),
+            "plan_segments": m.get("segments", {}),
             "note": reported.get("note"),
         })
 
     closed = [m for m in months if m["has_actual"]]
     open_months = [m for m in months if not m["has_actual"]]
 
+    roll_keys = keys + ["contracts", "events_oc", "events_new", "events"]
+
     # Year to date: plan restated over exactly the months that have reported.
-    ytd_plan = add_derived({k: _sum(m["plan"].get(k) for m in closed) for k in keys})
-    ytd_actual = add_derived({k: _sum(m["actual"].get(k) for m in closed) for k in keys})
+    ytd_plan = add_derived({k: _sum(m["plan"].get(k) for m in closed)
+                            for k in roll_keys}, profit_key)
+    ytd_actual = add_derived({k: _sum(m["actual"].get(k) for m in closed)
+                              for k in roll_keys}, profit_key)
 
     # Full year: plan for all twelve, and a projection that keeps reported months
     # and falls back to plan for months not yet closed.
-    fy_plan = add_derived({k: _sum(m["plan"].get(k) for m in months) for k in keys})
+    fy_plan = add_derived({k: _sum(m["plan"].get(k) for m in months)
+                           for k in roll_keys}, profit_key)
     fy_proj = add_derived({
         k: _sum([m["actual"].get(k) for m in closed] + [m["plan"].get(k) for m in open_months])
-        for k in keys
-    })
+        for k in roll_keys
+    }, profit_key)
 
     all_keys = list(fy_plan.keys())
     return {
         "slug": slug,
         "venue": base["venue"],
         "year": year,
+        "profit_key": profit_key,
+        "profit_label": next((ln["label"] for ln in base["lines"]
+                              if ln["key"] == profit_key), "Profit"),
+        "segments": segs,
+        "segment": segment,
+        "segment_label": next((s["label"] for s in segs if s["key"] == segment), None),
+        "headlines": headlines(base),
+        "line_keys": keys,
         "years": years_available(slug),
         "close_month": base["close_month"],
         "lines": base["lines"],
@@ -243,8 +299,14 @@ def build(slug, year):
 
 
 # ------------------------------------------------------------------ ancillary
-def ancillary(slug, year):
-    """Attachment rate and $/attached-event, proforma vs reported.
+def attachment_segments(slug):
+    """Segments that have attachment drivers. Elopements, for instance, has
+    contracts and events in the model but no Revenue Analysis tab."""
+    return [s for s in store.baseline(slug).get("segments", []) if s["drivers"]]
+
+
+def ancillary(slug, year, segment=None):
+    """Attachment rate and $/attached-event, proforma vs reported, per segment.
 
     The proforma states these annually, so reported figures are rolled to a
     year-to-date rate and compared against the annual assumption. Where only
@@ -252,29 +314,32 @@ def ancillary(slug, year):
     """
     base = store.baseline(slug)
     act = store.actuals(slug)
-    view = build(slug, year)
+    with_drivers = attachment_segments(slug)
+    if not with_drivers:
+        return None
+    seg = next((s for s in with_drivers if s["key"] == segment), with_drivers[0])
+    drivers = seg["drivers"]
     y = str(year)
 
-    reported = [ym for ym in view["reported_months"]]
-    events_actual = {"oc": 0.0, "new": 0.0}
-    for ym in reported:
-        lines = act["months"].get(ym, {}).get("lines", {})
-        events_actual["oc"] += lines.get("events_oc") or 0
-        events_actual["new"] += lines.get("events_new") or 0
+    view = build(slug, year, segment=seg["key"])
+    reported = view["reported_months"]
+    plan_by_ym = {m["ym"]: m for m in base["months"]}
 
-    # Proforma events for the same slice of months, so rates compare like for like.
-    plan_by_ym = _plan_by_month(slug)
+    events_actual = {"oc": 0.0, "new": 0.0}
     events_plan = {"oc": 0.0, "new": 0.0}
     for ym in reported:
-        pl = plan_by_ym.get(ym, {}).get("lines", {})
-        events_plan["oc"] += pl.get("events_oc") or 0
-        events_plan["new"] += pl.get("events_new") or 0
+        rep = (act["months"].get(ym, {}).get("segments", {}) or {}).get(seg["key"], {})
+        pl = (plan_by_ym.get(ym, {}).get("segments", {}) or {}).get(seg["key"], {})
+        for cohort, role in (("oc", "events_oc"), ("new", "events_new")):
+            events_actual[cohort] += rep.get(role) or 0
+            events_plan[cohort] += pl.get(role) or 0
 
     rows = []
-    for cat in base["drivers"]["categories"]:
+    for cat in drivers["categories"]:
         rep = {}
         for ym in reported:
-            entry = act["months"].get(ym, {}).get("ancillary", {}).get(cat["key"], {})
+            entry = ((act["months"].get(ym, {}).get("ancillary", {}) or {})
+                     .get(seg["key"], {}).get(cat["key"], {}))
             for k, v in entry.items():
                 if isinstance(v, (int, float)):
                     rep[k] = rep.get(k, 0.0) + v
@@ -308,13 +373,17 @@ def ancillary(slug, year):
 
     return {
         "rows": rows,
+        "segment": seg["key"],
+        "segment_label": seg["label"],
+        "segments": with_drivers,
         "events_plan": events_plan,
         "events_actual": events_actual,
         "reported_months": reported,
-        "service_charge": base["drivers"]["service_charge"],
-        "year_drivers": base["drivers"]["years"].get(y, {}),
+        "service_charge": drivers["service_charge"],
+        "year_drivers": drivers["years"].get(y, {}),
         "has_detail": any(
-            act["months"].get(ym, {}).get("ancillary") for ym in reported),
+            (act["months"].get(ym, {}).get("ancillary", {}) or {}).get(seg["key"])
+            for ym in reported),
     }
 
 
@@ -343,3 +412,78 @@ def decompose(events_plan, events_actual, rate_plan, rate_actual,
     price = events_actual * rate_actual * (dollar_actual - dollar_plan)
     return {"volume": volume, "attach": attach, "price": price,
             "total": volume + attach + price, "unplanned": False}
+
+
+# ------------------------------------------------------------------- segments
+def segment_summary(slug, year):
+    """Per-segment contracts, events and revenue per event.
+
+    Contracts and events compare against the proforma month by month, because
+    the model carries both monthly. Revenue does not: the model splits revenue
+    by segment only annually, so the comparison shown is $ per event -- a rate,
+    which is comparable against an annual assumption -- rather than a revenue
+    level, which would mean inventing a monthly plan the model never stated.
+    """
+    base = store.baseline(slug)
+    act = store.actuals(slug)
+    segs = base.get("segments", [])
+    if len(segs) < 2:
+        return None
+
+    view = build(slug, year)
+    reported = view["reported_months"]
+    y = str(year)
+
+    rows = []
+    for seg in segs:
+        sv = build(slug, year, segment=seg["key"])
+
+        # The proforma's $/event rate is built from the Revenue Analysis
+        # categories only. Firefly also sells all-inclusive packages and
+        # elopements, which the model carries as their own P&L lines and leaves
+        # out of that rate -- so they are excluded from the comparable figure
+        # and reported separately, rather than inflating a rate they were never
+        # part of.
+        comparable_cats = ({c["key"] for c in seg["drivers"]["categories"]}
+                           | {"service_charge"}) if seg["drivers"] else set()
+        revenue = 0.0
+        comparable = 0.0
+        seen = False
+        for ym in reported:
+            cats = (act["months"].get(ym, {}).get("ancillary", {}) or {}).get(
+                seg["key"], {})
+            for cat, payload in cats.items():
+                for k, v in payload.items():
+                    if not k.endswith("_rev") or not isinstance(v, (int, float)):
+                        continue
+                    revenue += v
+                    seen = True
+                    if cat in comparable_cats:
+                        comparable += v
+        events = sv["ytd"]["actual"].get("events")
+        plan_rate = (seg["drivers"]["years"][y].get("rev_per_event_total")
+                     if seg["drivers"] else None)
+        rows.append({
+            "key": seg["key"], "label": seg["label"],
+            "has_attachment": bool(seg["drivers"]),
+            "contracts": {"plan": sv["ytd"]["plan"].get("contracts"),
+                          "actual": sv["ytd"]["actual"].get("contracts"),
+                          "var": sv["ytd"]["var"].get("contracts", {})},
+            "events": {"plan": sv["ytd"]["plan"].get("events"),
+                       "actual": events,
+                       "var": sv["ytd"]["var"].get("events", {})},
+            "events_oc": sv["ytd"]["actual"].get("events_oc"),
+            "events_new": sv["ytd"]["actual"].get("events_new"),
+            "revenue": revenue if seen else None,
+            "outside_rate": (revenue - comparable) if seen else None,
+            # A space with no Revenue Analysis tab has no comparable revenue and
+            # no rate to compare against. Reporting 0.00 would read as "we earned
+            # nothing per event" rather than "there is nothing to compare".
+            "rev_per_event": (_safe_div(comparable, events)
+                              if seen and comparable_cats else None),
+            "plan_rev_per_event": plan_rate,
+            "rate_var": variance(_safe_div(comparable, events) if comparable_cats
+                                 else None, plan_rate),
+        })
+    return {"rows": rows, "reported": reported,
+            "revenue_total": _sum(r["revenue"] for r in rows)}

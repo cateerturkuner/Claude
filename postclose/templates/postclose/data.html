@@ -182,7 +182,9 @@
       <input type="hidden" name="ym" value="{{ edit_ym }}">
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:8px 18px">
       {% set ns = namespace(group=None) %}
-      {% for ln in view.lines if ln.key not in ('lead_to_tour', 'tour_to_contract') %}
+      {% set hidden_keys = ['lead_to_tour', 'tour_to_contract'] +
+           (['contracts', 'events', 'events_oc', 'events_new'] if multi_segment else []) %}
+      {% for ln in view.lines if ln.key not in hidden_keys %}
         {% if ln.group != ns.group %}{% set ns.group = ln.group %}
         <div style="grid-column:1/-1;font-weight:700;color:var(--teal-900);font-size:10.5px;
              text-transform:uppercase;letter-spacing:.5px;margin-top:10px;
@@ -199,10 +201,48 @@
       {% endfor %}
       </div>
 
+      {% if multi_segment %}
       <div style="grid-column:1/-1;font-weight:700;color:var(--teal-900);font-size:10.5px;
            text-transform:uppercase;letter-spacing:.5px;margin:18px 0 6px;
            border-bottom:1px solid var(--line);padding-bottom:3px">
-        Attachment detail (optional)</div>
+        Contracts and events by venue space</div>
+      <p class="note" style="margin:0 0 10px">Contracts sold and events held are
+        separate per space; leads and tours above are site-wide. Total events is
+        the two cohorts added together, so it is not typed.</p>
+      <table style="margin-bottom:6px">
+        <thead><tr><th class="lbl">Space</th><th>Contracts sold</th>
+          <th>Events – original</th><th>Events – new</th>
+          <th style="border-left:1px solid var(--line)">PF contracts</th>
+          <th>PF events</th></tr></thead>
+        <tbody>
+        {% for sg in segments %}
+        {% set cur = edit_month_segs.get(sg.key, {}) %}
+        {% set pf = edit_month.plan_segments.get(sg.key, {}) if edit_month.plan_segments else {} %}
+        <tr><td class="lbl">{{ sg.label }}</td>
+          {% for role in ['contracts', 'events_oc', 'events_new'] %}
+          <td><input type="text" name="seg__{{ sg.key }}__{{ role }}" style="width:80px;text-align:right"
+               value="{{ ('%g' % (cur.get(role) | round(4))) if cur.get(role) is not none else '' }}"
+               placeholder="{{ pf.get(role) | count if pf.get(role) is not none else '' }}"></td>
+          {% endfor %}
+          <td class="plan" style="border-left:1px solid var(--line)">{{ pf.get('contracts') | count }}</td>
+          <td class="plan">{{ pf.get('events') | count }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+      <div style="grid-column:1/-1;font-weight:700;color:var(--teal-900);font-size:10.5px;
+           text-transform:uppercase;letter-spacing:.5px;margin:18px 0 6px;
+           border-bottom:1px solid var(--line);padding-bottom:3px">
+        Attachment detail (optional){% if anc_seg and multi_segment %} — {{ anc_seg.label }}{% endif %}</div>
+      {% if multi_segment and segments | selectattr('drivers') | list | length > 1 %}
+      <p class="note" style="margin:0 0 8px">Editing
+        <b>{{ anc_seg.label }}</b>.
+        {% for sg in segments if sg.drivers and sg.key != anc_seg.key %}
+        <a href="{{ url_for('postclose.data', slug=slug, year=year, ym=edit_ym, segment=sg.key) }}">Switch to {{ sg.label }}</a>{% endfor %}
+        — save this space first; switching discards anything unsaved.</p>
+      {% endif %}
       <p class="note" style="margin:0 0 10px">Events that bought each category this month,
         and the revenue they produced, split original vs new contracts. Filling this in is
         what turns the Attachment tab from proforma-only into a real comparison — and it is
@@ -217,7 +257,7 @@
           {% set cur = edit_month_anc.get(cat.key, {}) %}
           <tr><td class="lbl">{{ cat.label }}</td>
             {% for metric in ['oc_events','oc_rev','new_events','new_rev'] %}
-            <td><input type="text" name="anc__{{ cat.key }}__{{ metric }}" style="width:78px;text-align:right"
+            <td><input type="text" name="anc__{{ anc_seg.key }}__{{ cat.key }}__{{ metric }}" style="width:78px;text-align:right"
                  value="{{ ('%g' % (cur.get(metric) | round(4))) if cur.get(metric) is not none else '' }}"></td>
             {% endfor %}
             <td class="plan" style="border-left:1px solid var(--line)">

@@ -13,23 +13,24 @@ from . import analysis, store
 
 # Lines worth ranking for modelling error. Totals are excluded because they
 # double-count their components; the funnel counts and each cost line are in.
-SIGNAL_KEYS = [
-    "leads", "tours", "contracts", "events", "events_oc", "events_new",
-    "lead_to_tour", "tour_to_contract", "rev_per_event",
-    "room_rental", "food", "beverage", "lodging", "ancillary", "service_charge",
-    "cancelled_events", "discounts", "other_revenue",
-    "food_cogs", "ancillary_cogs", "alcohol_cogs", "other_cogs", "room_cogs",
-    "sales_payroll", "planning_payroll", "operations_payroll",
-    "ancillary_payroll", "fnb_payroll", "payroll_admin", "other_payroll",
-    "marketing", "maintenance", "utilities", "office", "computer", "automobile",
-    "training", "tax", "travel", "professional", "insurance", "finance",
-    "other_opex", "rent",
-]
+# Every component line plus the funnel and the derived rate. Subtotals are
+# excluded because they double-count their own components; the blocks they
+# summarise are shown separately in the bridge.
+SIGNAL_GROUPS = ("funnel", "revenue", "cogs", "payroll", "opex", "adjust")
+EXTRA_SIGNAL_KEYS = ["rev_per_event", "rent"]
 
 MATERIAL_PCT = 0.10        # a miss below this is noise for classification
 PERSISTENT_MONTHS = 3      # months in a row before a miss is called structural
 MATERIAL_FLOOR = 0.005     # a dollar gap under 0.5% of plan revenue is not worth
                            # re-underwriting, however large its percentage
+
+
+def signal_keys(slug):
+    meta = analysis.line_meta(slug)
+    keys = [ln["key"] for ln in meta if ln["group"] in SIGNAL_GROUPS]
+    present = {ln["key"] for ln in meta}
+    keys += [k for k in EXTRA_SIGNAL_KEYS if k in present or k == "rev_per_event"]
+    return keys
 
 
 def _labels(slug):
@@ -74,17 +75,23 @@ def revenue_bridge(view):
     }
 
 
-def ebitda_bridge(view):
-    """Contribution of each block to the year-to-date EBITDA variance."""
+def profit_bridge(view):
+    """Contribution of each block to the year-to-date profit variance.
+
+    The bottom line differs by venue -- EBITDA after rent at Hadden, Adjusted
+    EBITDAR after an adjustments block at Firefly -- so the blocks are taken
+    from what the venue actually carries.
+    """
     v = view["ytd"]["var"]
     blocks = [("Revenue", "total_revenue"), ("COGS", "total_cogs"),
               ("Payroll", "total_payroll"), ("Operating Expenses", "total_opex"),
-              ("Rent", "rent")]
-    steps = [{"label": lbl, "var": v.get(key, {}).get("var")} for lbl, key in blocks]
+              ("Rent", "rent"), ("Other Adjustments", "total_other_adj")]
+    steps = [{"label": lbl, "var": v.get(key, {}).get("var")}
+             for lbl, key in blocks if key in view["line_keys"] or key.startswith("total")]
     steps = [s for s in steps if s["var"] is not None]
     return {
-        "plan": view["ytd"]["plan"].get("ebitda"),
-        "actual": view["ytd"]["actual"].get("ebitda"),
+        "plan": view["ytd"]["plan"].get("profit"),
+        "actual": view["ytd"]["actual"].get("profit"),
         "steps": steps,
     }
 
@@ -112,7 +119,7 @@ def line_signals(slug, year, view=None):
     view = view or analysis.build(slug, year)
     meta = _labels(slug)
     rows = []
-    for key in SIGNAL_KEYS:
+    for key in signal_keys(slug):
         if key not in meta:
             continue
         ytd = view["ytd"]["var"].get(key, {})
@@ -157,7 +164,7 @@ def summary(slug, year):
         "unplanned": [r for r in rows
                       if r["kind"].startswith("unplanned") and r["material"]],
         "revenue_bridge": revenue_bridge(view),
-        "ebitda_bridge": ebitda_bridge(view),
+        "profit_bridge": profit_bridge(view),
         "ancillary": analysis.ancillary(slug, year),
     }
 
@@ -185,7 +192,7 @@ def portfolio(year=None):
         venues.append({
             **v, "year": yr, "n_reported": view["n_reported"],
             "revenue_var": view["ytd"]["var"].get("total_revenue", {}),
-            "ebitda_var": view["ytd"]["var"].get("ebitda", {}),
+            "profit_var": view["ytd"]["var"].get("profit", {}),
             "events_var": view["ytd"]["var"].get("events", {}),
             "rows": rows,
         })
@@ -202,6 +209,7 @@ def portfolio(year=None):
             acc["pcts"].append(r["pct"])
             acc["vars"].append(r["var"] or 0)
 
+    reporting = [v for v in venues if v["n_reported"]]
     consensus = []
     for acc in per_line.values():
         n = len(acc["pcts"])
@@ -212,12 +220,19 @@ def portfolio(year=None):
         acc["total_var"] = sum(acc["vars"])
         acc["under"] = under
         acc["over"] = over
-        # Agreement: every reporting venue misses the same way.
-        acc["agree"] = (under == n and n > 0) or (over == n and n > 0)
+        # Agreement needs at least two venues. One venue always agrees with
+        # itself, and calling that a house assumption would be circular.
+        acc["agree"] = n > 1 and (under == n or over == n)
+        acc["only_venue"] = n == 1
+        # A percentage against a near-nil plan is arithmetically true and
+        # useless -- "-48,000%" says nothing a dollar figure does not say
+        # better. Suppress it and let the dollars carry the row.
+        acc["show_pct"] = abs(acc["mean_pct"]) <= 5.0
         consensus.append(acc)
-    consensus.sort(key=lambda a: (not a["agree"], -abs(a["mean_pct"])))
-    return {"venues": venues, "consensus": consensus,
-            "reporting": [v for v in venues if v["n_reported"]]}
+    # Ranked on dollars at stake, like the venue-level table, with the lines the
+    # venues agree on lifted to the top.
+    consensus.sort(key=lambda a: (not a["agree"], -abs(a["total_var"])))
+    return {"venues": venues, "consensus": consensus, "reporting": reporting}
 
 
 # ------------------------------------------------------- attachment headlines

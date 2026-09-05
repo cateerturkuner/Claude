@@ -14,7 +14,7 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
 sys.path.insert(0, __file__.rsplit("/tools/", 1)[0])
-from postclose import analysis, store  # noqa: E402
+from postclose import analysis, lines as L, store  # noqa: E402
 
 TEAL = "12666B"
 TEAL_LIGHT = "E8F4F5"
@@ -44,8 +44,7 @@ SKIP = {"lead_to_tour", "tour_to_contract", "events", "total_revenue",
 # Revenue the Events sheet already carries, event by event. Asking for it twice
 # would be duplicate work and would let the two sheets disagree, so the event
 # list is the single source for these and they are not on the P&L sheet.
-FROM_EVENTS = {"room_rental", "food", "beverage", "lodging", "ancillary",
-               "service_charge", "events_oc", "events_new"}
+FROM_EVENTS = set(L.EVENT_REVENUE_LINES) | {"events_oc", "events_new", "contracts"}
 
 INSTRUCTIONS = [
     ("head", "Two sheets, and the split between them matters"),
@@ -97,6 +96,7 @@ INSTRUCTIONS = [
              "and will not tie to each"),
     ("body", "other. That is intended — do not try to reconcile them."),
     ("gap", ""),
+    ("seg", ""),
     ("head", "Questions"),
     ("body", "If a line on your side has no home here, do not force it into the "
              "nearest row — say so and it gets added."),
@@ -106,8 +106,22 @@ INSTRUCTIONS = [
 def build(slug, out_path):
     base = store.baseline(slug)
     months = base["months"]
+    segs = base.get("segments", [])
+    multi = len(segs) > 1
     lines = [ln for ln in base["lines"]
              if ln["key"] not in SKIP and ln["key"] not in FROM_EVENTS]
+
+    # Contracts are per segment where a site has more than one: the Barn and the
+    # Chapel sell separately even though they share every expense line.
+    contract_rows = ([{"key": f"contracts__{s['key']}",
+                       "label": f"Contracts – {s['label']}",
+                       "group": "funnel", "format": "count"} for s in segs]
+                     if multi else
+                     [{"key": "contracts", "label": "Contracts",
+                       "group": "funnel", "format": "count"}])
+    at = next((i for i, ln in enumerate(lines) if ln["group"] != "funnel"),
+              len(lines))
+    lines = lines[:at] + contract_rows + lines[at:]
 
     wb = Workbook()
 
@@ -124,6 +138,23 @@ def build(slug, out_path):
     row = 5
     for style, text in INSTRUCTIONS:
         if style == "gap":
+            row += 1
+            continue
+        if style == "seg":
+            if not multi:
+                continue
+            for line in [
+                "This site is more than one venue",
+                ("Events, contracts, revenue and attachment are tracked separately "
+                 "for " + " and ".join(s["label"] for s in segs) + "."),
+                ("Expenses are not — every cost line on the P&L sheet is for the "
+                 "site as a whole."),
+                ("So every row on the Events sheet needs a Venue, and contracts "
+                 "are reported per venue on the P&L sheet."),
+            ]:
+                c = ws.cell(row, 2, line)
+                c.font = LABEL_B if line.startswith("This site") else LABEL
+                row += 1
             row += 1
             continue
         c = ws.cell(row, 2, text)
@@ -184,30 +215,34 @@ def build(slug, out_path):
     ws.sheet_view.showGridLines = False
     ws["B2"] = f"{base['venue']} — Events Held"
     ws["B2"].font = H1
-    ws["B3"] = ("One row per event that took place — every event, even if it "
-                "bought nothing but the room. Dollar amount in each category "
-                "the event bought; blank if they did not buy it.")
+    blurb = ("One row per event that took place — every event, even if it "
+             "bought nothing but the room. Dollar amount in each category "
+             "the event bought; blank if they did not buy it.")
+    if multi:
+        blurb += ("  Venue must be one of: "
+                  + ", ".join(s["label"] for s in segs) + ".")
+    ws["B3"] = blurb
     ws["B3"].font = NOTE
 
-    cats = [(c["key"], c["label"]) for c in base["drivers"]["categories"]]
-    headers = (["Event Date", "Contract Type"] + [label for _, label in cats]
-               + ["Service Charge"])
+    cats = L.event_columns(base)
+    headers = (["Event Date"] + (["Venue"] if multi else []) + ["Contract Type"]
+               + [L.CATEGORY_LABELS[c] for c in cats])
     for i, name in enumerate(headers):
         c = ws.cell(5, 2 + i, name)
         c.font = H2
         c.fill = FILL_HEAD
         c.alignment = Alignment(horizontal="center", wrap_text=True)
         ws.column_dimensions[get_column_letter(2 + i)].width = 15 if i < 2 else 12
-    for r in range(6, 406):
+    first_money = 2 + (1 if multi else 0)
+    for r in range(6, 606):
         for i in range(len(headers)):
             c = ws.cell(r, 2 + i)
             c.fill = FILL_INPUT
             c.border = BOX
             if i == 0:
                 c.number_format = "yyyy-mm-dd"
-            elif i > 1:
+            elif i > first_money - 1:
                 c.number_format = "#,##0"
-    ws.cell(6, 3).comment = None
     ws.column_dimensions["A"].width = 2
     ws.freeze_panes = ws.cell(6, 4)
 

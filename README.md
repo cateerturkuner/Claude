@@ -17,6 +17,32 @@ Served at `/PostCloseAnalysis` inside the existing Walters Hospitality Flask app
    whether attachment programmes landed on schedule, and — once more than one
    venue is loaded — which assumptions miss at *every* venue rather than one.
 
+## Venues with more than one venue
+
+Firefly Lane is one site and two venues: the Barn and the Chapel sell
+separately, and elopements are a third product line. Events, contracts, revenue
+and attachment are tracked per **segment**; every expense line is site-wide.
+That asymmetry is the whole point of the split, so the UI states it wherever a
+segmented view is shown rather than letting a reader assume the Barn carries its
+own costs.
+
+Segments are detected from the model's own labels (`Barn Contracts`,
+`Original - Chapel`, `Events - Barn`) and matched to their `Revenue Analysis -
+<name>` tab. A combined line like Firefly's `Events - B&C` is identified
+structurally — its monthly series equals the sum of two others — and dropped, so
+nothing is double-counted. A segment with no Revenue Analysis tab (elopements)
+gets events and contracts but no attachment comparison, and says so.
+
+A venue with no segment split gets one implicit segment covering the whole site,
+so every downstream view iterates segments uniformly and single-venue sites show
+no segment selector.
+
+Revenue is compared per segment as **$ per event**, not as a level: the model
+splits revenue by segment only annually, so a monthly plan level would have to be
+invented. Revenue on lines outside the proforma's $/event rate — Firefly's
+all-inclusive packages and elopements, which the model carries as their own P&L
+lines — is reported separately rather than inflating a rate it was never part of.
+
 ## Periods
 
 "Year" always means a **post-close year**, never a calendar year. Y1 is the
@@ -33,6 +59,10 @@ For Hadden Estate (closed September 2026):
 | Y3 | Sep 2028 – Aug 2029 |
 | Y4 | Sep 2029 – Dec 2029 (model stub) |
 
+Firefly Lane closed June 2026, so its Y1 is Jun 2026 – May 2027. The forecast
+block contains spacer columns between years, which extraction steps over rather
+than treating as the end of the model.
+
 ## Accrual basis
 
 Revenue and its associated costs are recognised on the **date the event
@@ -47,6 +77,22 @@ not the month the event lands:
 So the four stages describe different deals. Conversion rates are same-month
 ratios, a pace measure rather than a cohort measure — which is exactly how the
 pro forma computes them.
+
+## Different venues, different models
+
+Venue models are not identical. Hadden ends at EBITDA after a rent line; Firefly
+ends at Adjusted EBITDAR after an adjustments block, and carries elopement,
+all-inclusive and corporate-payroll lines Hadden has no concept of. So the P&L is
+read **by label**, not by row number: `postclose/lines.py` holds the canonical
+chart of lines and the labels seen in the wild, and a venue's baseline contains
+only the lines that venue actually has.
+
+Everything downstream follows from the baseline rather than a fixed list —
+subtotals are summed from the venue's own line groups, the bottom line is
+whichever of Adjusted EBITDAR / EBITDA / EBITDAR the venue carries, and the
+sign-flip on import covers whatever cost lines exist. A new venue needs a code
+change only when it introduces a line nobody has used before, and the extractor
+prints any label it could not match.
 
 ## Sign convention
 
