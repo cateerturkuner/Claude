@@ -218,3 +218,57 @@ def portfolio(year=None):
     consensus.sort(key=lambda a: (not a["agree"], -abs(a["mean_pct"])))
     return {"venues": venues, "consensus": consensus,
             "reporting": [v for v in venues if v["n_reported"]]}
+
+
+# ------------------------------------------------------- attachment headlines
+HEADLINE_TOP_N = 6
+
+
+def _headline(cat, cohort):
+    """One plain sentence naming the dominant reason a category is off plan."""
+    d = cohort.get("decomposition")
+    if not d:
+        return "Not reported yet."
+    if d.get("unplanned"):
+        return "Sold, but the proforma carried nothing here."
+    effects = [("attach", d["attach"]), ("price", d["price"]), ("volume", d["volume"])]
+    name, value = max(effects, key=lambda e: abs(e[1]))
+    if abs(value) < 0.05:
+        return "On plan."
+    rate_p, rate_a = cohort.get("plan_rate"), cohort.get("actual_rate")
+    dol_p, dol_a = cohort.get("plan_dollar"), cohort.get("actual_dollar")
+    if name == "attach":
+        if rate_a == 0:
+            return f"Not sold at all — the proforma assumed {rate_p:.0%} of events."
+        direction = "more" if value > 0 else "fewer"
+        text = (f"Attaching to {direction} events than planned — "
+                f"{rate_a:.0%} against {rate_p:.0%}")
+        # A large opposing price effect is the whole point of splitting them:
+        # "selling it far more often, for far less" is a different instruction to
+        # the next proforma than "selling it far more often".
+        if d["price"] * value < 0 and abs(d["price"]) > abs(value) * 0.4:
+            return text + f", but at {dol_a:,.2f} per event against {dol_p:,.2f}."
+        return text + "."
+    if name == "price":
+        direction = "above" if value > 0 else "below"
+        return (f"Attaching about as planned but priced {direction} assumption — "
+                f"{dol_a:,.2f} against {dol_p:,.2f} per event.")
+    return "Driven by how many events happened, not by this category."
+
+
+def headline_categories(anc, cohort="new", limit=HEADLINE_TOP_N):
+    """The categories worth putting on the overview, largest gap first."""
+    rows = []
+    for row in anc["rows"]:
+        c = row["cohorts"][cohort]
+        d = c.get("decomposition")
+        if not d:
+            continue
+        rows.append({**row, "headline": _headline(row, c), "gap": d["total"],
+                     # Rank on the category's own behaviour. Event volume moves
+                     # every category by the same proportion and is already shown
+                     # in the revenue bridge, so including it here would just sort
+                     # by category size and bury the ones nobody is selling.
+                     "signal": abs(d["attach"]) + abs(d["price"])})
+    rows.sort(key=lambda r: -r["signal"])
+    return rows[:limit]

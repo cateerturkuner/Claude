@@ -41,46 +41,61 @@ SKIP = {"lead_to_tour", "tour_to_contract", "events", "total_revenue",
         "total_cogs", "gross_margin", "total_payroll", "total_opex",
         "ebitdar", "ebitda"}
 
+# Revenue the Events sheet already carries, event by event. Asking for it twice
+# would be duplicate work and would let the two sheets disagree, so the event
+# list is the single source for these and they are not on the P&L sheet.
+FROM_EVENTS = {"room_rental", "food", "beverage", "lodging", "ancillary",
+               "service_charge", "events_oc", "events_new"}
+
 INSTRUCTIONS = [
-    ("head", "How to fill this in"),
+    ("head", "Two sheets, and the split between them matters"),
     ("gap", ""),
-    ("body", "1. One column per month. Fill only months that have closed — leave "
-             "future months blank."),
-    ("body", "2. Money in whole dollars. The dashboard converts; do not pre-scale "
-             "to thousands."),
+    ("body", "Events    every event that took place, one row each. This is where "
+             "event revenue comes from."),
+    ("body", "P&L       the funnel counts, the costs, and the three revenue lines "
+             "that are not per-event."),
+    ("gap", ""),
+    ("body", "Room rental, food, beverage, lodging, ancillary and service charge "
+             "are NOT on the P&L sheet."),
+    ("body", "They are added up from the Events sheet. Asking for them twice would "
+             "only let the two disagree."),
+    ("gap", ""),
+    ("head", "Rules"),
+    ("body", "1. One column per month on the P&L sheet. Fill only months that have "
+             "closed; leave the rest blank."),
+    ("body", "2. Money in whole dollars, on both sheets. Do not pre-scale to "
+             "thousands."),
     ("body", "3. Costs as positive numbers. The dashboard flips the sign on import."),
-    ("body", "4. Do not add, rename, reorder or delete rows. The line names are how "
-             "the dashboard matches them."),
-    ("body", "5. Send the whole file each month, not just the new column — it is "
+    ("body", "4. Do not add, rename, reorder or delete rows or columns. The names "
+             "are how the dashboard matches them."),
+    ("body", "5. Send the whole file each month, not just the new month — it is "
              "the running record."),
     ("gap", ""),
-    ("head", "Timing — this is the part that is easy to get wrong"),
-    ("body", "Everything is accrual. The revenue and the costs of an event belong "
-             "to the month the EVENT HAPPENED,"),
-    ("body", "not the month it was booked, invoiced or paid."),
-    ("gap", ""),
-    ("body", "    Leads          enquiries received in that month"),
-    ("body", "    Tours          tours that took place in that month"),
-    ("body", "    Contracts      contracts signed in that month, whenever the "
-             "event falls"),
-    ("body", "    Events         events held in that month — this is where "
-             "revenue lands"),
-    ("gap", ""),
-    ("body", "So the four counts describe different deals and will not tie to each "
-             "other. That is intended."),
-    ("gap", ""),
-    ("head", "The Events sheet"),
-    ("body", "One row per event held. Optional, but it is the only way to tell "
-             "\"fewer couples bought floral\""),
-    ("body", "apart from \"floral sold for less\" — which is most of the value in "
-             "this analysis."),
+    ("head", "Every event goes on the Events sheet"),
+    ("body", "A missing event does not just lose its own revenue — it understates "
+             "the attachment rate for"),
+    ("body", "every category, because attachment is measured against the total "
+             "number of events. If an event"),
+    ("body", "happened, it needs a row, even if it bought nothing but the room."),
     ("gap", ""),
     ("body", "    · Put the dollar amount in each category the event bought. Leave "
              "blank if they did not buy it."),
     ("body", "    · Contract Type is Original for events inherited at closing, New "
              "for anything sold since."),
-    ("body", "    · Each category total should agree with the matching revenue "
-             "line on the P&L sheet."),
+    ("gap", ""),
+    ("head", "Timing — the part that is easy to get wrong"),
+    ("body", "Everything is accrual. An event belongs to the month it HAPPENED, "
+             "not the month it was booked,"),
+    ("body", "invoiced or paid. The same goes for its costs."),
+    ("gap", ""),
+    ("body", "    Leads          enquiries received in that month"),
+    ("body", "    Tours          tours that took place in that month"),
+    ("body", "    Contracts      contracts signed in that month, whenever the "
+             "event falls"),
+    ("gap", ""),
+    ("body", "So those three counts and the event list describe different deals "
+             "and will not tie to each"),
+    ("body", "other. That is intended — do not try to reconcile them."),
     ("gap", ""),
     ("head", "Questions"),
     ("body", "If a line on your side has no home here, do not force it into the "
@@ -91,7 +106,8 @@ INSTRUCTIONS = [
 def build(slug, out_path):
     base = store.baseline(slug)
     months = base["months"]
-    lines = [ln for ln in base["lines"] if ln["key"] not in SKIP]
+    lines = [ln for ln in base["lines"]
+             if ln["key"] not in SKIP and ln["key"] not in FROM_EVENTS]
 
     wb = Workbook()
 
@@ -121,7 +137,8 @@ def build(slug, out_path):
     ws.sheet_view.showGridLines = False
     ws["B2"] = f"{base['venue']} — Monthly Actuals"
     ws["B2"].font = H1
-    ws["B3"] = "Whole dollars. Costs positive. Fill closed months only."
+    ws["B3"] = ("Whole dollars. Costs positive. Fill closed months only. "
+                "Event revenue is not here — it comes from the Events sheet.")
     ws["B3"].font = NOTE
 
     head = 5
@@ -167,7 +184,8 @@ def build(slug, out_path):
     ws.sheet_view.showGridLines = False
     ws["B2"] = f"{base['venue']} — Events Held"
     ws["B2"].font = H1
-    ws["B3"] = ("One row per event that took place. Dollar amount in each category "
+    ws["B3"] = ("One row per event that took place — every event, even if it "
+                "bought nothing but the room. Dollar amount in each category "
                 "the event bought; blank if they did not buy it.")
     ws["B3"].font = NOTE
 

@@ -4,11 +4,16 @@
 {% block content %}
 
 <div class="tiles">
-  {% for key, label, kind in HEADLINES %}
-    {{ m.tile(label, view.ytd.actual.get(key), view.ytd.plan.get(key),
-              view.ytd.var.get(key), kind,
-              sub='Y%d to date' % view.year) }}
-  {% endfor %}
+  {{ m.tile('Total Revenue', view.ytd.actual.get('total_revenue'),
+            view.ytd.plan.get('total_revenue'), view.ytd.var.get('total_revenue'),
+            'usd', sub='Y%d to date' % view.year) }}
+  {{ m.tile('EBITDA', view.ytd.actual.get('ebitda'), view.ytd.plan.get('ebitda'),
+            view.ytd.var.get('ebitda'), 'usd', sub='Y%d to date' % view.year) }}
+  {{ m.tile('Events', view.ytd.actual.get('events'), view.ytd.plan.get('events'),
+            view.ytd.var.get('events'), 'count', sub='Y%d to date' % view.year) }}
+  {{ m.tile('Revenue / Event', view.ytd.actual.get('rev_per_event'),
+            view.ytd.plan.get('rev_per_event'), view.ytd.var.get('rev_per_event'),
+            'usd', sub='Y%d to date' % view.year) }}
 </div>
 
 {% if not view.n_reported %}{{ m.nodata(view) }}{% endif %}
@@ -17,50 +22,67 @@
   <h2>Year {{ view.year }} position
     <span class="sub">{{ view.n_reported }} of {{ view.n_months }} months reported
       {%- if view.reported_months %} · through
-      {{ view.reported_months[-1] | replace('-', '/') }}{% endif %}
-      · all money in $ thousands</span></h2>
+      {{ view.reported_months[-1] | replace('-', '/') }}{% endif %} · $ thousands</span>
+    <a class="btn ghost" style="margin-left:auto;padding:4px 11px;font-size:11.5px"
+       href="{{ url_for('postclose.pnl', slug=slug, year=year) }}">Full monthly grid →</a>
+  </h2>
   <div class="body">
-    <table>
+    <table id="pos">
       <thead><tr>
         <th class="lbl">Measure</th>
         <th colspan="3" style="text-align:center;border-left:1px solid var(--line)">
           Year to date ({{ view.n_reported }} mo)</th>
-        <th colspan="3" style="text-align:center;border-left:1px solid var(--line)">
-          Full year {{ 'projected' if view.n_reported < view.n_months else 'actual' }}</th>
-      </tr>
-      <tr>
+        <th colspan="2" style="text-align:center;border-left:1px solid var(--line)">
+          Full year</th>
+      </tr><tr>
         <th class="lbl"></th>
         <th style="border-left:1px solid var(--line)">Proforma</th><th>Actual</th><th>Var</th>
-        <th style="border-left:1px solid var(--line)">Proforma</th><th>Projected</th><th>Var</th>
+        <th style="border-left:1px solid var(--line)">Proforma</th>
+        <th>{{ 'Projected' if view.n_reported < view.n_months else 'Actual' }}</th>
       </tr></thead>
       <tbody>
-      {% for key, label, kind in [
-          ('events','Events','count'),
-          ('total_revenue','Total Revenue','usd'),
-          ('rev_per_event','Revenue / Event','usd'),
-          ('total_cogs','Total COGS','usd'),
-          ('gross_margin','Gross Margin','usd'),
-          ('total_payroll','Total Payroll','usd'),
-          ('total_opex','Total Operating Expenses','usd'),
-          ('ebitdar','EBITDAR','usd'),
-          ('rent','Rent','usd'),
-          ('ebitda','EBITDA','usd'),
-          ('ebitda_margin','EBITDA Margin','pct') ] %}
-      <tr class="{{ 'total' if key in ('total_revenue','gross_margin','ebitda') }}">
-        <td class="lbl">{{ label }}</td>
-        <td class="plan" style="border-left:1px solid var(--line)">{{ fmt_by(view.ytd.plan.get(key), kind) }}</td>
-        <td><b>{{ fmt_by(view.ytd.actual.get(key), kind) }}</b></td>
-        {{ m.varcell(view.ytd.var.get(key), kind) }}
-        <td class="plan" style="border-left:1px solid var(--line)">{{ fmt_by(view.fy.plan.get(key), kind) }}</td>
-        <td>{{ fmt_by(view.fy.projected.get(key), kind) }}</td>
-        {{ m.varcell(view.fy.var.get(key), kind) }}
-      </tr>
-      {% endfor %}
+      {% macro posrow(key, label, kind, group=None, strong=False) %}
+        {% set kids = view.lines | selectattr('group', 'equalto', group) | list if group else [] %}
+        <tr class="{{ 'total' if strong }} {{ 'blk' if kids }}"
+            {% if kids %}data-blk="{{ group }}"{% endif %}>
+          <td class="lbl">{% if kids %}<span class="tw">▸</span> {% endif %}{{ label }}</td>
+          <td class="plan" style="border-left:1px solid var(--line)">{{ fmt_by(view.ytd.plan.get(key), kind) }}</td>
+          <td><b>{{ fmt_by(view.ytd.actual.get(key), kind) }}</b></td>
+          <td class="{{ tone(view.ytd.var.get(key,{}).get('var'), kind) }}">
+            {{ fmt_signed(view.ytd.var.get(key,{}).get('var'), kind) }}
+            {%- if view.ytd.var.get(key,{}).get('pct') is not none %}
+            <span style="font-size:10.5px">({{ '%+.0f%%' % (view.ytd.var[key].pct * 100) }})</span>{% endif %}</td>
+          <td class="plan" style="border-left:1px solid var(--line)">{{ fmt_by(view.fy.plan.get(key), kind) }}</td>
+          <td>{{ fmt_by(view.fy.projected.get(key), kind) }}</td>
+        </tr>
+        {% for ln in kids %}
+        <tr class="sub sub-{{ group }}" hidden>
+          <td class="lbl" style="padding-left:26px;color:var(--muted)">{{ ln.label }}</td>
+          <td class="plan" style="border-left:1px solid var(--line)">{{ fmt_by(view.ytd.plan.get(ln.key), ln.format) }}</td>
+          <td>{{ fmt_by(view.ytd.actual.get(ln.key), ln.format) }}</td>
+          <td class="{{ tone(view.ytd.var.get(ln.key,{}).get('var'), ln.format) }}">
+            {{ fmt_signed(view.ytd.var.get(ln.key,{}).get('var'), ln.format) }}</td>
+          <td class="plan" style="border-left:1px solid var(--line)">{{ fmt_by(view.fy.plan.get(ln.key), ln.format) }}</td>
+          <td>{{ fmt_by(view.fy.projected.get(ln.key), ln.format) }}</td>
+        </tr>
+        {% endfor %}
+      {% endmacro %}
+
+      {{ posrow('events', 'Events', 'count') }}
+      {{ posrow('total_revenue', 'Total Revenue', 'usd', 'revenue', true) }}
+      {{ posrow('total_cogs', 'Total COGS', 'usd', 'cogs') }}
+      {{ posrow('gross_margin', 'Gross Margin', 'usd', none, true) }}
+      {{ posrow('total_payroll', 'Total Payroll', 'usd', 'payroll') }}
+      {{ posrow('total_opex', 'Total Operating Expenses', 'usd', 'opex') }}
+      {{ posrow('rent', 'Rent', 'usd') }}
+      {{ posrow('ebitda', 'EBITDA', 'usd', none, true) }}
+      {{ posrow('ebitda_margin', 'EBITDA Margin', 'pct') }}
       </tbody>
     </table>
-    <p class="note" style="margin:10px 0 0">Full-year projection keeps every reported
-      month and falls back to the proforma for months not yet closed — it is not a
-      re-forecast, it is "if the rest of the year lands exactly on plan".</p>
+    <p class="note" style="margin:10px 0 0">Click a block to open its lines. Costs are
+      carried negative, so a positive variance is favourable everywhere — on expenses
+      it means spending less than planned. The full-year column keeps every reported
+      month and falls back to the proforma for the rest; it is not a re-forecast.</p>
   </div>
 </div>
 
@@ -76,70 +98,90 @@
     </div>
   </div>
   <div class="card">
-    <h2>Events by month <span class="sub">accrual basis — recognised on the event date</span></h2>
-    <div class="body">
-      {% set erows = [] %}
-      {% for mo in view.months %}{% set _ = erows.append({
-          'label': mo.label, 'plan': mo.plan.events,
-          'actual': mo.actual.get('events') if mo.has_actual else none}) %}{% endfor %}
-      {{ m.barchart(erows, 'count') }}
-    </div>
-  </div>
-</div>
-
-{% if bridge %}
-<div class="grid g2">
-  <div class="card">
     <h2>Why revenue differs <span class="sub">year to date</span></h2>
     <div class="body">
+      {% if bridge %}
       {{ m.waterfall(bridge.plan,
            [{'label': 'Event volume (%s vs %s events)' % (bridge.events_actual|round|int, bridge.events_plan|round|int), 'var': bridge.volume},
             {'label': 'Revenue per event (%s vs %s)' % (bridge.rate_actual|round(1), bridge.rate_plan|round(1)), 'var': bridge.rate}],
            bridge.actual, 'usd', 'Proforma revenue', 'Actual revenue') }}
-      <p class="note" style="margin:10px 0 0">Volume holds price at plan; rate is measured
-        on actual events. The two add exactly to the total gap — so a miss is
-        attributable, not just visible.</p>
-    </div>
-  </div>
-  <div class="card">
-    <h2>EBITDA bridge <span class="sub">year to date, by block</span></h2>
-    <div class="body">
-      {{ m.waterfall(ebitda.plan, ebitda.steps, ebitda.actual, 'usd',
-                     'Proforma EBITDA', 'Actual EBITDA') }}
+      <p class="note" style="margin:10px 0 0">
+        {% if (bridge.volume|abs) > (bridge.rate|abs) %}Mostly <b>volume</b> — the
+        funnel, not the pricing.{% else %}Mostly <b>rate</b> — pricing and
+        attachment, not the funnel.{% endif %}
+        The two effects add exactly to the total gap.</p>
+      {% else %}
+      <p class="note" style="margin:0">Fills in once a month with events and revenue
+        is reported.</p>
+      {% endif %}
     </div>
   </div>
 </div>
-{% endif %}
 
+{% if anc and anc.has_detail %}
 <div class="card">
-  <h2>Month detail <span class="sub">$000s except counts</span></h2>
-  <div class="scroll">
+  <h2>Attachment — new contracts
+    <span class="sub">{{ anc.events_actual.new | count }} events sold since close</span>
+    <a class="btn ghost" style="margin-left:auto;padding:4px 11px;font-size:11.5px"
+       href="{{ url_for('postclose.ancillary', slug=slug, year=year) }}">All categories →</a>
+  </h2>
+  <div class="body">
     <table>
-      <thead><tr><th class="lbl">Month</th>
-        <th>Events plan</th><th>Events act</th><th>Var</th>
-        <th style="border-left:1px solid var(--line)">Revenue plan</th><th>Revenue act</th><th>Var</th>
-        <th style="border-left:1px solid var(--line)">EBITDA plan</th><th>EBITDA act</th><th>Var</th>
-        <th style="border-left:1px solid var(--line)">Source</th></tr></thead>
+      <thead><tr><th class="lbl">Category</th>
+        <th>PF attach</th><th>Actual</th>
+        <th>PF $/event</th><th>Actual</th>
+        <th style="border-left:1px solid var(--line)">Gap</th>
+        <th style="text-align:left">Because</th></tr></thead>
       <tbody>
-      {% for mo in view.months %}
-      <tr class="{{ '' if mo.has_actual else 'dim' }}">
-        <td class="lbl">{{ mo.label }}</td>
-        <td class="plan">{{ mo.plan.events | count }}</td>
-        <td><b>{{ mo.actual.get('events') | count if mo.has_actual else '–' }}</b></td>
-        {{ m.varcell(mo.var.get('events'), 'count') }}
-        <td class="plan" style="border-left:1px solid var(--line)">{{ mo.plan.total_revenue | num }}</td>
-        <td><b>{{ mo.actual.get('total_revenue') | num if mo.has_actual else '–' }}</b></td>
-        {{ m.varcell(mo.var.get('total_revenue'), 'usd') }}
-        <td class="plan" style="border-left:1px solid var(--line)">{{ mo.plan.ebitda | num }}</td>
-        <td><b>{{ mo.actual.get('ebitda') | num if mo.has_actual else '–' }}</b></td>
-        {{ m.varcell(mo.var.get('ebitda'), 'usd') }}
-        <td style="border-left:1px solid var(--line);text-align:left">
-          {% if mo.has_actual %}<span class="chip teal">{{ mo.source }}</span>
-          {% else %}<span class="chip flat">not reported</span>{% endif %}</td>
-      </tr>
+      {% for row in anc.top %}
+        {% set c = row.cohorts.new %}
+        <tr><td class="lbl">{{ row.label }}</td>
+          <td class="plan">{{ c.plan_rate | pct(0) }}</td>
+          <td class="{{ tone(c.rate_var.var, 'pct') }}"><b>{{ c.actual_rate | pct(0) }}</b></td>
+          <td class="plan">{{ c.plan_dollar | num(2) }}</td>
+          <td class="{{ tone(c.dollar_var.var, 'usd') }}"><b>{{ c.actual_dollar | num(2) }}</b></td>
+          <td class="{{ tone(c.decomposition.total) }}" style="border-left:1px solid var(--line)">
+            <b>{{ fmt_signed(c.decomposition.total) }}</b></td>
+          <td style="text-align:left;white-space:normal;color:var(--muted)">{{ row.headline }}</td>
+        </tr>
       {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
+{% endif %}
+
+{% if show_signals %}
+<div class="card"><div class="body" style="display:flex;align-items:center;gap:14px">
+  <div><b style="color:var(--navy)">{{ view.n_reported }} months reported</b>
+    <span class="note">— enough to tell a pattern from an incident.</span></div>
+  <a class="btn" style="margin-left:auto"
+     href="{{ url_for('postclose.venue_signals', slug=slug, year=year) }}">Proforma signals →</a>
+</div></div>
+{% elif view.n_reported %}
+<div class="card"><div class="body">
+  <p class="note" style="margin:0">Proforma signals unlock at
+    {{ 3 }} reported months — {{ 3 - view.n_reported }} to go. A line has to miss the
+    same way three months running before it is worth calling a modelling error rather
+    than an incident.</p>
+</div></div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Blocks open to their component lines. Collapsed by default so the page opens
+// as a position, not a P&L.
+document.querySelectorAll('#pos tr.blk').forEach(function (row) {
+  row.style.cursor = 'pointer';
+  row.addEventListener('click', function () {
+    var open = row.classList.toggle('open');
+    row.querySelector('.tw').textContent = open ? '▾' : '▸';
+    document.querySelectorAll('#pos tr.sub-' + row.dataset.blk).forEach(function (kid) {
+      kid.hidden = !open;
+    });
+  });
+});
+</script>
 {% endblock %}

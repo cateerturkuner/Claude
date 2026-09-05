@@ -67,13 +67,19 @@ def fmt_signed(value, kind="usd", dp=1):
     return f"{'+' if value >= 0 else '−'}{body}"
 
 
-def tone(value, threshold=0.0):
+# A variance too small to show up in the number itself should not be coloured:
+# a rounding-level -0.04 rendering as "-0.0" in red reads as a real miss.
+DEADBAND = {"usd": 0.05, "count": 0.05, "pct": 0.00005}
+
+
+def tone(value, kind="usd"):
     """Favourable / unfavourable class. Positive is favourable on every line."""
     if value is None:
         return "flat"
-    if value > threshold:
+    band = DEADBAND.get(kind, 0.05)
+    if value > band:
         return "good"
-    if value < -threshold:
+    if value < -band:
         return "bad"
     return "flat"
 
@@ -99,8 +105,16 @@ def _ctx(slug):
     year = request.args.get("year", type=int) or analysis.current_year(slug)
     if year not in analysis.years_available(slug):
         year = analysis.years_available(slug)[0]
+    # Tabs appear when the data can support them, so month one is three tabs
+    # rather than seven mostly-empty ones. Nothing is rebuilt when they unlock;
+    # the routes exist throughout.
+    n_reported = len(analysis.reported_months(slug, year))
     return {"slug": slug, "venues": vs, "year": year,
-            "venue": next(v for v in vs if v["slug"] == slug)}
+            "venue": next(v for v in vs if v["slug"] == slug),
+            "n_reported": n_reported,
+            "show_signals": n_reported >= signals.PERSISTENT_MONTHS,
+            "show_attachment": analysis.has_attachment(slug, year),
+            "show_portfolio": len(vs) > 1}
 
 
 def _first_slug():
@@ -121,9 +135,12 @@ def index():
 def overview(slug):
     ctx = _ctx(slug)
     view = analysis.build(slug, ctx["year"])
+    anc = None
+    if ctx["show_attachment"]:
+        anc = analysis.ancillary(slug, ctx["year"])
+        anc["top"] = signals.headline_categories(anc)
     return render_template("postclose/overview.html", tab="overview", view=view,
-                           bridge=signals.revenue_bridge(view),
-                           ebitda=signals.ebitda_bridge(view), **ctx)
+                           bridge=signals.revenue_bridge(view), anc=anc, **ctx)
 
 
 @bp.route("/<slug>/funnel")
@@ -160,10 +177,10 @@ def venue_signals(slug):
 def portfolio():
     slug = _first_slug()
     year = request.args.get("year", type=int)
+    ctx = _ctx(slug)
+    ctx.pop("year", None)
     return render_template("postclose/portfolio.html", tab="portfolio",
-                           slug=slug, venues=store.venues(), year=year,
-                           venue=next(v for v in store.venues() if v["slug"] == slug),
-                           data=signals.portfolio(year))
+                           year=year, data=signals.portfolio(year), **ctx)
 
 
 # ------------------------------------------------------------------------ data

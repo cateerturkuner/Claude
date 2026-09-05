@@ -7,7 +7,7 @@
   <div class="v">{{ (actual | money) if kind == 'usd' else fmt_by(actual, kind) }}</div>
   <div class="p">Plan {{ (plan | money) if kind == 'usd' else fmt_by(plan, kind) }}{% if sub %} · {{ sub }}{% endif %}</div>
   {% if var and var.var is not none %}
-  <span class="d {{ tone(var.var) }}">{{ fmt_signed(var.var, kind) }}
+  <span class="d {{ tone(var.var, kind) }}">{{ fmt_signed(var.var, kind) }}
     {%- if var.pct is not none %} · {{ '%+.0f' % (var.pct * 100) }}%{% endif %}</span>
   {% else %}<span class="d flat">no actuals</span>{% endif %}
 </div>
@@ -64,10 +64,10 @@
     <td style="width:110px">{{ fmt_by(start, kind) }}</td><td style="width:46%"></td></tr>
   {% for s in steps %}
   <tr><td class="lbl" style="padding-left:20px">{{ s.label }}</td>
-    <td class="{{ tone(s.var) }}">{{ fmt_signed(s.var, kind) }}</td>
+    <td class="{{ tone(s.var, kind) }}">{{ fmt_signed(s.var, kind) }}</td>
     <td><div class="split">
       <div class="bar" style="flex:1;max-width:280px">
-        <i class="{{ tone(s.var) }}" style="width:{{ (s.var|abs) / top * 100 }}%"></i></div>
+        <i class="{{ tone(s.var, kind) }}" style="width:{{ (s.var|abs) / top * 100 }}%"></i></div>
     </div></td></tr>
   {% endfor %}
   <tr class="total"><td class="lbl">{{ end_label }}</td>
@@ -77,7 +77,7 @@
 
 
 {% macro varcell(v, kind='usd') %}
-<td class="{{ tone(v.var if v else none) }}">{{ fmt_signed(v.var if v else none, kind) }}</td>
+<td class="{{ tone(v.var if v else none, kind) }}">{{ fmt_signed(v.var if v else none, kind) }}</td>
 {% endmacro %}
 
 

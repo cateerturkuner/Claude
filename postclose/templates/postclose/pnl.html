@@ -37,14 +37,14 @@
             <td class="{{ '' if mo.has_actual else 'dim plan' }}">
               {% if mode == 'plan' or not mo.has_actual %}{{ fmt_by(mo.plan.get(ln.key), ln.format) }}
               {% elif mode == 'actual' %}{{ fmt_by(mo.actual.get(ln.key), ln.format) }}
-              {% else %}<span class="{{ tone(v.get('var')) }}">{{ fmt_signed(v.get('var'), ln.format) }}</span>
+              {% else %}<span class="{{ tone(v.get('var'), ln.format) }}">{{ fmt_signed(v.get('var'), ln.format) }}</span>
               {% endif %}
             </td>
           {% endfor %}
           <td class="plan" style="border-left:1px solid var(--line)">{{ fmt_by(view.ytd.plan.get(ln.key), ln.format) }}</td>
           <td><b>{{ fmt_by(view.ytd.actual.get(ln.key), ln.format) }}</b></td>
           {{ m.varcell(view.ytd.var.get(ln.key), ln.format) }}
-          <td class="{{ tone(view.ytd.var.get(ln.key,{}).get('var')) }}">
+          <td class="{{ tone(view.ytd.var.get(ln.key,{}).get('var'), ln.format) }}">
             {{ ('%+.0f%%' % (view.ytd.var.get(ln.key,{}).get('pct') * 100))
                if view.ytd.var.get(ln.key,{}).get('pct') is not none else '–' }}</td>
           <td class="plan" style="border-left:1px solid var(--line)">{{ fmt_by(view.fy.plan.get(ln.key), ln.format) }}</td>

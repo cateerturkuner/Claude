@@ -167,10 +167,18 @@ details.hint summary{cursor:pointer;color:var(--teal-700);font-size:12px;font-we
   <nav class="tabs">
     <a class="{{ 'on' if tab=='overview' }}" href="{{ url_for('postclose.overview', slug=slug, year=year) }}">Overview</a>
     <a class="{{ 'on' if tab=='funnel' }}" href="{{ url_for('postclose.funnel', slug=slug, year=year) }}">Funnel</a>
-    <a class="{{ 'on' if tab=='pnl' }}" href="{{ url_for('postclose.pnl', slug=slug, year=year) }}">P&amp;L Detail</a>
-    <a class="{{ 'on' if tab=='ancillary' }}" href="{{ url_for('postclose.ancillary', slug=slug, year=year) }}">Attachment &amp; Rate</a>
+    {# These earn their place: attachment once any is reported, signals once
+       there are enough months to see a pattern, portfolio once there is more
+       than one venue. Until then they would be tabs onto an empty page. #}
+    {% if show_attachment or tab == 'ancillary' %}
+    <a class="{{ 'on' if tab=='ancillary' }}" href="{{ url_for('postclose.ancillary', slug=slug, year=year) }}">Attachment</a>
+    {% endif %}
+    {% if show_signals or tab == 'signals' %}
     <a class="{{ 'on' if tab=='signals' }}" href="{{ url_for('postclose.venue_signals', slug=slug, year=year) }}">Proforma Signals</a>
+    {% endif %}
+    {% if show_portfolio or tab == 'portfolio' %}
     <a class="{{ 'on' if tab=='portfolio' }}" href="{{ url_for('postclose.portfolio') }}">Portfolio</a>
+    {% endif %}
     <a class="{{ 'on' if tab=='data' }}" href="{{ url_for('postclose.data', slug=slug, year=year) }}">Data</a>
   </nav>
 </header>

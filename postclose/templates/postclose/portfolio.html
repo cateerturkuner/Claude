@@ -21,7 +21,7 @@
         {% if v.n_reported %}
           <td class="{{ tone(v.revenue_var.var) }}">{{ fmt_signed(v.revenue_var.var) }}
             <span class="note">{{ ('%+.0f%%' % (v.revenue_var.pct*100)) if v.revenue_var.pct is not none }}</span></td>
-          <td class="{{ tone(v.events_var.var) }}">{{ fmt_signed(v.events_var.var, 'count') }}</td>
+          <td class="{{ tone(v.events_var.var, 'count') }}">{{ fmt_signed(v.events_var.var, 'count') }}</td>
           <td class="{{ tone(v.ebitda_var.var) }}">{{ fmt_signed(v.ebitda_var.var) }}</td>
         {% else %}<td colspan="3" class="note" style="text-align:center">no actuals reported</td>{% endif %}
         <td><a href="{{ url_for('postclose.venue_signals', slug=v.slug, year=v.year) }}">Signals →</a></td>
@@ -56,10 +56,10 @@
         <td>{% if c.agree %}<span class="chip {{ 'bad' if c.mean_pct < 0 else 'good' }}">
               all {{ 'below' if c.mean_pct < 0 else 'above' }}</span>
             {% else %}<span class="chip flat">mixed</span>{% endif %}</td>
-        <td class="{{ tone(c.mean_pct) }}">{{ '%+.0f%%' % (c.mean_pct * 100) }}</td>
-        <td class="{{ tone(c.total_var) }}">{{ fmt_signed(c.total_var, c.format) }}</td>
+        <td class="{{ tone(c.mean_pct, 'pct') }}">{{ '%+.0f%%' % (c.mean_pct * 100) }}</td>
+        <td class="{{ tone(c.total_var, c.format) }}">{{ fmt_signed(c.total_var, c.format) }}</td>
         <td style="text-align:left;white-space:normal">
-          {% for v in c.venues %}<span class="chip {{ tone(v.pct) }}"
+          {% for v in c.venues %}<span class="chip {{ tone(v.pct, 'pct') }}"
             style="margin-right:4px">{{ v.venue }} {{ '%+.0f%%' % (v.pct*100) }}</span>{% endfor %}
         </td></tr>
       {% endfor %}

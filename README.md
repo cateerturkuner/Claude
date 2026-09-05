@@ -69,7 +69,8 @@ postclose/
     actuals_<slug>.json    everything reported since close
   templates/postclose/
 tools/
-  extract_baseline.py        workbook -> baseline JSON
+  extract_baseline.py        venue forecast workbook -> baseline JSON
+  make_actuals_template.py   baseline -> the workbook finance fills in
   deploy_pythonanywhere.py   push files + reload the web app
 ```
 
@@ -85,17 +86,50 @@ the picker on the next request. The workbook needs a `Detailed P&L` tab laid out
 like Hadden's (row 3 post-close year tags, row 9 month-end dates, line names in
 column C) and a `Revenue Analysis` tab with the Y1/Y2/Y3 driver columns.
 
+## Tabs appear when the data supports them
+
+Month one shows three tabs, not seven mostly-empty ones. Nothing is rebuilt when
+the others unlock — the routes exist throughout, they are just not offered until
+they can say something.
+
+| Tab | Appears |
+|-----|---------|
+| Overview, Funnel, Data | always |
+| Attachment | once any attachment detail is reported |
+| Pro forma Signals | at three reported months — the minimum to tell a pattern from an incident |
+| Portfolio | at two venues |
+
+The Overview carries the position as eight rows — Events, Revenue, COGS, Gross
+Margin, Payroll, Operating Expenses, Rent, EBITDA — and each block opens to its
+component lines on click. The full monthly grid is a link away rather than a tab.
+
 ## Loading a month of actuals
 
-**From a finance workbook.** Data tab → upload. No fixed template: the parser
-finds a row of month headers (`Sep-26`, `2026-09`, a real date) and a column of
-line names, matches those names against the venue's own P&L labels plus an alias
+**From the template.** `tools/make_actuals_template.py` generates the workbook
+finance fills in; a completed copy uploads with no mapping work. Two sheets, and
+the split matters: **Events** carries one row per event and is the source for
+room rental, food, beverage, lodging, ancillary and service charge; **P&L**
+carries the funnel counts, the costs, and the three revenue lines that are not
+per-event (cancelled, discounts, other). Those six revenue lines are deliberately
+absent from the P&L sheet — asking for them twice would be duplicate work and
+would let the two sheets disagree.
+
+**From any other workbook.** The parser does not require the template. It finds
+a row of month headers (`Sep-26`, `2026-09`, a real date) and a column of line
+names, matches those names against the venue's own P&L labels plus an alias
 table, and shows the mapping for confirmation before saving anything. It detects
 and offers to fix two common mismatches — a file kept in whole dollars against a
 model kept in thousands, and cost lines delivered positive. Months outside the
-pro forma window are ignored.
+pro forma window, and template columns still blank, are ignored.
 
-**By hand.** Same tab, lower panel. Typed values are marked `manual` and win
+An event list is recognised in any workbook with a date column and two or more
+known category columns. It is applied after the P&L sheet, so where both carry
+event counts the per-event rows win. A category column present but empty records
+an explicit zero — left absent, a category nobody bought would read as "not
+reported" and vanish from the attachment tab instead of showing as the shortfall
+it is.
+
+**By hand.** Data tab, lower panel. Typed values are marked `manual` and win
 over an uploaded file. Blank leaves an existing value alone.
 
 Subtotals (Gross Margin, EBITDA, Total Payroll…) are derived from their

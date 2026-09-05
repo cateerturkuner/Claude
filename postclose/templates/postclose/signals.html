@@ -21,8 +21,8 @@
           {{ r.streak|abs }} mo {{ 'below' if r.streak < 0 else 'above' }}</span></td>
         <td class="plan">{{ fmt_by(r.plan, r.format) }}</td>
         <td><b>{{ fmt_by(r.actual, r.format) }}</b></td>
-        <td class="{{ tone(r.var) }}">{{ fmt_signed(r.var, r.format) }}</td>
-        <td class="{{ tone(r.var) }}">{{ '%+.0f%%' % (r.pct * 100) }}</td>
+        <td class="{{ tone(r.var, r.format) }}">{{ fmt_signed(r.var, r.format) }}</td>
+        <td class="{{ tone(r.pct, 'pct') }}">{{ '%+.0f%%' % (r.pct * 100) }}</td>
         <td style="text-align:left;white-space:normal;color:var(--muted)">
           {% if r.group == 'funnel' %}Funnel assumption is
             {{ 'optimistic' if r.streak < 0 else 'conservative' }} — adjust the driver,
@@ -78,7 +78,7 @@
       {% for r in unplanned %}
       <tr><td class="lbl">{{ r.label }}</td>
         <td style="text-align:left" class="note">{{ GROUP_LABELS.get(r.group, r.group) }}</td>
-        <td class="{{ tone(r.var) }}"><b>{{ fmt_by(r.actual, r.format) }}</b></td>
+        <td class="{{ tone(r.var, r.format) }}"><b>{{ fmt_by(r.actual, r.format) }}</b></td>
         <td style="text-align:left;white-space:normal;color:var(--muted)">
           {% if r.actual > 0 %}Revenue the model gave no credit for — if this repeats,
             the next proforma should carry it from day one.
@@ -104,8 +104,8 @@
         <td style="text-align:left" class="note">{{ GROUP_LABELS.get(r.group, r.group) }}</td>
         <td class="plan">{{ fmt_by(r.plan, r.format) }}</td>
         <td>{{ fmt_by(r.actual, r.format) }}</td>
-        <td class="{{ tone(r.var) }}"><b>{{ fmt_signed(r.var, r.format) }}</b></td>
-        <td class="{{ tone(r.var) }}">{{ ('%+.0f%%' % (r.pct * 100)) if r.pct is not none else '–' }}</td>
+        <td class="{{ tone(r.var, r.format) }}"><b>{{ fmt_signed(r.var, r.format) }}</b></td>
+        <td class="{{ tone(r.pct, 'pct') }}">{{ ('%+.0f%%' % (r.pct * 100)) if r.pct is not none else '–' }}</td>
         <td class="note">{% if r.streak %}{{ r.streak|abs }} mo
           {{ '↓' if r.streak < 0 else '↑' }}{% else %}–{% endif %}</td>
         <td style="text-align:left">

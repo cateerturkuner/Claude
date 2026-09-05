@@ -367,6 +367,21 @@ EVENT_TYPE_HEADERS = {"contract type", "type", "contract", "cohort", "source",
 OC_WORDS = ("original", "oc", "assumed", "inherited", "pre close", "preclose",
             "backlog", "seller")
 
+# How an event list rolls up into P&L revenue lines. The six ancillary
+# categories are reported per-category on the Events sheet but land on a single
+# Ancillary Revenue line in the P&L, which is why finance no longer reports these
+# lines separately -- the event list is the source and the two cannot disagree.
+EVENT_REVENUE_LINES = {
+    "room_rental": ["room_rental"],
+    "food": ["food"],
+    "beverage": ["beverage"],
+    "lodging": ["lodging"],
+    "service_charge": ["service_charge"],
+    "ancillary": ["dj", "floral", "bakery", "stationery", "photography",
+                  "other_ancillary"],
+}
+
+
 # Revenue Analysis category -> the names a reporting sheet is likely to use.
 CATEGORY_ALIASES = {
     "room_rental": ["room rental", "venue fee", "venue rental", "rental", "site fee"],
@@ -487,6 +502,19 @@ def apply_events(slug, parsed, months, scale=1.0, filename=None):
                  for k, v in payload.items()})
         lines = {"events_oc": slot["events_oc"], "events_new": slot["events_new"],
                  "events": slot["events_oc"] + slot["events_new"]}
+
+        # Derive the revenue lines the event list covers. Only lines whose
+        # categories are actually present in the file are written, so a partial
+        # event sheet cannot zero out a revenue line reported on the P&L sheet.
+        present = set(parsed["categories"])
+        for line, cats in EVENT_REVENUE_LINES.items():
+            if not present.intersection(cats):
+                continue
+            total = 0.0
+            for cat in cats:
+                payload = slot["ancillary"].get(cat, {})
+                total += payload.get("oc_rev", 0.0) + payload.get("new_rev", 0.0)
+            lines[line] = round(total * scale, 6)
         store.record(slug, ym, lines, "upload", ancillary=ancillary, note=filename)
         written.append(ym)
     return written

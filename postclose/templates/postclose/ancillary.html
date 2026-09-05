@@ -65,7 +65,7 @@
               title="{{ row.comment | replace('<- ', '') }}">PF note</span>{% endif %}</td>
           <td class="plan" style="border-left:1px solid var(--line)">{{ c.plan_rate | pct(0) }}</td>
           <td><b>{{ c.actual_rate | pct(0) }}</b></td>
-          <td class="{{ tone(c.rate_var.var) }}">{{ fmt_signed(c.rate_var.var, 'pct') }}</td>
+          <td class="{{ tone(c.rate_var.var, 'pct') }}">{{ fmt_signed(c.rate_var.var, 'pct') }}</td>
           <td class="plan" style="border-left:1px solid var(--line)">{{ c.plan_dollar | num(2) }}</td>
           <td><b>{{ c.actual_dollar | num(2) }}</b></td>
           <td class="{{ tone(c.dollar_var.var) }}">{{ fmt_signed(c.dollar_var.var, 'usd', 2) }}</td>

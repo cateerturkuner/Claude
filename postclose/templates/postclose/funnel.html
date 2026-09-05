@@ -20,28 +20,6 @@
 
 {% if not view.n_reported %}{{ m.nodata(view) }}{% endif %}
 
-<div class="card">
-  <h2>The four stages do not describe the same deals
-    <span class="sub">each is counted in the month it happened</span></h2>
-  <div class="body">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
-      {% for stage, note in [
-        ('Leads', 'Enquiries received this month.'),
-        ('Tours', 'Tours that took place this month, from leads of any month.'),
-        ('Contracts', 'Contracts signed this month, whenever the event lands.'),
-        ('Events', 'Events held this month — revenue and cost are recognised here.')] %}
-      <div style="border:1px solid var(--line);border-radius:10px;padding:11px 13px">
-        <div style="font-weight:700;color:var(--navy);font-size:12.5px">{{ stage }}</div>
-        <div class="note" style="margin-top:3px">{{ note }}</div>
-      </div>
-      {% endfor %}
-    </div>
-    <p class="note" style="margin:12px 0 0">Conversion rates are the proforma's own
-      same-month ratios (tours ÷ leads, contracts ÷ tours). They are a pace measure,
-      not a cohort measure — a lead in March may tour in June.</p>
-  </div>
-</div>
-
 <div class="grid g2">
   <div class="card"><h2>Leads by month</h2><div class="body">
     {% set r = [] %}{% for mo in view.months %}{% set _ = r.append({'label': mo.label,
@@ -74,7 +52,7 @@
         <td class="{{ '' if mo.has_actual else 'dim plan' }}">
           {% if mo.has_actual and mo.actual.get(key) is not none %}
             <b>{{ fmt_by(mo.actual.get(key), kind) }}</b>
-            <span class="{{ tone(mo.var.get(key,{}).get('var')) }}" style="font-size:10.5px">
+            <span class="{{ tone(mo.var.get(key,{}).get('var'), kind) }}" style="font-size:10.5px">
               {{ fmt_signed(mo.var.get(key,{}).get('var'), kind) }}</span>
           {% else %}{{ fmt_by(mo.plan.get(key), kind) }}{% endif %}
         </td>
@@ -88,6 +66,12 @@
     </table>
   </div>
   <div class="body" style="border-top:1px solid var(--line)">
+    <p class="note" style="margin:0 0 6px"><b>These four stages describe different
+      deals, and will not tie to each other.</b> Leads are enquiries received that
+      month; tours are tours that took place that month, from leads of any month;
+      contracts are contracts signed that month, whenever the event falls; events are
+      events held that month, which is where revenue is recognised. Conversion rates
+      are the proforma's own same-month ratios — a pace measure, not a cohort measure.</p>
     <p class="note" style="margin:0">Reported months show the actual with its variance
       underneath; months not yet closed show the proforma in grey.</p>
   </div>

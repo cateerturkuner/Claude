@@ -155,6 +155,20 @@ def current_year(slug):
     return plan[-1]["post_close_year"] if plan else 1
 
 
+def reported_months(slug, year):
+    """Months of `year` that have actuals, without building the full view."""
+    act = store.actuals(slug)
+    return sorted(m["ym"] for m in store.baseline(slug)["months"]
+                  if m["post_close_year"] == year
+                  and act["months"].get(m["ym"], {}).get("lines"))
+
+
+def has_attachment(slug, year):
+    act = store.actuals(slug)
+    return any(act["months"].get(ym, {}).get("ancillary")
+               for ym in reported_months(slug, year))
+
+
 def build(slug, year):
     """Everything the month / YTD / full-year views need for one post-close year."""
     base = store.baseline(slug)
