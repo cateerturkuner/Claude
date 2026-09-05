@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 .venv/
 *.tmp
+postclose/data/actuals_*.json
