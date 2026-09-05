@@ -1,0 +1,131 @@
+{% extends "postclose/base.html" %}
+{% import "postclose/macros.html" as m %}
+{% block title %}{{ view.venue }} · Y{{ view.year }} Signals{% endblock %}
+{% block content %}
+
+{% if not view.n_reported %}{{ m.nodata(view) }}{% else %}
+
+<div class="card">
+  <h2>What to change in the proforma
+    <span class="sub">lines missing in the same direction for
+      {{ 3 }}+ consecutive months, sized by dollars at stake</span></h2>
+  <div class="body">
+    {% if structural %}
+    <table>
+      <thead><tr><th class="lbl">Line</th><th>Pattern</th><th>PF YTD</th><th>Actual YTD</th>
+        <th>Gap</th><th>Gap %</th><th style="text-align:left">Read</th></tr></thead>
+      <tbody>
+      {% for r in structural %}
+      <tr><td class="lbl">{{ r.label }}</td>
+        <td><span class="chip {{ 'bad' if r.streak < 0 else 'good' }}">
+          {{ r.streak|abs }} mo {{ 'below' if r.streak < 0 else 'above' }}</span></td>
+        <td class="plan">{{ fmt_by(r.plan, r.format) }}</td>
+        <td><b>{{ fmt_by(r.actual, r.format) }}</b></td>
+        <td class="{{ tone(r.var) }}">{{ fmt_signed(r.var, r.format) }}</td>
+        <td class="{{ tone(r.var) }}">{{ '%+.0f%%' % (r.pct * 100) }}</td>
+        <td style="text-align:left;white-space:normal;color:var(--muted)">
+          {% if r.group == 'funnel' %}Funnel assumption is
+            {{ 'optimistic' if r.streak < 0 else 'conservative' }} — adjust the driver,
+            not the month.
+          {% elif r.group in ('payroll','opex','cogs') %}Cost assumption is
+            {{ 'light' if r.streak < 0 else 'heavy' }} at this venue size.
+          {% else %}Revenue assumption is
+            {{ 'optimistic' if r.streak < 0 else 'conservative' }}.{% endif %}
+        </td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="note" style="margin:0">Nothing has missed by more than 10% for three
+      months running yet. With {{ view.n_reported }} month(s) reported this is expected —
+      the pattern test needs at least three.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="grid g2">
+  <div class="card"><h2>Revenue gap attribution</h2><div class="body">
+    {% if revenue_bridge %}
+    {{ m.waterfall(revenue_bridge.plan,
+        [{'label': 'Event volume', 'var': revenue_bridge.volume},
+         {'label': 'Revenue per event', 'var': revenue_bridge.rate}],
+        revenue_bridge.actual, 'usd', 'Proforma', 'Actual') }}
+    <p class="note" style="margin:10px 0 0">
+      {{ revenue_bridge.events_actual|round|int }} events vs
+      {{ revenue_bridge.events_plan|round|int }} planned, at
+      {{ revenue_bridge.rate_actual|round(1) }} vs
+      {{ revenue_bridge.rate_plan|round(1) }} per event.
+      {% if (revenue_bridge.volume|abs) > (revenue_bridge.rate|abs) %}
+      The gap is mostly <b>volume</b> — the funnel, not the pricing.
+      {% else %}The gap is mostly <b>rate</b> — pricing and attachment, not the funnel.{% endif %}</p>
+    {% else %}<p class="note" style="margin:0">Needs reported events and revenue.</p>{% endif %}
+  </div></div>
+  <div class="card"><h2>EBITDA gap by block</h2><div class="body">
+    {{ m.waterfall(ebitda_bridge.plan, ebitda_bridge.steps, ebitda_bridge.actual,
+                   'usd', 'Proforma', 'Actual') }}
+  </div></div>
+</div>
+
+{% if unplanned %}
+<div class="card">
+  <h2>Happening but not underwritten
+    <span class="sub">the proforma carried nil for these in Y{{ view.year }}</span></h2>
+  <div class="body">
+    <table>
+      <thead><tr><th class="lbl">Line</th><th style="text-align:left">Block</th>
+        <th>Actual YTD</th><th style="text-align:left">Read</th></tr></thead>
+      <tbody>
+      {% for r in unplanned %}
+      <tr><td class="lbl">{{ r.label }}</td>
+        <td style="text-align:left" class="note">{{ GROUP_LABELS.get(r.group, r.group) }}</td>
+        <td class="{{ tone(r.var) }}"><b>{{ fmt_by(r.actual, r.format) }}</b></td>
+        <td style="text-align:left;white-space:normal;color:var(--muted)">
+          {% if r.actual > 0 %}Revenue the model gave no credit for — if this repeats,
+            the next proforma should carry it from day one.
+          {% else %}Cost the model did not anticipate at this stage.{% endif %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>Every line, ranked by dollars at stake
+    <span class="sub">year to date · positive is favourable on all lines</span></h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th class="lbl">Line</th><th style="text-align:left">Block</th>
+        <th>PF YTD</th><th>Actual YTD</th><th>Gap</th><th>Gap %</th>
+        <th>Streak</th><th style="text-align:left">Classification</th></tr></thead>
+      <tbody>
+      {% for r in rows %}
+      <tr><td class="lbl">{{ r.label }}</td>
+        <td style="text-align:left" class="note">{{ GROUP_LABELS.get(r.group, r.group) }}</td>
+        <td class="plan">{{ fmt_by(r.plan, r.format) }}</td>
+        <td>{{ fmt_by(r.actual, r.format) }}</td>
+        <td class="{{ tone(r.var) }}"><b>{{ fmt_signed(r.var, r.format) }}</b></td>
+        <td class="{{ tone(r.var) }}">{{ ('%+.0f%%' % (r.pct * 100)) if r.pct is not none else '–' }}</td>
+        <td class="note">{% if r.streak %}{{ r.streak|abs }} mo
+          {{ '↓' if r.streak < 0 else '↑' }}{% else %}–{% endif %}</td>
+        <td style="text-align:left">
+          <span class="chip {{ {'structural-under':'bad','structural-over':'good',
+            'miss':'bad','beat':'good','under':'warn','over':'warn',
+            'unplanned':'teal','unplanned-cost':'warn','immaterial':'flat',
+            'on-plan':'flat','no-data':'flat'}[r.kind] }}">{{ r.kind.replace('-', ' ') }}</span>
+          <span class="note">{{ r.why }}</span></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="body" style="border-top:1px solid var(--line)">
+    <p class="note" style="margin:0">Ranked by absolute dollar gap, not percentage, so a
+      12% miss on room rental outranks a 90% miss on office supplies. "Structural" means
+      3+ consecutive months in the same direction and at least 10% off — that is a
+      modelling error rather than an incident.</p>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

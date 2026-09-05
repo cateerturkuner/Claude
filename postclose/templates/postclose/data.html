@@ -1,0 +1,242 @@
+{% extends "postclose/base.html" %}
+{% import "postclose/macros.html" as m %}
+{% block title %}{{ view.venue }} · Data{% endblock %}
+{% block content %}
+
+<div class="grid g2">
+  <div class="card">
+    <h2>Upload a month from finance <span class="sub">.xlsx / .xlsm</span></h2>
+    <div class="body">
+      <form method="post" enctype="multipart/form-data"
+            action="{{ url_for('postclose.upload', slug=slug) }}">
+        <input type="file" name="file" accept=".xlsx,.xlsm" required
+               style="font-size:13px;margin-bottom:10px;display:block">
+        <button class="btn" type="submit">Read the file</button>
+      </form>
+      <p class="note" style="margin:12px 0 0">No fixed template needed. The parser looks
+        for a row of month headers (<i>Sep-26</i>, <i>2026-09</i>, a real date — any of
+        them) and a column of line names, matches those names against this venue's
+        proforma, and shows you the mapping before anything is saved. Whole dollars vs
+        thousands, and costs delivered positive, are both detected and offered as a fix.
+        Months outside the proforma window are ignored.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Reported months <span class="sub">Y{{ view.year }}</span></h2>
+    <div class="scroll" style="max-height:320px">
+      <table>
+        <thead><tr><th class="lbl">Month</th><th style="text-align:left">Source</th>
+          <th>Lines</th><th style="text-align:left">Updated</th><th></th></tr></thead>
+        <tbody>
+        {% for mo in view.months %}
+        <tr class="{{ '' if mo.has_actual else 'dim' }}">
+          <td class="lbl">{{ mo.label }}</td>
+          <td style="text-align:left">
+            {% if mo.has_actual %}<span class="chip teal">{{ mo.source }}</span>
+              {% if mo.note %}<span class="note">{{ mo.note }}</span>{% endif %}
+            {% else %}<span class="chip flat">not reported</span>{% endif %}</td>
+          <td>{{ mo.n_reported_lines if mo.has_actual else '–' }}</td>
+          <td style="text-align:left" class="note">{{ (mo.updated_at or '')[:16] | replace('T', ' ') }}</td>
+          <td>{% if mo.has_actual %}
+            <form method="post" style="display:inline"
+                  action="{{ url_for('postclose.month_delete', slug=slug, ym=mo.ym) }}"
+                  onsubmit="return confirm('Clear all reported values for {{ mo.label }}?')">
+              <button class="btn danger" style="padding:3px 9px;font-size:11px">Clear</button>
+            </form>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% if preview %}
+<div class="card" id="preview" style="border-color:var(--teal-500)">
+  <h2>Confirm the import — <span style="color:var(--teal-700)">{{ preview.filename }}</span>
+    <span class="sub">sheet <b>{{ preview.sheet }}</b> · {{ preview.matched }} lines matched ·
+      months {{ preview.months | join(', ') }}</span></h2>
+  <form method="post" action="{{ url_for('postclose.upload_confirm', slug=slug) }}">
+    <div class="body" style="border-bottom:1px solid var(--line)">
+      <div style="display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start">
+        <div>
+          <div style="font-weight:700;color:var(--navy);font-size:12px;margin-bottom:6px">Months to import</div>
+          {% for ym in preview.months %}
+          <label style="display:block;font-size:12.5px"><input type="checkbox" name="month"
+            value="{{ ym }}" checked> {{ ym }}</label>
+          {% endfor %}
+          {% if preview.months_skipped %}
+          <p class="note" style="margin:6px 0 0;max-width:230px;white-space:normal">
+            Ignored (outside the proforma window): {{ preview.months_skipped | join(', ') }}</p>
+          {% endif %}
+        </div>
+        <div>
+          <div style="font-weight:700;color:var(--navy);font-size:12px;margin-bottom:6px">Units</div>
+          <label style="display:block;font-size:12.5px"><input type="radio" name="scale" value="1"
+            {{ 'checked' if preview.suggest_scale == 1.0 }}> File is in $ thousands</label>
+          <label style="display:block;font-size:12.5px"><input type="radio" name="scale" value="0.001"
+            {{ 'checked' if preview.suggest_scale != 1.0 }}> File is in whole dollars</label>
+          {% if preview.suggest_scale != 1.0 %}
+          <p class="note" style="margin:5px 0 0;max-width:230px;white-space:normal">
+            Values came in about 1,000× the proforma, so whole dollars is pre-selected.</p>
+          {% endif %}
+        </div>
+        <div>
+          <div style="font-weight:700;color:var(--navy);font-size:12px;margin-bottom:6px">Cost signs</div>
+          <label style="font-size:12.5px"><input type="checkbox" name="flip_costs"
+            {{ 'checked' if preview.suggest_flip_costs }}> Costs arrive positive — negate them</label>
+          <p class="note" style="margin:5px 0 0;max-width:250px;white-space:normal">
+            The model carries every cost negative so a positive variance always means good news.</p>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn" type="submit">Import checked lines</button>
+        </div>
+      </div>
+    </div>
+    <div class="scroll" style="max-height:430px">
+      <table>
+        <thead><tr><th class="lbl" style="text-align:left">
+          <input type="checkbox" checked onclick="
+            document.querySelectorAll('input[name=key]').forEach(function(b){b.checked=this.checked}.bind(this))">
+          Import</th>
+          <th style="text-align:left">Label in file</th><th style="text-align:left">Mapped to</th>
+          <th>Match</th>
+          {% for ym in preview.months %}<th>{{ ym }}</th>{% endfor %}</tr></thead>
+        <tbody>
+        {% for r in preview.rows %}
+        <tr><td class="lbl" style="text-align:left;min-width:60px">
+            <input type="checkbox" name="key" value="{{ r.key }}" checked></td>
+          <td style="text-align:left">{{ r.raw }}</td>
+          <td style="text-align:left"><b>{{ r.label }}</b></td>
+          <td><span class="chip {{ 'good' if r.confidence == 1.0 else 'warn' }}">
+            {{ 'exact' if r.confidence == 1.0 else '%.0f%%' % (r.confidence * 100) }}</span></td>
+          {% for ym in preview.months %}
+          <td>{{ r.by_month.get(ym) | num if r.by_month.get(ym) is not none else '–' }}</td>{% endfor %}
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if preview.unmatched %}
+    <div class="body" style="border-top:1px solid var(--line)">
+      <details class="hint" open><summary>{{ preview.unmatched | length }} labels in the
+        file had numbers but no match in the model — they will not be imported</summary>
+        <p class="note" style="margin:8px 0 0;white-space:normal">
+          {% for u in preview.unmatched %}<span class="chip flat"
+            style="margin:2px 4px 2px 0">{{ u.raw }}</span>{% endfor %}</p>
+        <p class="note" style="margin:8px 0 0;white-space:normal">If one of these is a
+          line you want tracked, tell me the name and I'll add it to the alias table so
+          it maps automatically every month.</p>
+      </details>
+    </div>
+    {% endif %}
+  </form>
+  <div class="body" style="border-top:1px solid var(--line)">
+    <form method="post" action="{{ url_for('postclose.upload_cancel', slug=slug) }}">
+      <button class="btn ghost" type="submit">Discard this preview</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>Enter or override a month by hand
+    <span class="sub">blank leaves a value alone; typed values are marked
+      <span class="chip teal">manual</span> and win over an uploaded file</span></h2>
+  <div class="body">
+    <form method="get" style="margin-bottom:14px;display:flex;gap:10px;align-items:center">
+      <input type="hidden" name="year" value="{{ year }}">
+      <label style="font-size:12px;font-weight:700;color:var(--navy)">Month</label>
+      <select name="ym" onchange="this.form.submit()">
+        {% for mo in view.months %}
+        <option value="{{ mo.ym }}" {{ 'selected' if mo.ym == edit_ym }}>
+          {{ mo.label }}{{ ' · reported' if mo.has_actual }}</option>
+        {% endfor %}
+      </select>
+      <span class="note">Placeholders show the proforma for that month. Conversion
+        rates are not editable — they are always recomputed from leads, tours and
+        contracts so the funnel cannot contradict itself.</span>
+    </form>
+
+    <form method="post" action="{{ url_for('postclose.manual', slug=slug) }}">
+      <input type="hidden" name="ym" value="{{ edit_ym }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:8px 18px">
+      {% set ns = namespace(group=None) %}
+      {% for ln in view.lines if ln.key not in ('lead_to_tour', 'tour_to_contract') %}
+        {% if ln.group != ns.group %}{% set ns.group = ln.group %}
+        <div style="grid-column:1/-1;font-weight:700;color:var(--teal-900);font-size:10.5px;
+             text-transform:uppercase;letter-spacing:.5px;margin-top:10px;
+             border-bottom:1px solid var(--line);padding-bottom:3px">
+          {{ GROUP_LABELS.get(ln.group, ln.group) }}</div>
+        {% endif %}
+        <label style="display:flex;align-items:center;gap:8px;font-size:12.5px">
+          <span style="flex:1;color:var(--muted)">{{ ln.label }}</span>
+          <input type="text" name="line__{{ ln.key }}" style="width:96px;text-align:right"
+                 value="{{ ('%g' % (edit_month.actual.get(ln.key) | round(4)))
+                            if edit_month.has_actual and edit_month.actual.get(ln.key) is not none else '' }}"
+                 placeholder="{{ fmt_by(edit_month.plan.get(ln.key), ln.format) }}">
+        </label>
+      {% endfor %}
+      </div>
+
+      <div style="grid-column:1/-1;font-weight:700;color:var(--teal-900);font-size:10.5px;
+           text-transform:uppercase;letter-spacing:.5px;margin:18px 0 6px;
+           border-bottom:1px solid var(--line);padding-bottom:3px">
+        Attachment detail (optional)</div>
+      <p class="note" style="margin:0 0 10px">Events that bought each category this month,
+        and the revenue they produced, split original vs new contracts. Filling this in is
+        what turns the Attachment tab from proforma-only into a real comparison — and it is
+        the only way to tell "we sold it to fewer couples" apart from "we charged less".</p>
+      <div class="scroll" style="max-height:340px">
+        <table>
+          <thead><tr><th class="lbl">Category</th>
+            <th>OC events</th><th>OC revenue</th><th>New events</th><th>New revenue</th>
+            <th style="border-left:1px solid var(--line)">PF new attach</th><th>PF new $/evt</th></tr></thead>
+          <tbody>
+          {% for cat in categories %}
+          {% set cur = edit_month_anc.get(cat.key, {}) %}
+          <tr><td class="lbl">{{ cat.label }}</td>
+            {% for metric in ['oc_events','oc_rev','new_events','new_rev'] %}
+            <td><input type="text" name="anc__{{ cat.key }}__{{ metric }}" style="width:78px;text-align:right"
+                 value="{{ ('%g' % (cur.get(metric) | round(4))) if cur.get(metric) is not none else '' }}"></td>
+            {% endfor %}
+            <td class="plan" style="border-left:1px solid var(--line)">
+              {{ cat.new.attach_rate.get(year|string) | pct(0) }}</td>
+            <td class="plan">{{ cat.new.rev_per_event.get(year|string) | num(2) }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:14px;display:flex;gap:10px;align-items:center">
+        <input type="text" name="note" placeholder="Note (optional)" style="width:280px">
+        <button class="btn" type="submit">Save {{ edit_month.label }}</button>
+        <span class="note">Revenue in $ thousands. Costs negative.</span>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if actuals.log %}
+<div class="card">
+  <h2>Activity</h2>
+  <div class="scroll" style="max-height:230px">
+    <table>
+      <thead><tr><th class="lbl" style="text-align:left">When</th><th style="text-align:left">Month</th>
+        <th style="text-align:left">Source</th><th>Fields</th><th style="text-align:left">Note</th></tr></thead>
+      <tbody>
+      {% for e in actuals.log %}
+      <tr><td class="lbl" style="text-align:left">{{ e.at[:16] | replace('T', ' ') }}</td>
+        <td style="text-align:left">{{ e.ym }}</td>
+        <td style="text-align:left"><span class="chip teal">{{ e.source }}</span></td>
+        <td>{{ e.fields }}</td>
+        <td style="text-align:left" class="note">{{ e.note or '' }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

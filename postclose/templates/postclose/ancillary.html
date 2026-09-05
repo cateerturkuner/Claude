@@ -1,0 +1,118 @@
+{% extends "postclose/base.html" %}
+{% import "postclose/macros.html" as m %}
+{% block title %}{{ view.venue }} · Y{{ view.year }} Attachment{% endblock %}
+{% block content %}
+
+<div class="card">
+  <h2>Attachment rate and $ per attached event
+    <span class="sub">the proforma states these annually — actuals are rolled to
+      year-to-date across {{ anc.reported_months|length }} reported month(s)</span></h2>
+  <div class="body">
+    <div style="display:flex;gap:26px;flex-wrap:wrap">
+      <div><div class="k note" style="font-weight:700;text-transform:uppercase;font-size:10.5px">
+        Events in the compared window</div>
+        <div style="margin-top:4px">
+          Original contracts: <b>{{ anc.events_actual.oc | count }}</b>
+          <span class="note">vs plan {{ anc.events_plan.oc | count }}</span> ·
+          New contracts: <b>{{ anc.events_actual.new | count }}</b>
+          <span class="note">vs plan {{ anc.events_plan.new | count }}</span>
+        </div></div>
+      <div><div class="k note" style="font-weight:700;text-transform:uppercase;font-size:10.5px">
+        Y{{ view.year }} proforma, full year</div>
+        <div style="margin-top:4px">
+          {{ anc.year_drivers.get('events_total') | count }} events ·
+          {{ anc.year_drivers.get('revenue_total') | money }} ·
+          {{ anc.year_drivers.get('rev_per_event_total') | money }}/event
+        </div></div>
+    </div>
+    {% if not anc.has_detail %}
+    <div class="flash error" style="margin:14px 0 0;background:var(--warn-bg);
+         color:var(--warn);border-color:#f0dcb4">
+      No per-category attachment reported yet. Enter attached-event counts and revenue
+      by category on the <a href="{{ url_for('postclose.data', slug=slug, year=year) }}">Data</a>
+      tab and this table fills in. Until then only the proforma column is real.
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% for cohort, title, blurb in [
+    ('new', 'New contracts', 'Events sold after close. This is where the investment thesis lives — the catering build-out, the ancillary programme, the package changes.'),
+    ('oc', 'Original contracts', 'Backlog inherited at close. Priced by the seller, so misses here are about delivery, not underwriting.')] %}
+<div class="card">
+  <h2>{{ title }} <span class="sub">{{ blurb }}</span></h2>
+  <div class="scroll" style="max-height:none">
+    <table>
+      <thead><tr>
+        <th class="lbl">Category</th>
+        <th colspan="3" style="text-align:center;border-left:1px solid var(--line)">Attachment rate</th>
+        <th colspan="3" style="text-align:center;border-left:1px solid var(--line)">$ per attached event</th>
+        <th colspan="4" style="text-align:center;border-left:1px solid var(--line)">Revenue gap attributed to</th>
+        <th style="border-left:1px solid var(--line)">WH avg</th>
+      </tr><tr>
+        <th class="lbl"></th>
+        <th style="border-left:1px solid var(--line)">PF</th><th>Actual</th><th>Var</th>
+        <th style="border-left:1px solid var(--line)">PF</th><th>Actual</th><th>Var</th>
+        <th style="border-left:1px solid var(--line)">Events</th><th>Attach</th><th>Price</th><th>Total</th>
+        <th style="border-left:1px solid var(--line)">$/evt</th>
+      </tr></thead>
+      <tbody>
+      {% for row in anc.rows %}
+        {% set c = row.cohorts[cohort] %}
+        <tr>
+          <td class="lbl">{{ row.label }}
+            {% if row.comment and cohort == 'new' %}<span class="chip flat"
+              title="{{ row.comment | replace('<- ', '') }}">PF note</span>{% endif %}</td>
+          <td class="plan" style="border-left:1px solid var(--line)">{{ c.plan_rate | pct(0) }}</td>
+          <td><b>{{ c.actual_rate | pct(0) }}</b></td>
+          <td class="{{ tone(c.rate_var.var) }}">{{ fmt_signed(c.rate_var.var, 'pct') }}</td>
+          <td class="plan" style="border-left:1px solid var(--line)">{{ c.plan_dollar | num(2) }}</td>
+          <td><b>{{ c.actual_dollar | num(2) }}</b></td>
+          <td class="{{ tone(c.dollar_var.var) }}">{{ fmt_signed(c.dollar_var.var, 'usd', 2) }}</td>
+          {% if c.decomposition %}
+            <td class="{{ tone(c.decomposition.volume) }}" style="border-left:1px solid var(--line)">
+              {{ fmt_signed(c.decomposition.volume) }}</td>
+            <td class="{{ tone(c.decomposition.attach) }}">{{ fmt_signed(c.decomposition.attach) }}</td>
+            <td class="{{ tone(c.decomposition.price) }}">{{ fmt_signed(c.decomposition.price) }}</td>
+            <td class="{{ tone(c.decomposition.total) }}"><b>{{ fmt_signed(c.decomposition.total) }}</b>
+              {% if c.decomposition.unplanned %}<span class="chip teal"
+                title="The proforma carried this category at nil, so the whole amount is attachment we did not underwrite.">nil in PF</span>{% endif %}</td>
+          {% else %}
+            <td colspan="4" class="note" style="border-left:1px solid var(--line);text-align:center">
+              needs reported attachment</td>
+          {% endif %}
+          <td class="plan" style="border-left:1px solid var(--line)">{{ row.benchmark.wh_avg | num(2) }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if cohort == 'new' %}
+  <div class="body" style="border-top:1px solid var(--line)">
+    <p class="note" style="margin:0 0 8px"><b>Reading the attribution.</b> A revenue gap
+      splits three ways and the three add exactly to the total: <b>Events</b> is holding
+      attachment and price at plan and only changing how many events happened;
+      <b>Attach</b> is selling the category to a different share of those events;
+      <b>Price</b> is charging a different amount on the ones that did attach. "We
+      haven't stood catering up yet" shows in Attach. "We priced floral wrong" shows
+      in Price.</p>
+    <details class="hint"><summary>Proforma assumptions behind these numbers</summary>
+      <table style="margin-top:8px">
+        <thead><tr><th class="lbl">Category</th><th style="text-align:left">Underwriting note</th></tr></thead>
+        <tbody>
+        {% for row in anc.rows if row.comment %}
+        <tr><td class="lbl">{{ row.label }}</td>
+          <td style="text-align:left;white-space:normal;color:var(--muted)">
+            {{ row.comment | replace('<- ', '') }}</td></tr>
+        {% endfor %}
+        <tr><td class="lbl">Service Charge</td>
+          <td style="text-align:left;white-space:normal;color:var(--muted)">
+            {{ (anc.service_charge.comment or '22% of new-contract revenue') | replace('<- ', '') }}</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+{% endblock %}

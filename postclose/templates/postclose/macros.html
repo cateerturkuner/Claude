@@ -1,0 +1,91 @@
+{# Shared display pieces. Everything is server-rendered SVG so the dashboard
+   needs no chart library and renders identically offline. #}
+
+{% macro tile(label, actual, plan, var, kind='usd', sub=None) %}
+<div class="tile">
+  <div class="k">{{ label }}</div>
+  <div class="v">{{ (actual | money) if kind == 'usd' else fmt_by(actual, kind) }}</div>
+  <div class="p">Plan {{ (plan | money) if kind == 'usd' else fmt_by(plan, kind) }}{% if sub %} · {{ sub }}{% endif %}</div>
+  {% if var and var.var is not none %}
+  <span class="d {{ tone(var.var) }}">{{ fmt_signed(var.var, kind) }}
+    {%- if var.pct is not none %} · {{ '%+.0f' % (var.pct * 100) }}%{% endif %}</span>
+  {% else %}<span class="d flat">no actuals</span>{% endif %}
+</div>
+{% endmacro %}
+
+
+{# Grouped bars: plan behind, actual in front, one pair per month. #}
+{% macro barchart(rows, kind='usd', height=132) %}
+{% set vals = [] %}
+{% for r in rows %}{% if r.plan is not none %}{% set _ = vals.append(r.plan|abs) %}{% endif %}
+{% if r.actual is not none %}{% set _ = vals.append(r.actual|abs) %}{% endif %}{% endfor %}
+{% set top = (vals|max) if vals else 1 %}
+{% set top = top if top > 0 else 1 %}
+{% set n = rows|length %}
+{% set bw = 100.0 / (n if n else 1) %}
+<svg viewBox="0 0 100 {{ height }}" preserveAspectRatio="none" width="100%"
+     height="{{ height }}" style="display:block;overflow:visible">
+  <line x1="0" y1="{{ height - 18 }}" x2="100" y2="{{ height - 18 }}"
+        stroke="#e2e8f0" stroke-width=".5" vector-effect="non-scaling-stroke"/>
+  {% for r in rows %}
+    {% set x = loop.index0 * bw %}
+    {% set ph = ((r.plan|abs) / top * (height - 26)) if r.plan is not none else 0 %}
+    {% set ah = ((r.actual|abs) / top * (height - 26)) if r.actual is not none else 0 %}
+    <rect x="{{ x + bw*0.16 }}" y="{{ height - 18 - ph }}" width="{{ bw*0.34 }}"
+          height="{{ ph }}" fill="#9fb3c8" rx=".6">
+      <title>{{ r.label }} plan {{ fmt_by(r.plan, kind) }}</title></rect>
+    {% if r.actual is not none %}
+    <rect x="{{ x + bw*0.50 }}" y="{{ height - 18 - ah }}" width="{{ bw*0.34 }}"
+          height="{{ ah }}" rx=".6"
+          fill="{{ '#2f7a52' if (r.actual - r.plan) >= 0 else '#c53030' }}">
+      <title>{{ r.label }} actual {{ fmt_by(r.actual, kind) }}</title></rect>
+    {% endif %}
+  {% endfor %}
+</svg>
+<div style="display:flex;font-size:9.5px;color:#718096;margin-top:-14px">
+  {% for r in rows %}<div style="flex:1;text-align:center">{{ r.label.split(' ')[0] }}</div>{% endfor %}
+</div>
+<div class="note" style="margin-top:8px">
+  <span style="display:inline-block;width:9px;height:9px;background:#9fb3c8;border-radius:2px"></span> Proforma
+  &nbsp;<span style="display:inline-block;width:9px;height:9px;background:#2f7a52;border-radius:2px"></span> Actual ahead
+  &nbsp;<span style="display:inline-block;width:9px;height:9px;background:#c53030;border-radius:2px"></span> Actual behind
+</div>
+{% endmacro %}
+
+
+{# Waterfall from plan to actual through named effects. #}
+{% macro waterfall(start, steps, end, kind='usd', start_label='Proforma', end_label='Actual') %}
+{% set mags = [start|abs, end|abs] %}
+{% for s in steps %}{% set _ = mags.append(s.var|abs) %}{% endfor %}
+{% set top = mags|max %}
+{% set top = top if top > 0 else 1 %}
+<table style="margin-top:2px">
+  <tr class="total"><td class="lbl">{{ start_label }}</td>
+    <td style="width:110px">{{ fmt_by(start, kind) }}</td><td style="width:46%"></td></tr>
+  {% for s in steps %}
+  <tr><td class="lbl" style="padding-left:20px">{{ s.label }}</td>
+    <td class="{{ tone(s.var) }}">{{ fmt_signed(s.var, kind) }}</td>
+    <td><div class="split">
+      <div class="bar" style="flex:1;max-width:280px">
+        <i class="{{ tone(s.var) }}" style="width:{{ (s.var|abs) / top * 100 }}%"></i></div>
+    </div></td></tr>
+  {% endfor %}
+  <tr class="total"><td class="lbl">{{ end_label }}</td>
+    <td>{{ fmt_by(end, kind) }}</td><td></td></tr>
+</table>
+{% endmacro %}
+
+
+{% macro varcell(v, kind='usd') %}
+<td class="{{ tone(v.var if v else none) }}">{{ fmt_signed(v.var if v else none, kind) }}</td>
+{% endmacro %}
+
+
+{% macro nodata(view) %}
+<div class="card"><div class="empty">
+  <b>No actuals reported for Y{{ view.year }} yet</b>
+  Upload a month from finance, or type the numbers in, on the
+  <a href="{{ url_for('postclose.data', slug=view.slug, year=view.year) }}">Data</a> tab.
+  Everything below will fill in against the locked proforma.
+</div></div>
+{% endmacro %}

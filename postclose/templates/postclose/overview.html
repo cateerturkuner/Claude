@@ -1,0 +1,145 @@
+{% extends "postclose/base.html" %}
+{% import "postclose/macros.html" as m %}
+{% block title %}{{ view.venue }} · Y{{ view.year }} Overview{% endblock %}
+{% block content %}
+
+<div class="tiles">
+  {% for key, label, kind in HEADLINES %}
+    {{ m.tile(label, view.ytd.actual.get(key), view.ytd.plan.get(key),
+              view.ytd.var.get(key), kind,
+              sub='Y%d to date' % view.year) }}
+  {% endfor %}
+</div>
+
+{% if not view.n_reported %}{{ m.nodata(view) }}{% endif %}
+
+<div class="card">
+  <h2>Year {{ view.year }} position
+    <span class="sub">{{ view.n_reported }} of {{ view.n_months }} months reported
+      {%- if view.reported_months %} · through
+      {{ view.reported_months[-1] | replace('-', '/') }}{% endif %}
+      · all money in $ thousands</span></h2>
+  <div class="body">
+    <table>
+      <thead><tr>
+        <th class="lbl">Measure</th>
+        <th colspan="3" style="text-align:center;border-left:1px solid var(--line)">
+          Year to date ({{ view.n_reported }} mo)</th>
+        <th colspan="3" style="text-align:center;border-left:1px solid var(--line)">
+          Full year {{ 'projected' if view.n_reported < view.n_months else 'actual' }}</th>
+      </tr>
+      <tr>
+        <th class="lbl"></th>
+        <th style="border-left:1px solid var(--line)">Proforma</th><th>Actual</th><th>Var</th>
+        <th style="border-left:1px solid var(--line)">Proforma</th><th>Projected</th><th>Var</th>
+      </tr></thead>
+      <tbody>
+      {% for key, label, kind in [
+          ('events','Events','count'),
+          ('total_revenue','Total Revenue','usd'),
+          ('rev_per_event','Revenue / Event','usd'),
+          ('total_cogs','Total COGS','usd'),
+          ('gross_margin','Gross Margin','usd'),
+          ('total_payroll','Total Payroll','usd'),
+          ('total_opex','Total Operating Expenses','usd'),
+          ('ebitdar','EBITDAR','usd'),
+          ('rent','Rent','usd'),
+          ('ebitda','EBITDA','usd'),
+          ('ebitda_margin','EBITDA Margin','pct') ] %}
+      <tr class="{{ 'total' if key in ('total_revenue','gross_margin','ebitda') }}">
+        <td class="lbl">{{ label }}</td>
+        <td class="plan" style="border-left:1px solid var(--line)">{{ fmt_by(view.ytd.plan.get(key), kind) }}</td>
+        <td><b>{{ fmt_by(view.ytd.actual.get(key), kind) }}</b></td>
+        {{ m.varcell(view.ytd.var.get(key), kind) }}
+        <td class="plan" style="border-left:1px solid var(--line)">{{ fmt_by(view.fy.plan.get(key), kind) }}</td>
+        <td>{{ fmt_by(view.fy.projected.get(key), kind) }}</td>
+        {{ m.varcell(view.fy.var.get(key), kind) }}
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <p class="note" style="margin:10px 0 0">Full-year projection keeps every reported
+      month and falls back to the proforma for months not yet closed — it is not a
+      re-forecast, it is "if the rest of the year lands exactly on plan".</p>
+  </div>
+</div>
+
+<div class="grid g2">
+  <div class="card">
+    <h2>Revenue by month <span class="sub">actual vs proforma, $000s</span></h2>
+    <div class="body">
+      {% set rows = [] %}
+      {% for mo in view.months %}{% set _ = rows.append({
+          'label': mo.label, 'plan': mo.plan.total_revenue,
+          'actual': mo.actual.get('total_revenue') if mo.has_actual else none}) %}{% endfor %}
+      {{ m.barchart(rows, 'usd') }}
+    </div>
+  </div>
+  <div class="card">
+    <h2>Events by month <span class="sub">accrual basis — recognised on the event date</span></h2>
+    <div class="body">
+      {% set erows = [] %}
+      {% for mo in view.months %}{% set _ = erows.append({
+          'label': mo.label, 'plan': mo.plan.events,
+          'actual': mo.actual.get('events') if mo.has_actual else none}) %}{% endfor %}
+      {{ m.barchart(erows, 'count') }}
+    </div>
+  </div>
+</div>
+
+{% if bridge %}
+<div class="grid g2">
+  <div class="card">
+    <h2>Why revenue differs <span class="sub">year to date</span></h2>
+    <div class="body">
+      {{ m.waterfall(bridge.plan,
+           [{'label': 'Event volume (%s vs %s events)' % (bridge.events_actual|round|int, bridge.events_plan|round|int), 'var': bridge.volume},
+            {'label': 'Revenue per event (%s vs %s)' % (bridge.rate_actual|round(1), bridge.rate_plan|round(1)), 'var': bridge.rate}],
+           bridge.actual, 'usd', 'Proforma revenue', 'Actual revenue') }}
+      <p class="note" style="margin:10px 0 0">Volume holds price at plan; rate is measured
+        on actual events. The two add exactly to the total gap — so a miss is
+        attributable, not just visible.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h2>EBITDA bridge <span class="sub">year to date, by block</span></h2>
+    <div class="body">
+      {{ m.waterfall(ebitda.plan, ebitda.steps, ebitda.actual, 'usd',
+                     'Proforma EBITDA', 'Actual EBITDA') }}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>Month detail <span class="sub">$000s except counts</span></h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th class="lbl">Month</th>
+        <th>Events plan</th><th>Events act</th><th>Var</th>
+        <th style="border-left:1px solid var(--line)">Revenue plan</th><th>Revenue act</th><th>Var</th>
+        <th style="border-left:1px solid var(--line)">EBITDA plan</th><th>EBITDA act</th><th>Var</th>
+        <th style="border-left:1px solid var(--line)">Source</th></tr></thead>
+      <tbody>
+      {% for mo in view.months %}
+      <tr class="{{ '' if mo.has_actual else 'dim' }}">
+        <td class="lbl">{{ mo.label }}</td>
+        <td class="plan">{{ mo.plan.events | count }}</td>
+        <td><b>{{ mo.actual.get('events') | count if mo.has_actual else '–' }}</b></td>
+        {{ m.varcell(mo.var.get('events'), 'count') }}
+        <td class="plan" style="border-left:1px solid var(--line)">{{ mo.plan.total_revenue | num }}</td>
+        <td><b>{{ mo.actual.get('total_revenue') | num if mo.has_actual else '–' }}</b></td>
+        {{ m.varcell(mo.var.get('total_revenue'), 'usd') }}
+        <td class="plan" style="border-left:1px solid var(--line)">{{ mo.plan.ebitda | num }}</td>
+        <td><b>{{ mo.actual.get('ebitda') | num if mo.has_actual else '–' }}</b></td>
+        {{ m.varcell(mo.var.get('ebitda'), 'usd') }}
+        <td style="border-left:1px solid var(--line);text-align:left">
+          {% if mo.has_actual %}<span class="chip teal">{{ mo.source }}</span>
+          {% else %}<span class="chip flat">not reported</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

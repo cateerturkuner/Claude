@@ -1,0 +1,62 @@
+{% extends "postclose/base.html" %}
+{% import "postclose/macros.html" as m %}
+{% block title %}{{ view.venue }} · Y{{ view.year }} P&L{% endblock %}
+{% block content %}
+
+<div class="card">
+  <h2>Detailed P&amp;L — actual vs proforma
+    <span class="sub">$ thousands · Y{{ view.year }} ({{ view.months[0].label }} –
+      {{ view.months[-1].label }}) · {{ view.n_reported }} months reported</span>
+    <span style="margin-left:auto;display:flex;gap:4px">
+      {% for key, label in [('variance','Variance'),('actual','Actual'),('plan','Proforma')] %}
+      <a class="btn ghost" style="padding:4px 11px;font-size:11.5px;
+         {{ 'background:var(--teal-050);border-color:var(--teal-500)' if mode==key }}"
+         href="{{ url_for('postclose.pnl', slug=slug, year=year, mode=key) }}">{{ label }}</a>
+      {% endfor %}
+    </span>
+  </h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th class="lbl">Line</th>
+        {% for mo in view.months %}<th class="{{ '' if mo.has_actual else 'dim' }}">{{ mo.label }}</th>{% endfor %}
+        <th style="border-left:1px solid var(--line)">YTD plan</th>
+        <th>YTD actual</th><th>Var</th><th>Var %</th>
+        <th style="border-left:1px solid var(--line)">FY plan</th></tr></thead>
+      <tbody>
+      {% set ns = namespace(group=None) %}
+      {% for ln in view.lines %}
+        {% if ln.group != ns.group and ln.group != 'total' %}
+          {% set ns.group = ln.group %}
+          <tr class="group"><td class="lbl" colspan="{{ view.months|length + 6 }}">
+            {{ GROUP_LABELS.get(ln.group, ln.group) }}</td></tr>
+        {% endif %}
+        <tr class="{{ 'total' if ln.group == 'total' }}">
+          <td class="lbl">{{ ln.label }}</td>
+          {% for mo in view.months %}
+            {% set v = mo.var.get(ln.key, {}) %}
+            <td class="{{ '' if mo.has_actual else 'dim plan' }}">
+              {% if mode == 'plan' or not mo.has_actual %}{{ fmt_by(mo.plan.get(ln.key), ln.format) }}
+              {% elif mode == 'actual' %}{{ fmt_by(mo.actual.get(ln.key), ln.format) }}
+              {% else %}<span class="{{ tone(v.get('var')) }}">{{ fmt_signed(v.get('var'), ln.format) }}</span>
+              {% endif %}
+            </td>
+          {% endfor %}
+          <td class="plan" style="border-left:1px solid var(--line)">{{ fmt_by(view.ytd.plan.get(ln.key), ln.format) }}</td>
+          <td><b>{{ fmt_by(view.ytd.actual.get(ln.key), ln.format) }}</b></td>
+          {{ m.varcell(view.ytd.var.get(ln.key), ln.format) }}
+          <td class="{{ tone(view.ytd.var.get(ln.key,{}).get('var')) }}">
+            {{ ('%+.0f%%' % (view.ytd.var.get(ln.key,{}).get('pct') * 100))
+               if view.ytd.var.get(ln.key,{}).get('pct') is not none else '–' }}</td>
+          <td class="plan" style="border-left:1px solid var(--line)">{{ fmt_by(view.fy.plan.get(ln.key), ln.format) }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="body" style="border-top:1px solid var(--line)">
+    <p class="note" style="margin:0">Costs are carried negative, so a positive
+      variance is favourable on every line — including expenses, where it means
+      spending less than planned. Months not yet reported show the proforma in grey.</p>
+  </div>
+</div>
+{% endblock %}

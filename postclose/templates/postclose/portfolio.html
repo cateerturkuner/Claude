@@ -1,0 +1,70 @@
+{% extends "postclose/base.html" %}
+{% import "postclose/macros.html" as m %}
+{% block title %}Portfolio Signals{% endblock %}
+{% block content %}
+
+<div class="card">
+  <h2>Every venue, at the same point in its own life
+    <span class="sub">each venue is shown in the post-close year it is currently in,
+      so a 2026 close and a 2028 close are compared like for like</span></h2>
+  <div class="body">
+    <table>
+      <thead><tr><th class="lbl">Venue</th><th style="text-align:left">Closed</th>
+        <th>Year</th><th>Months reported</th>
+        <th>Revenue gap</th><th>Events gap</th><th>EBITDA gap</th><th></th></tr></thead>
+      <tbody>
+      {% for v in data.venues %}
+      <tr><td class="lbl">{{ v.venue }}</td>
+        <td style="text-align:left" class="note">{{ v.close_month }}</td>
+        <td>Y{{ v.year }}</td>
+        <td>{{ v.n_reported }}</td>
+        {% if v.n_reported %}
+          <td class="{{ tone(v.revenue_var.var) }}">{{ fmt_signed(v.revenue_var.var) }}
+            <span class="note">{{ ('%+.0f%%' % (v.revenue_var.pct*100)) if v.revenue_var.pct is not none }}</span></td>
+          <td class="{{ tone(v.events_var.var) }}">{{ fmt_signed(v.events_var.var, 'count') }}</td>
+          <td class="{{ tone(v.ebitda_var.var) }}">{{ fmt_signed(v.ebitda_var.var) }}</td>
+        {% else %}<td colspan="3" class="note" style="text-align:center">no actuals reported</td>{% endif %}
+        <td><a href="{{ url_for('postclose.venue_signals', slug=v.slug, year=v.year) }}">Signals →</a></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>House assumptions to revisit
+    <span class="sub">lines where the venues agree — every reporting venue missing the
+      same way is an underwriting problem, not a venue problem</span></h2>
+  {% if data.reporting|length < 2 %}
+  <div class="body">
+    <p class="note" style="margin:0">Only {{ data.reporting|length }} venue is reporting.
+      Consensus needs at least two — the ranking below is still shown, but read it as a
+      single venue's variance until a second one lands.</p>
+  </div>
+  {% endif %}
+  <div class="scroll">
+    <table>
+      <thead><tr><th class="lbl">Line</th><th style="text-align:left">Block</th>
+        <th>Venues</th><th>Agree</th><th>Mean gap %</th><th>Total $ gap</th>
+        <th style="text-align:left">By venue</th></tr></thead>
+      <tbody>
+      {% for c in data.consensus %}
+      <tr><td class="lbl">{{ c.label }}</td>
+        <td style="text-align:left" class="note">{{ GROUP_LABELS.get(c.group, c.group) }}</td>
+        <td>{{ c.n }}</td>
+        <td>{% if c.agree %}<span class="chip {{ 'bad' if c.mean_pct < 0 else 'good' }}">
+              all {{ 'below' if c.mean_pct < 0 else 'above' }}</span>
+            {% else %}<span class="chip flat">mixed</span>{% endif %}</td>
+        <td class="{{ tone(c.mean_pct) }}">{{ '%+.0f%%' % (c.mean_pct * 100) }}</td>
+        <td class="{{ tone(c.total_var) }}">{{ fmt_signed(c.total_var, c.format) }}</td>
+        <td style="text-align:left;white-space:normal">
+          {% for v in c.venues %}<span class="chip {{ tone(v.pct) }}"
+            style="margin-right:4px">{{ v.venue }} {{ '%+.0f%%' % (v.pct*100) }}</span>{% endfor %}
+        </td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
