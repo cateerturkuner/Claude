@@ -70,6 +70,11 @@
           <p class="note" style="margin:6px 0 0;max-width:230px;white-space:normal">
             Ignored (outside the proforma window): {{ preview.months_skipped | join(', ') }}</p>
           {% endif %}
+          {% if preview.months_empty %}
+          <p class="note" style="margin:6px 0 0;max-width:230px;white-space:normal">
+            {{ preview.months_empty | length }} further column(s) in the file are
+            still blank — nothing to import from them yet.</p>
+          {% endif %}
         </div>
         <div>
           <div style="font-weight:700;color:var(--navy);font-size:12px;margin-bottom:6px">Units</div>
@@ -89,6 +94,20 @@
           <p class="note" style="margin:5px 0 0;max-width:250px;white-space:normal">
             The model carries every cost negative so a positive variance always means good news.</p>
         </div>
+        {% if preview.events %}
+        <div>
+          <div style="font-weight:700;color:var(--navy);font-size:12px;margin-bottom:6px">Event detail</div>
+          <label style="font-size:12.5px"><input type="checkbox" name="import_events" checked>
+            Import the <b>{{ preview.events.sheet }}</b> sheet</label>
+          <p class="note" style="margin:5px 0 0;max-width:260px;white-space:normal">
+            {{ preview.events.rows_read }} event rows across
+            {{ preview.events.months | length }} month(s),
+            {{ preview.events.categories | length }} categories{{ '' if
+            preview.events.has_type_column else ', no contract-type column so all
+            are treated as new' }}. This supplies the attachment tab and overrides
+            any event counts on the P&amp;L sheet.</p>
+        </div>
+        {% endif %}
         <div style="margin-left:auto;display:flex;gap:8px">
           <button class="btn" type="submit">Import checked lines</button>
         </div>

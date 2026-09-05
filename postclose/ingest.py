@@ -14,8 +14,6 @@ import difflib
 import re
 from datetime import datetime
 
-import openpyxl
-
 from . import analysis, store
 
 # Names finance uses that differ from the model's own labels.
@@ -215,8 +213,16 @@ def _find_label_col(ws, header_row, idx, max_col=8):
 
 def preview(path, slug, sheet=None):
     """Parse a workbook and describe what would be imported. Stores nothing."""
+    try:
+        import openpyxl
+    except ImportError:
+        return {"ok": False,
+                "error": "openpyxl is not installed on this server, so workbook "
+                         "uploads are unavailable. Enter the month by hand below, "
+                         "or run: pip3.10 install --user openpyxl"}
     wb = openpyxl.load_workbook(path, data_only=True)
     idx = _alias_index(slug)
+    events = parse_events(slug, wb)
 
     candidates = []
     for ws in wb.worksheets:
@@ -268,13 +274,21 @@ def preview(path, slug, sheet=None):
 
     scale = _suggest_scale(rows, base_months)
     flip = _suggest_flip(rows)
+
+    # A running template carries a column for every month in the model. Only the
+    # ones that actually hold a number are worth offering for import.
+    with_data = {ym for row in rows for ym in row["by_month"]}
+    if events:
+        with_data |= set(events["months"])
+
     return {
         "ok": True,
         "sheet": title,
         "sheets": [c[2] for c in candidates],
         "header_row": header_row,
         "label_col": label_col,
-        "months": sorted(set(in_model.values())),
+        "months": sorted(with_data),
+        "months_empty": sorted(set(in_model.values()) - with_data),
         "months_skipped": sorted({ym for ym in month_cols.values()
                                   if ym not in base_months}),
         "rows": rows,
@@ -282,6 +296,7 @@ def preview(path, slug, sheet=None):
         "suggest_scale": scale,
         "suggest_flip_costs": flip,
         "matched": len(rows),
+        "events": events,
     }
 
 
@@ -337,5 +352,141 @@ def apply_preview(slug, prev, include_keys, months, scale=1.0, flip_costs=False,
     written = []
     for ym in sorted(by_month):
         store.record(slug, ym, by_month[ym], "upload", note=filename)
+        written.append(ym)
+    return written
+
+
+# ---------------------------------------------------------------- events sheet
+# Attachment is far easier to report one event per row than as a month x category
+# x metric grid, and an event list cross-checks the P&L revenue lines for free.
+# Any sheet with a date column and at least two recognised category columns is
+# treated as one.
+EVENT_DATE_HEADERS = {"event date", "date", "event"}
+EVENT_TYPE_HEADERS = {"contract type", "type", "contract", "cohort", "source",
+                      "oc or new", "original or new"}
+OC_WORDS = ("original", "oc", "assumed", "inherited", "pre close", "preclose",
+            "backlog", "seller")
+
+# Revenue Analysis category -> the names a reporting sheet is likely to use.
+CATEGORY_ALIASES = {
+    "room_rental": ["room rental", "venue fee", "venue rental", "rental", "site fee"],
+    "food": ["food", "catering"],
+    "beverage": ["beverage", "bar", "alcohol"],
+    "lodging": ["lodging", "lodgings", "accommodation", "cabins", "overnight"],
+    "dj": ["dj", "music", "entertainment"],
+    "floral": ["floral", "flowers", "florals"],
+    "bakery": ["bakery", "cake", "desserts"],
+    "stationery": ["stationery", "stationary", "invitations", "paper"],
+    "photography": ["photography", "photo", "photographer"],
+    "other_ancillary": ["other ancillary", "other", "add ons", "enhancements",
+                        "misc ancillary"],
+    "service_charge": ["service charge", "service fee", "admin fee"],
+}
+
+
+def _category_index():
+    idx = {}
+    for key, names in CATEGORY_ALIASES.items():
+        for name in names:
+            idx.setdefault(norm(name), key)
+    return idx
+
+
+def _cohort(value):
+    """'Original'/'OC'/'Inherited' mean the seller's backlog; anything else is new."""
+    n = norm(value)
+    return "oc" if any(w in n for w in OC_WORDS) else "new"
+
+
+def find_events_sheet(wb):
+    """(worksheet, header_row, {column: role}) for the first event-list sheet."""
+    cat_idx = _category_index()
+    for ws in wb.worksheets:
+        for r in range(1, min(ws.max_row, 25) + 1):
+            roles, seen_cats = {}, 0
+            for c in range(1, ws.max_column + 1):
+                label = norm(ws.cell(r, c).value)
+                if not label:
+                    continue
+                if label in EVENT_DATE_HEADERS and "date" not in roles.values():
+                    roles[c] = "date"
+                elif label in EVENT_TYPE_HEADERS and "type" not in roles.values():
+                    roles[c] = "type"
+                elif label in cat_idx:
+                    roles[c] = cat_idx[label]
+                    seen_cats += 1
+            if "date" in roles.values() and seen_cats >= 2:
+                return ws, r, roles
+    return None, None, None
+
+
+def parse_events(slug, wb):
+    """Roll an event list into per-month attachment counts, revenue and cohorts.
+
+    Returns None when the workbook has no event sheet -- that is the normal case
+    for a P&L-only file, not an error.
+    """
+    ws, header_row, roles = find_events_sheet(wb)
+    if ws is None:
+        return None
+
+    base_months = {m["ym"] for m in store.baseline(slug)["months"]}
+    date_col = next(c for c, role in roles.items() if role == "date")
+    type_col = next((c for c, role in roles.items() if role == "type"), None)
+    cat_cols = {c: role for c, role in roles.items() if role not in ("date", "type")}
+
+    months, skipped, rows_read = {}, [], 0
+    for r in range(header_row + 1, ws.max_row + 1):
+        raw_date = ws.cell(r, date_col).value
+        if not isinstance(raw_date, datetime):
+            continue
+        rows_read += 1
+        ym = f"{raw_date.year:04d}-{raw_date.month:02d}"
+        if ym not in base_months:
+            skipped.append(ym)
+            continue
+        cohort = _cohort(ws.cell(r, type_col).value) if type_col else "new"
+        slot = months.setdefault(ym, {"events_oc": 0, "events_new": 0,
+                                      "ancillary": {}})
+        slot[f"events_{cohort}"] += 1
+        for c, cat in cat_cols.items():
+            v = ws.cell(r, c).value
+            if not isinstance(v, (int, float)) or isinstance(v, bool) or v <= 0:
+                continue
+            entry = slot["ancillary"].setdefault(cat, {})
+            entry[f"{cohort}_events"] = entry.get(f"{cohort}_events", 0) + 1
+            entry[f"{cohort}_rev"] = entry.get(f"{cohort}_rev", 0.0) + float(v)
+
+    return {
+        "sheet": ws.title,
+        "header_row": header_row,
+        "categories": sorted(set(cat_cols.values())),
+        "has_type_column": type_col is not None,
+        "rows_read": rows_read,
+        "months": months,
+        "months_skipped": sorted(set(skipped)),
+    }
+
+
+def apply_events(slug, parsed, months, scale=1.0, filename=None):
+    """Commit parsed event detail. Counts are never scaled; money always is."""
+    written = []
+    for ym in sorted(parsed["months"]):
+        if ym not in months:
+            continue
+        slot = parsed["months"][ym]
+        # A category column that exists in the file but holds nothing means
+        # nobody bought it -- a real zero. Left absent it would read as "not
+        # reported" and the shortfall would disappear from the attachment tab.
+        ancillary = {cat: {"oc_events": 0, "new_events": 0,
+                           "oc_rev": 0.0, "new_rev": 0.0}
+                     for cat in parsed["categories"]}
+        for cat, payload in slot["ancillary"].items():
+            ancillary.setdefault(cat, {}).update(
+                {k: (v * scale if k.endswith("_rev") else v)
+                 for k, v in payload.items()})
+        lines = {"events_oc": slot["events_oc"], "events_new": slot["events_new"],
+                 "events": slot["events_oc"] + slot["events_new"]}
+        store.record(slug, ym, lines, "upload", ancillary=ancillary, note=filename)
         written.append(ym)
     return written

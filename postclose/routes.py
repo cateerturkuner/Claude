@@ -228,18 +228,28 @@ def upload_confirm(slug):
         flash("That preview expired. Upload the file again.", "error")
         return redirect(url_for("postclose.data", slug=slug, year=ctx["year"]))
 
+    months = set(request.form.getlist("month"))
+    scale = float(request.form.get("scale") or 1.0)
     written = ingest.apply_preview(
         slug, prev,
         include_keys=request.form.getlist("key"),
-        months=set(request.form.getlist("month")),
-        scale=float(request.form.get("scale") or 1.0),
+        months=months, scale=scale,
         flip_costs=request.form.get("flip_costs") == "on",
         filename=prev.get("filename"),
     )
-    cache.pop(slug, None)
-    session[PREVIEW_KEY] = cache
-    flash(f"Imported {len(written)} month(s): "
-          f"{', '.join(analysis.ym_label(m) for m in written) or 'nothing'}.", "ok")
+
+    # The event list is applied second on purpose: where both sheets carry event
+    # counts, one row per event is the more reliable of the two.
+    events_written = []
+    if prev.get("events") and request.form.get("import_events") == "on":
+        events_written = ingest.apply_events(
+            slug, prev["events"], months, scale=scale, filename=prev.get("filename"))
+
+    touched = sorted(set(written) | set(events_written))
+    detail = ", ".join(analysis.ym_label(m) for m in touched) or "nothing"
+    extra = (f" Event detail for {len(events_written)} month(s)."
+             if events_written else "")
+    flash(f"Imported {len(touched)} month(s): {detail}.{extra}", "ok")
     return redirect(url_for("postclose.overview", slug=slug, year=ctx["year"]))
 
 
