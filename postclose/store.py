@@ -9,10 +9,15 @@ Two kinds of file live in DATA_DIR:
 """
 import json
 import os
+import re
+import secrets
 import threading
+import time
 from datetime import datetime, timezone
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+PREVIEW_DIR = os.path.join(DATA_DIR, "previews")
+PREVIEW_TTL = 2 * 60 * 60
 
 _lock = threading.Lock()
 _baseline_cache = {}
@@ -142,3 +147,49 @@ def delete_month(slug, ym):
         save_actuals(slug, data)
         return True
     return False
+
+
+# ------------------------------------------------------------------- previews
+# An upload preview is far too big for a signed session cookie -- four months of
+# a P&L already runs to 2.4KB against a ~4KB limit, and a full year would be
+# dropped silently, leaving the confirm step reporting an expired preview. So the
+# preview lives on disk and only a short token rides in the session.
+def _prune_previews():
+    if not os.path.isdir(PREVIEW_DIR):
+        return
+    cutoff = time.time() - PREVIEW_TTL
+    for name in os.listdir(PREVIEW_DIR):
+        path = os.path.join(PREVIEW_DIR, name)
+        try:
+            if os.path.getmtime(path) < cutoff:
+                os.unlink(path)
+        except OSError:
+            pass
+
+
+def put_preview(payload):
+    os.makedirs(PREVIEW_DIR, exist_ok=True)
+    _prune_previews()
+    token = secrets.token_urlsafe(16)
+    with open(os.path.join(PREVIEW_DIR, token + ".json"), "w") as fh:
+        json.dump(payload, fh)
+    return token
+
+
+def get_preview(token):
+    if not token or not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", token):
+        return None
+    path = os.path.join(PREVIEW_DIR, token + ".json")
+    if not os.path.exists(path) or os.path.getmtime(path) < time.time() - PREVIEW_TTL:
+        return None
+    with open(path) as fh:
+        return json.load(fh)
+
+
+def drop_preview(token):
+    if not token or not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", token):
+        return
+    try:
+        os.unlink(os.path.join(PREVIEW_DIR, token + ".json"))
+    except OSError:
+        pass

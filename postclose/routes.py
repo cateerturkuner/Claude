@@ -183,7 +183,7 @@ def data(slug):
 
     return render_template(
         "postclose/data.html", tab="data", view=view, actuals=act,
-        preview=session.get(PREVIEW_KEY, {}).get(slug),
+        preview=store.get_preview(session.get(PREVIEW_KEY, {}).get(slug)),
         edit_ym=edit_ym, edit_month=edit_month,
         edit_month_anc=act["months"].get(edit_ym, {}).get("ancillary", {}),
         categories=store.baseline(slug)["drivers"]["categories"], **ctx)
@@ -214,7 +214,8 @@ def upload(slug):
 
     prev["filename"] = file.filename
     cache = session.get(PREVIEW_KEY, {})
-    cache[slug] = prev
+    store.drop_preview(cache.get(slug))
+    cache[slug] = store.put_preview(prev)
     session[PREVIEW_KEY] = cache
     return redirect(url_for("postclose.data", slug=slug, year=ctx["year"]) + "#preview")
 
@@ -223,7 +224,7 @@ def upload(slug):
 def upload_confirm(slug):
     ctx = _ctx(slug)
     cache = session.get(PREVIEW_KEY, {})
-    prev = cache.get(slug)
+    prev = store.get_preview(cache.get(slug))
     if not prev:
         flash("That preview expired. Upload the file again.", "error")
         return redirect(url_for("postclose.data", slug=slug, year=ctx["year"]))
@@ -256,7 +257,7 @@ def upload_confirm(slug):
 @bp.route("/<slug>/upload/cancel", methods=["POST"])
 def upload_cancel(slug):
     cache = session.get(PREVIEW_KEY, {})
-    cache.pop(slug, None)
+    store.drop_preview(cache.pop(slug, None))
     session[PREVIEW_KEY] = cache
     return redirect(url_for("postclose.data", slug=slug))
 
