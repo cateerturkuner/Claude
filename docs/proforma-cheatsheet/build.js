@@ -117,6 +117,32 @@ const children=[
       [["Venue specific",true],[" (utilities, maintenance)",false]],
       [["Walters operational changes",true],[" (marketing, insurance, finance expenses, professional services, etc.)",false]]]},
   ],{headSize:22,lineSize:18}),
+
+  pageBreak(),
+  p([run("Walters Hospitality",{size:22,color:TEAL,bold:true}),run("   |   Part 2: Post-LOI",{size:22,color:INK2,bold:true})],{after:60}),
+
+  ...h1("6. Same process, more detail"),
+  text("Everything in Part 1 again, with updated event counts, financials and what we learned in diligence. Then we get in the weeds:",{size:19,color:INK2,after:60}),
+  tiles([
+    {head:"Employees",bullets:[[["Role by role",true],[": who stays, who we add, what each costs",false]],[["Owner replacement",true],[" if they step away",false]]]},
+    {head:"COGS and pricing",bullets:[[["Lingering OC costs",true],[" (e.g. a required caterer on booked events)",false]],[["Go-forward pricing",true],[" for the venue and each vendor service",false]]]},
+    {head:"Vendor service timing",bullets:[[["Attach timeline",true],[" by service: license, hubs, hiring",false]],[["Ramp by month",true],[" instead of by year",false]]]},
+  ],{headSize:21,lineSize:18}),
+
+  ...h1("7. New step: Leads / Tours / Contracts"),
+  img("funnel.png",5.2),
+  kv([
+    ["Annual first","Events for Years 1 to 3 set the contracts we need; conversion rates set the tours and leads behind them."],
+    ["Conversion rates",["L→T: leads that become tours. T→C: tours that become contracts.","Venue history if they have it (they often don't); otherwise Walters averages."]],
+  ],3000),
+
+  ...h1("8. Monthly build"),
+  img("monthly.png",4.8),
+  kv([
+    ["Annual to monthly",["Leads, tours, contracts, events and financials are split by month on seasonality (a Walters comparable venue if no history).","Early months ramp up to a stable lead and tour count; contracts follow."]],
+    ["Events by month","OC events land in their booked month; new events fill the rest of the annual total."],
+    ["Attachment and $ / Event","Applied directly by month; not split out from an annual total."],
+  ],2600),
 ];
 
 const doc=new Document({

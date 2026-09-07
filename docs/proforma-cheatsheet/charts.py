@@ -55,3 +55,39 @@ venue(-1.6,0.35,1); venue(1.2,0.45,2); venue(3.4,-0.6,3)
 ax.text(3.4,0.9,"New market",ha="center",va="center",fontsize=9.5,color=INK2)
 save(fig,"market.png")
 print("charts done")
+
+# ===== Part 2 charts =====
+from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+DARK="#0f5f65"
+# 5. Funnel: Leads -> Tours -> Contracts -> Events, built backwards
+fig,ax=plt.subplots(figsize=(W,1.9)); ax.set_xlim(0,10); ax.set_ylim(-1.35,1.15); ax.axis("off")
+boxes=[("Leads",0.4,TEAL2),("Tours",3.0,TEAL2),("Contracts",5.6,TEAL),("Events",8.2,TEAL)]
+for lab,x,c in boxes:
+    ax.add_patch(FancyBboxPatch((x,-0.4),1.6,0.8,boxstyle="round,pad=0,rounding_size=0.12",fc=c,ec="none"))
+    ax.text(x+0.8,0,lab,ha="center",va="center",fontsize=12,fontweight="bold",color="white" if c==TEAL else INK)
+for x0,lab in [(2.0,"L→T\nconversion"),(4.6,"T→C\nconversion"),(7.2,"timing of\nevent date")]:
+    ax.add_patch(FancyArrowPatch((x0+0.05,0),(x0+0.95,0),arrowstyle="-|>",mutation_scale=14,color=INK2,lw=1.5))
+    ax.text(x0+0.5,0.55,lab,ha="center",va="bottom",fontsize=8.5,color=INK2)
+ax.add_patch(FancyArrowPatch((9.0,-0.62),(1.2,-0.62),arrowstyle="-|>",mutation_scale=14,color=DARK,lw=1.8,ls=(0,(4,3))))
+ax.text(5.1,-0.78,"We build backwards from Events, using venue history or Walters conversion rates",ha="center",va="top",fontsize=9.5,color=DARK)
+save(fig,"funnel.png")
+
+# 6. Monthly build: ramp + seasonality (illustrative) and events OC vs New by month
+fig,(a1,a2)=plt.subplots(1,2,figsize=(W,2.5),gridspec_kw=dict(wspace=0.3))
+clean(a1); clean(a2)
+m=np.arange(1,13)
+season=np.array([1,1,1,1.03,1.15,1.08,1,1,0.95,0.98,1,1])
+ramp=np.minimum(1,0.3+0.14*(m-1))
+leads=100*season*ramp; tours=0.2*leads*np.array([0.8,0.85,0.9,0.95,1,1,1,1,1,1,1,1]); contracts=tours*0.26
+a1.plot(m,leads/leads.max(),color=TEAL,lw=2.2); a1.text(12.2,leads[-1]/leads.max(),"Leads",va="center",fontsize=9.5,color=INK)
+a1.plot(m,tours/leads.max()*3.2,color=TEAL2,lw=2.2); a1.text(12.2,tours[-1]/leads.max()*3.2,"Tours",va="center",fontsize=9.5,color=INK)
+a1.plot(m,contracts/leads.max()*6,color=DARK,lw=2.2); a1.text(12.2,contracts[-1]/leads.max()*6,"Contracts",va="center",fontsize=9.5,color=INK)
+a1.set_xlim(0.5,14.2); a1.set_ylim(0,1.25); a1.set_xticks([1,6,12]); a1.set_xticklabels(["Mo 1","Mo 6","Mo 12"])
+a1.set_title("Ramp to a stable level, then seasonality",fontsize=10.5,color=INK,loc="left",pad=8)
+oc=np.array([6,6,4,3,2,1,1,1,1,0,0,0]); new=np.array([0,0,1,1,2,2,3,3,4,4,3,3])
+a2.bar(m,oc,color=TEAL,width=0.7,edgecolor=SURF,linewidth=1); a2.bar(m,new,bottom=oc,color=TEAL2,width=0.7,edgecolor=SURF,linewidth=1)
+a2.set_xlim(0.3,12.7); a2.set_xticks([1,6,12]); a2.set_xticklabels(["Mo 1","Mo 6","Mo 12"]); a2.set_ylim(0,9)
+a2.text(2,7.2,"OC events",fontsize=9.5,color=TEAL,fontweight="bold"); a2.text(8.2,7.2,"New events",fontsize=9.5,color="#3f8f96",fontweight="bold")
+a2.set_title("Events by month: OC vs. New",fontsize=10.5,color=INK,loc="left",pad=8)
+save(fig,"monthly.png")
+print("part2 charts done")
