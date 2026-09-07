@@ -6,7 +6,7 @@ import numpy as np
 plt.rcParams["font.family"] = "Liberation Sans"
 TEAL="#1a939b"; TEAL2="#8fc9cd"; LIGHT="#eff6f9"; INK="#0b0b0b"; INK2="#52514e"; MUTED="#c9c8c2"; SURF="#ffffff"
 W=7.2
-def save(fig,name): fig.savefig(name,dpi=220,bbox_inches="tight",facecolor=SURF,pad_inches=0.05); plt.close(fig)
+def save(fig,name): fig.savefig(name,dpi=150,bbox_inches="tight",facecolor=SURF,pad_inches=0.05); plt.close(fig)
 def clean(ax):
     for s in ["top","right","left"]: ax.spines[s].set_visible(False)
     ax.spines["bottom"].set_color(MUTED); ax.set_yticks([]); ax.tick_params(axis="x",length=0,labelsize=11,colors=INK)

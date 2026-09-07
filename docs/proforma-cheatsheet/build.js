@@ -60,7 +60,7 @@ const pageBreak=()=>new Paragraph({children:[new PageBreak()]});
 
 const vs=(a,b)=>[a,"vs.",b];
 const children=[
-  p(run("Pro Forma Sheet",{size:40,bold:true,color:INK}),{after:0}),
+  p(run("Pro Forma Cheat Sheet",{size:40,bold:true,color:INK}),{after:0}),
   p([run("Walters Hospitality",{size:22,color:TEAL,bold:true}),run("   |   Part 1: Pre-LOI",{size:22,color:INK2,bold:true})],{after:60}),
 
   ...h1("1. Frame the venue"),
@@ -75,55 +75,47 @@ const children=[
   img("ocmix.png",4.1),
   kv([
     ["Pro Forma Year 1 / 2 / 3","Year 1 starts the day we close."],
-    ["OC events","\u201COriginal Contract\u201D events; booked prior to close by the sellers to occur post-close. We honor OC events as booked, even if not our model or packaging."],
-    ["\u201CEvent\u201D vs. \u201CContract\u201D","\u201CEvents\u201D in Year 1 occur in Year 1, regardless of when booked. \u201CContracts\u201D in Year 1 are booked in Year 1, regardless of when they occur. Pre-LOI we only project Events."],
+    ["OC events","\u201COriginal Contract\u201D events; booked prior to close by the sellers to occur post-close. We honor OC events as-is."],
+    ["\u201CEvent\u201D vs. \u201CContract\u201D",["\u201CEvents\u201D in Year 1 occur in Year 1.","\u201CContracts\u201D in Year 1 are events booked in Year 1.","We only project Events pre-LOI."]],
   ]),
 
   ...h1("3. Market"),
   img("market.png",3.8),
   kv([
-    ["1  Current market, in hub range","Under a 90-minute drive from each hub (Catering / Floral / Bakery)."],
-    ["2  Current market, outside hub range",["Part of the broader region, geographically and operationally.","Too far to use our hubs."]],
-    ["3  New market","A full new market for Walters."],
+    ["1  Current market, in hub range","<90-minute drive from each hub (Catering / Floral / Bakery)."],
+    ["2  Current market, outside hub range",["Part of the broader region, geographically and operationally.","Too far to utilize existing hubs."]],
+    ["3  New market","A new region for Walters."],
   ],3300),
 
   ...h1("4. Top-Line Projections"),
   tiles([
-    {head:"# of Events",lines:["Historical average","Last 12 months","Booked next 12 months"]},
-    {head:"% Attachment",lines:["Share of events that add each vendor service"]},
-    {head:"$ / Event",lines:["Spend per event on each vendor service"]},
+    {head:"# of Events",lines:["Historical average?","LTM vs. NTM?"]},
+    {head:"% Attachment",lines:["Share of events that attach to each vendor service; based on Walters regional averages"]},
+    {head:"$ / Event",lines:["Spend per event on each vendor service; based on Walters averages"]},
   ],{headSize:21,lineSize:18}),
-  spacer(60),
+  h2("Vendor Services"),
   kv([
-    ["Bar","On/off switch once we hold the liquor license."],
-    ["Catering","Attach gradually; test it."],
-    ["Floral / Bakery","Depends on hub distance."],
-    ["Photography / DJ / Stationery","Quick to implement."],
+    ["Bar","Any market; on/off switch once we hold the liquor license."],
+    ["Catering / Floral / Bakery","Existing markets; depends on hub distance."],
+    ["Photography / DJ / Stationery","Any market; only need to hire and implement packages."],
   ],3300),
   divider(),
   lead("Attachment ramp-up"),
   text("Our typical assumption: ramp to the Walters average attachment by Year 3, adjusted for the venue.",{size:19,color:INK2,after:40}),
   img("ramp.png",5.3),
-  divider(),
-  lead("$ per vendor service"),
-  bullet("Walters average $ per event for that service"),
-  bullet("Smaller venue: adjust down; almost never adjust up"),
-  bullet("Sanity-check against what couples at that venue actually spend"),
 
   ...h1("5. Expenses"),
   tiles([
     {head:"COGS",bullets:[
-      [["Driven by their ",false],["vendor services",true],[" and other offerings",false]],
-      [["Keep ",false],["their existing costs",true],[" in mind (e.g. a required caterer's per-head cost on OC events)",false]],
-      [["Often ",false],["little or no COGS today",true],["; we build on ",false],["our ramp and margins",true]]]},
+      [["Historically driven by their ",false],["existing vendor services",true],[" (if any); go-forward defers towards ",false],["our offerings and margins",true]],
+      [["Keep their ",false],["go-forward OC costs",true],[" in mind (e.g. a required caterer's per-head cost on OC events)",false]]]},
     {head:"Payroll",bullets:[
-      [["Current staff",true],[" and roles",false]],
+      [["Current staff",true]],
       [["Current or new market",true]],
       [["Owner involvement",true],[": what they pay themselves; ",false],["replacement cost",true]]]},
     {head:"Operating expenses",bullets:[
-      [["Switch to ",false],["our marketing",true],["; almost always higher",false]],
-      [["Their ",false],["utilities and maintenance",true],[" per event",false]],
-      [["Our ",false],["insurance, finance expenses, professional services",true]]]},
+      [["Venue specific",true],[" (utilities, maintenance)",false]],
+      [["Walters operational changes",true],[" (marketing, insurance, finance expenses, professional services, etc.)",false]]]},
   ],{headSize:22,lineSize:18}),
 ];
 
