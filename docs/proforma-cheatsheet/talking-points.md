@@ -1,37 +1,30 @@
-# Pre-LOI Proforma — CEO walkthrough talking points
+# Pro Forma Sheet: Pre-LOI talking points
 
 **1. Frame the venue**
+- Market: current or new?
 - Performing today, or growth opportunity?
 - Vendor services: what they do today vs. what we implement, how fast (plus our marketing to fill events)
 - Employee structure: over- or understaffed? Owner heavily involved or not?
-- Current market or new market?
 
 **2. Terms**
 - Y1 / Y2 / Y3. Y1 starts the day we close
-- OC events = booked before close. Need a healthy number; a year only holds so many
-- New contract = anything booked after close, any year
+- OC events = booked before close. Most of Y1, roughly 25% of Y2, none in Y3. Need a healthy number; a year only holds so many
+- New contracts = what we assume books after close; can land in Y1, Y2 or Y3
 
 **3. Market**
-- Current market = within 90 min of hubs. Dallas: The Olana (bakery + floral), one of three catering hubs
-- Each vendor service against its own hub; too far = $0 for that service
-- New market: venue must stand on its own; vendor services may be a couple of years out
+- Current market, in hub range: within 90 min of hubs. Dallas: The Olana (bakery + floral), one of three catering hubs. Model vendor services on our ramp
+- Current market, outside hub range: in the region, likely grouped operationally with it; too far to use hubs, so hub services start at $0. Do we grow that direction and open hubs to service it?
+- New market: venue stands on its own; vendor services may be a couple of years out
 - Perfect new-market venue: ~100 events/yr, all-inclusive package (outside vendor partners or some in-house), owner not involved
 
-**4. Events (first thing we project)**
-- Historical average per year
-- Last 12 months
-- Booked for next 12 months
-
-**5. Revenue / Vendor Services**
-- Photography / DJ / Stationery: quick, set pricing and sell
-- Bar: on/off switch, liquor license. In-house today?
-- Catering: attach slowly, test. Required caterer today?
-- Floral / Bakery: hub-dependent, too far = $0
-- Attachment ramp-up: to Walters average by Y3, tweak per venue
+**4. Top-line projections**
+- Events: historical average, last 12 months, booked next 12 months
+- Vendor services by type: Photography / DJ / Stationery quick; Bar is a license switch; Catering attach slowly; Floral / Bakery hub-dependent
+- Attachment ramp-up: our typical assumption is 30% / 60% / 100% of Walters average by Y3, tweaked per venue
 - $ per vendor service: Walters average $ per event; tweak down for small venues, almost never up; sanity-check vs. what brides spend
 - Don't "Walterize" too fast
 
-**6. Expenses**
-- COGS: little for venue-rental-only; add per vendor service; required caterer's per-head cost on OC events, then our price going forward
-- Payroll: don't assume big cuts; over/understaffed? Owner: how involved, what they pay themselves, replacement cost if they walk
-- OpEx: what they spend today, adjusted to how we'd run it
+**5. Expenses**
+- COGS: depends on their vendor services and offerings; keep theirs in mind (required caterer per-head on OC events); often little or none today, so we implement on our ramp and margins
+- Payroll: who they employ today; current or new market; how involved the owners are, what they pay themselves, replacement cost if they walk
+- OpEx: switch to our marketing (almost always higher); their utilities and maintenance per event; our insurance, finance expenses, professional services
