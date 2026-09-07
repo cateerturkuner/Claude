@@ -92,7 +92,7 @@ a2.bar(m,oc,color=TEAL,width=0.7,edgecolor=SURF,linewidth=1); a2.bar(m,new,botto
 a2.set_xlim(0.3,12.7); a2.set_xticks([1,6,12]); a2.set_xticklabels(["Mo 1","Mo 6","Mo 12"]); a2.set_ylim(0,9.6)
 a2.text(1.2,8.3,"OC events",fontsize=8.5,color=TEAL,fontweight="bold"); a2.text(8.6,8.3,"New events",fontsize=8.5,color="#3f8f96",fontweight="bold")
 a2.add_patch(Ellipse((6,1.5),1.3,3.6,fc="none",ec=INK,lw=1.4,ls=(0,(3,2))))
-a2.annotate("January",xy=(6.7,3.0),xytext=(6.6,6.0),fontsize=8,color=INK,ha="center",va="center",arrowprops=dict(arrowstyle="-|>",color=INK,lw=1.2))
+a2.annotate("January",xy=(6,3.5),xytext=(6,6.0),fontsize=8,color=INK,ha="center",va="center",arrowprops=dict(arrowstyle="-|>",color=INK,lw=1.2))
 a2.set_title("Events by month: OC vs. New",fontsize=9.5,color=INK,loc="left",pad=8)
 save(fig,"monthly.png")
 print("part2 charts done")

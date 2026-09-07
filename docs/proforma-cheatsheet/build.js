@@ -133,9 +133,11 @@ const children=[
   ],{headSize:21,lineSize:18}),
 
   ...h1("7. New step: Leads / Tours / Contracts"),
+  text("We start from the event counts and work backwards into estimated contracts, tours and leads using historical venue performance and Walters conversion rates, then work with Marketing and Sales to finalize what they feel is realistic.",{size:19,color:INK2,after:40}),
   img("funnel.png",6.0),
 
   ...h1("8. Monthly build"),
+  text("We take the annual figures and use seasonality plus a slow ramp-up over the first ~6 months to spread the marketing funnel, events and financials across the months.",{size:19,color:INK2,after:40}),
   img("monthly.png",6.2),
 ];
 
