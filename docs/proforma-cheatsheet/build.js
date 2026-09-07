@@ -124,9 +124,12 @@ const children=[
   ...h1("6. Same process, more detail"),
   text("Everything in Part 1 again, with updated event counts, financials and what we learned in diligence. Then we get in the weeds:",{size:19,color:INK2,after:60}),
   tiles([
-    {head:"Employees",bullets:[[["Role by role",true],[": who stays, who we add, what each costs",false]],[["Owner replacement",true],[" if they step away",false]]]},
-    {head:"COGS and pricing",bullets:[[["Lingering OC costs",true],[" (e.g. a required caterer on booked events)",false]],[["Go-forward pricing",true],[" for the venue and each vendor service",false]]]},
-    {head:"Vendor service timing",bullets:[[["Attach timeline",true],[" by service: license, hubs, hiring",false]],[["Ramp by month",true],[" instead of by year",false]]]},
+    {head:"Revenue",bullets:[
+      [["Go-forward pricing",true],[" for the venue and each vendor service",false]],
+      [["Go-live plans",true],[" for each vendor service",false]]]},
+    {head:"Expenses",bullets:[
+      [["Payroll",true],[": estimate costs by employee",false]],
+      [["COGS and OpEx",true],[": more detail from what diligence collected",false]]]},
   ],{headSize:21,lineSize:18}),
 
   ...h1("7. New step: Leads / Tours / Contracts"),
