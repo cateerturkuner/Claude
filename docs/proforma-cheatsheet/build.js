@@ -130,19 +130,10 @@ const children=[
   ],{headSize:21,lineSize:18}),
 
   ...h1("7. New step: Leads / Tours / Contracts"),
-  img("funnel.png",5.2),
-  kv([
-    ["Annual first","Events for Years 1 to 3 set the contracts we need; conversion rates set the tours and leads behind them."],
-    ["Conversion rates",["L→T: leads that become tours. T→C: tours that become contracts.","Venue history if they have it (they often don't); otherwise Walters averages."]],
-  ],3000),
+  img("funnel.png",6.6),
 
   ...h1("8. Monthly build"),
-  img("monthly.png",4.8),
-  kv([
-    ["Annual to monthly",["Leads, tours, contracts, events and financials are split by month on seasonality (a Walters comparable venue if no history).","Early months ramp up to a stable lead and tour count; contracts follow."]],
-    ["Events by month","OC events land in their booked month; new events fill the rest of the annual total."],
-    ["Attachment and $ / Event","Applied directly by month; not split out from an annual total."],
-  ],2600),
+  img("monthly.png",6.8),
 ];
 
 const doc=new Document({
