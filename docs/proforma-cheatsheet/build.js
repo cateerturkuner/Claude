@@ -130,10 +130,10 @@ const children=[
   ],{headSize:21,lineSize:18}),
 
   ...h1("7. New step: Leads / Tours / Contracts"),
-  img("funnel.png",6.6),
+  img("funnel.png",6.0),
 
   ...h1("8. Monthly build"),
-  img("monthly.png",6.8),
+  img("monthly.png",6.2),
 ];
 
 const doc=new Document({

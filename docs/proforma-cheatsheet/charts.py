@@ -64,34 +64,35 @@ fig,ax=plt.subplots(figsize=(W,1.5)); ax.set_xlim(0,10); ax.set_ylim(-0.7,1.15);
 boxes=[("Events",0.4,TEAL),("Contracts",3.0,TEAL),("Tours",5.6,TEAL2),("Leads",8.2,TEAL2)]
 for lab,x,c in boxes:
     ax.add_patch(FancyBboxPatch((x,-0.4),1.6,0.8,boxstyle="round,pad=0,rounding_size=0.12",fc=c,ec="none"))
-    ax.text(x+0.8,0,lab,ha="center",va="center",fontsize=12,fontweight="bold",color="white" if c==TEAL else INK)
+    ax.text(x+0.8,0,lab,ha="center",va="center",fontsize=10.5,fontweight="bold",color="white" if c==TEAL else INK)
 for x0,lab in [(2.0,"timing of\nevent date"),(4.6,"T→C\nconversion"),(7.2,"L→T\nconversion")]:
     ax.add_patch(FancyArrowPatch((x0+0.05,0),(x0+0.95,0),arrowstyle="-|>",mutation_scale=14,color=INK2,lw=1.5))
-    ax.text(x0+0.5,0.55,lab,ha="center",va="bottom",fontsize=8.5,color=INK2)
+    ax.text(x0+0.5,0.55,lab,ha="center",va="bottom",fontsize=7.5,color=INK2)
 save(fig,"funnel.png")
 
 # 6. Monthly build: ramp + seasonality (illustrative) and events OC vs New by month
 from matplotlib.patches import Ellipse
 fig,(a1,a2)=plt.subplots(1,2,figsize=(W,2.7),gridspec_kw=dict(wspace=0.3))
 clean(a1); clean(a2)
+for ax in (a1,a2): ax.tick_params(axis="x",labelsize=9)
 m=np.arange(1,13)
 season=np.array([1,1,1,1,1.02,1.28,1.06,1,0.97,0.98,1,1])
 ramp=np.minimum(1,0.3+0.14*(m-1))
 leads=100*season*ramp; tours=0.2*leads*np.array([0.8,0.85,0.9,0.95,1,1,1,1,1,1,1,1]); contracts=tours*0.26
 L=leads/leads.max(); T=tours/leads.max()*3.2; C=contracts/leads.max()*6
-a1.plot(m,L,color=TEAL,lw=2.2); a1.text(12.2,L[-1],"Leads",va="center",fontsize=9.5,color=INK)
-a1.plot(m,T,color=TEAL2,lw=2.2); a1.text(12.2,T[-1],"Tours",va="center",fontsize=9.5,color=INK)
-a1.plot(m,C,color=DARK,lw=2.2); a1.text(12.2,C[-1],"Contracts",va="center",fontsize=9.5,color=INK)
+a1.plot(m,L,color=TEAL,lw=2.2); a1.text(12.2,L[-1],"Leads",va="center",fontsize=8.5,color=INK)
+a1.plot(m,T,color=TEAL2,lw=2.2); a1.text(12.2,T[-1],"Tours",va="center",fontsize=8.5,color=INK)
+a1.plot(m,C,color=DARK,lw=2.2); a1.text(12.2,C[-1],"Contracts",va="center",fontsize=8.5,color=INK)
 a1.add_patch(Ellipse((6,(L[5]+C[5])/2),1.6,(L[5]-C[5])+0.28,fc="none",ec=INK,lw=1.4,ls=(0,(3,2))))
-a1.annotate("January:\nbooking season",xy=(6.85,L[5]+0.02),xytext=(9.6,1.28),fontsize=9,color=INK,ha="center",va="center",arrowprops=dict(arrowstyle="-|>",color=INK,lw=1.2))
+a1.annotate("January:\nbooking season",xy=(6.85,L[5]+0.02),xytext=(9.6,1.28),fontsize=8,color=INK,ha="center",va="center",arrowprops=dict(arrowstyle="-|>",color=INK,lw=1.2))
 a1.set_xlim(0.5,14.2); a1.set_ylim(0,1.45); a1.set_xticks([1,6,12]); a1.set_xticklabels(["Mo 1","Mo 6","Mo 12"])
-a1.set_title("Leads / tours / contracts by month",fontsize=10.5,color=INK,loc="left",pad=8)
+a1.set_title("Leads / tours / contracts by month",fontsize=9.5,color=INK,loc="left",pad=8)
 oc=np.array([6,6,4,3,2,1,0,1,2,0,3,1]); new=np.array([0,0,1,1,2,2,3,3,3,4,3,3])
 a2.bar(m,oc,color=TEAL,width=0.7,edgecolor=SURF,linewidth=1); a2.bar(m,new,bottom=oc,color=TEAL2,width=0.7,edgecolor=SURF,linewidth=1)
 a2.set_xlim(0.3,12.7); a2.set_xticks([1,6,12]); a2.set_xticklabels(["Mo 1","Mo 6","Mo 12"]); a2.set_ylim(0,9.6)
-a2.text(1.2,8.3,"OC events",fontsize=9.5,color=TEAL,fontweight="bold"); a2.text(8.6,8.3,"New events",fontsize=9.5,color="#3f8f96",fontweight="bold")
+a2.text(1.2,8.3,"OC events",fontsize=8.5,color=TEAL,fontweight="bold"); a2.text(8.6,8.3,"New events",fontsize=8.5,color="#3f8f96",fontweight="bold")
 a2.add_patch(Ellipse((6,1.5),1.3,3.6,fc="none",ec=INK,lw=1.4,ls=(0,(3,2))))
-a2.annotate("January",xy=(6.7,3.0),xytext=(6.6,6.0),fontsize=9,color=INK,ha="center",va="center",arrowprops=dict(arrowstyle="-|>",color=INK,lw=1.2))
-a2.set_title("Events by month: OC vs. New",fontsize=10.5,color=INK,loc="left",pad=8)
+a2.annotate("January",xy=(6.7,3.0),xytext=(6.6,6.0),fontsize=8,color=INK,ha="center",va="center",arrowprops=dict(arrowstyle="-|>",color=INK,lw=1.2))
+a2.set_title("Events by month: OC vs. New",fontsize=9.5,color=INK,loc="left",pad=8)
 save(fig,"monthly.png")
 print("part2 charts done")
