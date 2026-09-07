@@ -8,7 +8,7 @@
 
 **2. Terms**
 - Y1 / Y2 / Y3. Y1 starts the day we close
-- OC events = booked before close. Most of Y1, roughly 25% of Y2, none in Y3. Need a healthy number; a year only holds so many
+- OC events = booked before close. Mostly Y1, some Y2, rarely Y3. Need a healthy count; a year only holds so many
 - New contracts = what we assume books after close; can land in Y1, Y2 or Y3
 
 **3. Market**

@@ -14,19 +14,21 @@ const run=(t,o={})=>new TextRun({text:t,font:FONT,size:o.size||20,bold:!!o.bold,
 const p=(children,o={})=>new Paragraph({children:Array.isArray(children)?children:[children],spacing:{before:o.before??0,after:o.after??60,line:o.line||264},alignment:o.align||AlignmentType.LEFT});
 const text=(t,o={})=>p(run(t,o),o);
 const bullet=(t,o={})=>new Paragraph({numbering:{reference:"bul",level:0},spacing:{before:0,after:o.after??30,line:248},children:[run(t,{size:o.size||19,color:o.color||INK})]});
+const richBullet=(parts,o={})=>new Paragraph({numbering:{reference:"bul",level:0},spacing:{before:0,after:o.after??20,line:248},children:parts.map(([t,b])=>run(t,{size:o.size||19,bold:!!b,color:INK}))});
+const divider=()=>new Paragraph({spacing:{before:30,after:40},border:{bottom:{style:BorderStyle.SINGLE,size:4,color:"B7DCDF",space:1}},children:[]});
 const lead=(t)=>text(t,{size:20,bold:true,after:30,before:80});
 
 function h1(t,sub){
-  const out=[new Paragraph({heading:HeadingLevel.HEADING_1,spacing:{before:240,after:sub?20:100},border:{bottom:{style:BorderStyle.SINGLE,size:12,color:TEAL,space:4}},children:[run(t,{size:30,bold:true,color:TEAL})]})];
+  const out=[new Paragraph({heading:HeadingLevel.HEADING_1,spacing:{before:140,after:sub?20:70},border:{bottom:{style:BorderStyle.SINGLE,size:12,color:TEAL,space:4}},children:[run(t,{size:30,bold:true,color:TEAL})]})];
   if(sub) out.push(text(sub,{size:18,color:INK2,italics:true,after:100}));
   return out;
 }
-function h2(t){ return text(t,{size:23,bold:true,color:TEAL,before:140,after:40}); }
+function h2(t){ return text(t,{size:23,bold:true,color:TEAL,before:60,after:40}); }
 
 function img(file,widthIn){
   const data=fs.readFileSync(file); const w=data.readUInt32BE(16), h=data.readUInt32BE(20);
   const W=Math.round(widthIn*96), H=Math.round(W*h/w);
-  return new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:60,after:60},children:[new ImageRun({type:"png",data,transformation:{width:W,height:H}})]});
+  return new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:30,after:30},children:[new ImageRun({type:"png",data,transformation:{width:W,height:H}})]});
 }
 
 // Tiles: {head, lines[] | bullets[], big}
@@ -36,12 +38,12 @@ function tiles(items,opts={}){
     rows:[new TableRow({children:items.map((it,i)=>new TableCell({
       width:{size:widths[i],type:WidthType.DXA},borders:gapBorders,
       shading:{type:ShadingType.CLEAR,fill:it.fill||LIGHT,color:"auto"},
-      margins:{top:120,bottom:120,left:140,right:140},
+      margins:{top:100,bottom:100,left:140,right:140},
       children:[
         ...(it.big?[p(run(it.big,{size:40,bold:true,color:TEAL}),{align:AlignmentType.CENTER,after:0})]:[]),
         p(run(it.head,{size:opts.headSize||21,bold:true,color:it.big?INK:TEAL}),{align:it.big?AlignmentType.CENTER:AlignmentType.LEFT,after:60}),
         ...(it.lines||[]).map(l=>p(run(l,{size:opts.lineSize||19,color:INK2}),{align:it.big?AlignmentType.CENTER:AlignmentType.LEFT,after:30,line:240})),
-        ...(it.bullets||[]).map(b=>bullet(b,{size:opts.lineSize||19,after:20}))
+        ...(it.bullets||[]).map(b=>Array.isArray(b)?richBullet(b,{size:opts.lineSize||19}):bullet(b,{size:opts.lineSize||19,after:20}))
       ]}))})]});
 }
 
@@ -49,78 +51,79 @@ function kv(rows,keyW=2600){
   const vW=CONTENT-keyW;
   return new Table({width:{size:CONTENT,type:WidthType.DXA},columnWidths:[keyW,vW],borders:noBorders,
     rows:rows.map(([k,v])=>new TableRow({children:[
-      new TableCell({width:{size:keyW,type:WidthType.DXA},borders:gapBorders,shading:{type:ShadingType.CLEAR,fill:LIGHT,color:"auto"},margins:{top:80,bottom:80,left:140,right:140},children:[p(run(k,{size:20,bold:true,color:TEAL}),{after:0})]}),
-      new TableCell({width:{size:vW,type:WidthType.DXA},borders:gapBorders,shading:{type:ShadingType.CLEAR,fill:PALE,color:"auto"},margins:{top:80,bottom:80,left:140,right:140},children:Array.isArray(v)?v.map((l,i)=>p(run(l,{size:20,color:INK}),{after:i===v.length-1?0:20,line:240})):[p(run(v,{size:20,color:INK}),{after:0})]})
+      new TableCell({width:{size:keyW,type:WidthType.DXA},borders:gapBorders,shading:{type:ShadingType.CLEAR,fill:LIGHT,color:"auto"},margins:{top:60,bottom:60,left:140,right:140},children:[p(run(k,{size:20,bold:true,color:TEAL}),{after:0})]}),
+      new TableCell({width:{size:vW,type:WidthType.DXA},borders:gapBorders,shading:{type:ShadingType.CLEAR,fill:PALE,color:"auto"},margins:{top:60,bottom:60,left:140,right:140},children:Array.isArray(v)?v.map((l,i)=>p(run(l,{size:20,color:INK}),{after:i===v.length-1?0:20,line:240})):[p(run(v,{size:20,color:INK}),{after:0})]})
     ]}))});
 }
 const spacer=(n=80)=>new Paragraph({spacing:{before:0,after:n},children:[]});
 const pageBreak=()=>new Paragraph({children:[new PageBreak()]});
 
 const children=[
-  p(run("Pro Forma Sheet",{size:52,bold:true,color:INK}),{after:0}),
-  p(run("Walters Hospitality",{size:22,color:TEAL,bold:true}),{after:60}),
-  p(run("Part 1: Pre-LOI",{size:26,bold:true,color:INK2}),{after:120}),
+  p(run("Pro Forma Sheet",{size:40,bold:true,color:INK}),{after:0}),
+  p([run("Walters Hospitality",{size:22,color:TEAL,bold:true}),run("   |   Part 1: Pre-LOI",{size:22,color:INK2,bold:true})],{after:60}),
 
   ...h1("1. Frame the venue"),
   tiles([
     {head:"Market",lines:["Current market","New market"]},
-    {head:"Performing or growth?",lines:["Already doing well","Growth opportunity"]},
-    {head:"Vendor services",lines:["What they do today vs. what we implement, and how fast","Our marketing to fill events"]},
-    {head:"Employee structure",lines:["Overstaffed or understaffed?","Owner involved or hands-off?"]},
+    {head:"Performing or growth?",lines:["Established, strong performer","Upside we can unlock"]},
+    {head:"Vendor services",lines:["What they offer today vs. what we bring, and how fast","Our marketing to drive bookings"]},
+    {head:"Employee structure",lines:["Overstaffed or understaffed?","Owner hands-on or hands-off?"]},
   ],{headSize:21,lineSize:18}),
 
   ...h1("2. Key terms"),
-  img("ocmix.png",6.4),
+  img("ocmix.png",4.4),
   kv([
     ["Year 1 / 2 / 3","Pro forma years. Year 1 starts the day we close."],
-    ["OC events","Original Contract events; booked before close. Mostly Year 1, some Year 2, rarely Year 3. We want a healthy number; a year only holds so many."],
-    ["New contracts","Events we assume will book after close; they can land in Year 1, 2 or 3."],
+    ["OC events","Original Contract events; booked before we close. We want a healthy count; a year only holds so many."],
+    ["New contracts","Events we assume will book after close; they can fall in Year 1, 2 or 3."],
   ]),
 
-  pageBreak(),
-
   ...h1("3. Market"),
-  img("market.png",5.6),
+  img("market.png",4.1),
   kv([
     ["1  Current market, in hub range",["Within 90 minutes of our hubs.","Vendor services modeled in Years 1 to 3 on our ramp."]],
-    ["2  Current market, outside hub range",["In the broader region; likely grouped operationally with it.","Too far to use our hubs, so hub services start at $0.","Question: do we grow that direction and open hubs that can service it?"]],
-    ["3  New market",["Venue must stand on its own.","Vendor services may be a couple of years out, once volume exists."]],
+    ["2  Current market, outside hub range",["Part of the broader region; likely grouped operationally with it.","Too far to use our hubs, so hub services start at $0.","Open question: do we grow that direction and add hubs to serve it?"]],
+    ["3  New market",["The venue has to carry itself.","Vendor services may be a couple of years out, once volume exists."]],
   ],3300),
-  spacer(80),
-  lead("The perfect new-market venue"),
-  tiles([
-    {head:"~100 events / year",lines:["Real volume from day one"]},
-    {head:"All-inclusive package",lines:["Partnering with outside vendors, or some in-house"]},
-    {head:"Owner not involved",lines:["Runs without them"]},
-  ],{headSize:21,lineSize:18}),
-
-  pageBreak(),
 
   ...h1("4. Top-Line Projections"),
   h2("Events"),
   bullet("Historical average per year"),
   bullet("Last 12 months"),
   bullet("Booked for the next 12 months"),
+  divider(),
   h2("Revenue / Vendor Services"),
   bullet("Photography / DJ / Stationery: quick to implement"),
   bullet("Bar: on/off switch once we hold the liquor license"),
-  bullet("Catering: attach slowly; test it"),
+  bullet("Catering: attach gradually; test it"),
   bullet("Floral / Bakery: depends on hub distance"),
+  divider(),
   lead("Attachment ramp-up"),
-  text("Our typical assumption: ramp to the Walters average attachment by Year 3, tweaked for the venue.",{size:19,color:INK2,after:40}),
-  img("ramp.png",6.0),
+  text("Our typical assumption: ramp to the Walters average attachment by Year 3, adjusted for the venue.",{size:19,color:INK2,after:40}),
+  img("ramp.png",5.3),
+  divider(),
   lead("$ per vendor service"),
   bullet("Walters average $ per event for that service"),
-  bullet("Small venue: tweak down; almost never tweak up"),
-  bullet("Sanity-check against what brides at that venue actually spend"),
+  bullet("Smaller venue: adjust down; almost never adjust up"),
+  bullet("Sanity-check against what couples at that venue actually spend"),
+  divider(),
   lead("Don't \"Walterize\" too fast"),
-  bullet("Test and attach slowly; catering is not 100% on day one"),
+  bullet("Test and attach gradually; catering is not 100% on day one"),
 
   ...h1("5. Expenses"),
   tiles([
-    {head:"COGS",bullets:["Depends on their vendor services and other offerings","Keep theirs in mind (e.g. a required caterer's per-head cost on OC events)","Often they have little or no COGS; we implement on our ramp and margins"]},
-    {head:"Payroll",bullets:["Who they employ today","Current or new market","How involved the owners are; what they pay themselves; replacement cost"]},
-    {head:"Operating expenses",bullets:["Switch to our marketing; almost always higher","Their utilities and maintenance per event","Our insurance, finance expenses, professional services"]},
+    {head:"COGS",bullets:[
+      [["Driven by their ",false],["vendor services",true],[" and other offerings",false]],
+      [["Keep ",false],["their existing costs",true],[" in mind (e.g. a required caterer's per-head cost on OC events)",false]],
+      [["Often ",false],["little or no COGS today",true],["; we build on ",false],["our ramp and margins",true]]]},
+    {head:"Payroll",bullets:[
+      [["Current staff",true],[" and roles",false]],
+      [["Current or new market",true]],
+      [["Owner involvement",true],[": what they pay themselves; ",false],["replacement cost",true]]]},
+    {head:"Operating expenses",bullets:[
+      [["Switch to ",false],["our marketing",true],["; almost always higher",false]],
+      [["Their ",false],["utilities and maintenance",true],[" per event",false]],
+      [["Our ",false],["insurance, finance expenses, professional services",true]]]},
   ],{headSize:22,lineSize:18}),
 ];
 
