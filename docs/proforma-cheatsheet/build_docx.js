@@ -58,21 +58,17 @@ function kv(rows,keyW=2600){
 const spacer=(n=80)=>new Paragraph({spacing:{before:0,after:n},children:[]});
 
 const children=[
-  // Title
   p(run("Pre-LOI Proforma",{size:52,bold:true,color:INK}),{after:0}),
   p(run("Cheat sheet · how we underwrite a venue before LOI",{size:24,color:INK2}),{after:40}),
   p(run("Walters Hospitality",{size:18,color:BLUE,bold:true}),{after:120}),
 
-  ...h1("1. Frame the venue","Five questions that set the tone for every proforma"),
+  ...h1("1. Frame the venue","Four questions that set the tone for every proforma"),
   tiles([
     {head:"Performing or growth?",lines:["Already doing well","— or —","Growth opportunity"]},
-    {head:"Vendor services",lines:["What they do today","vs. what we implement,","and how fast"]},
-    {head:"Payroll",lines:["Overstaffed","— or —","Understaffed"]},
-    {head:"Owner",lines:["Heavily involved","— or —","Hands-off"]},
+    {head:"Vendor services",lines:["What they do today vs. what we implement, and how fast","Plus our marketing to fill events"]},
+    {head:"Employee structure",lines:["Overstaffed or understaffed?","Owner heavily involved or hands-off?"]},
     {head:"Market",lines:["Current market","— or —","New market"]},
-  ],{headSize:20,lineSize:18}),
-  spacer(60),
-  text("Also: our marketing to get events booked, not just vendor services.",{size:18,color:INK2,italics:true}),
+  ],{headSize:21,lineSize:18}),
 
   ...h1("2. Key terms"),
   img("timeline.png",6.9),
@@ -82,7 +78,24 @@ const children=[
     ["New contract","Anything we book after close, whether it lands in Year 1, 2 or 3."],
   ]),
 
-  ...h1("3. Events — the three numbers","First thing we look at when projecting forward"),
+  new Paragraph({children:[new PageBreak()]}),
+
+  ...h1("3. Current vs. new market","Current market = within 90 minutes of our hubs"),
+  img("market.png",5.8),
+  kv([
+    ["Dallas hubs","The Olana (bakery + floral) · one of our three catering hubs, whichever is closest"],
+    ["Rule","Model each vendor service against its own hub. 30 min from catering but 1–2 hrs from bakery → catering yes, bakery $0."],
+    ["New market","Think further out. The venue must do well on its own; vendor services may not come for a couple of years, once volume exists."],
+  ],2700),
+  spacer(80),
+  text("The perfect new-market venue",{size:20,bold:true,after:40}),
+  tiles([
+    {head:"~100 events / year",lines:["Real volume from day one"]},
+    {head:"All-inclusive package",lines:["Partnering with outside vendors — or some in-house"]},
+    {head:"Owner not involved",lines:["Runs without them"]},
+  ],{headSize:21,lineSize:18}),
+
+  ...h1("4. Events — the three numbers","First thing we look at when projecting forward"),
   tiles([
     {big:"1",head:"Historical average",lines:["Events per year over their history"]},
     {big:"2",head:"Last 12 months",lines:["Events actually held"]},
@@ -91,41 +104,26 @@ const children=[
 
   new Paragraph({children:[new PageBreak()]}),
 
-  ...h1("4. Revenue & ancillary services","What they offer today · when we can implement · how fast we attach"),
-  text("Today: in-house bar? Required caterer? What else do they offer, and how?",{size:20,bold:true,after:20}),
-  text("Then: what can we implement, and when?",{size:20,bold:true,after:80}),
-  img("speed.png",6.6),
-  img("ramp.png",6.6),
+  ...h1("5. Revenue / Vendor Services","What they offer today · when we can implement · how fast we attach"),
   kv([
-    ["Attachment rate","Ramp up to the Walters average attachment for each service by Year 3. Tweak up or down for what they do today and what we truly believe we can do."],
-    ["$ per ancillary","Use the Walters average $ per event for that service. Small venue → tweak down. Almost never tweak up. Sanity-check the implied $ per event against what the owner says brides actually spend."],
+    ["Photography · DJ · Stationery","Quick to implement — set pricing and start selling."],
+    ["Bar","On/off switch. Off until we hold the liquor license, then on. Do they pour in-house today?"],
+    ["Catering","Attach slowly — test, don't flip at close. Do they require a caterer today, even if not in-house?"],
+    ["Floral · Bakery","Hub-dependent. Too far from The Olana → $0."],
+  ],2900),
+  img("ramp.png",5.2),
+  kv([
+    ["Attachment ramp-up","Ramp up to the Walters average attachment for each service by Year 3. Tweak for what they do today and what we truly believe we can do."],
+    ["$ per vendor service","Use the Walters average $ per event for that service. Small venue → tweak down. Almost never tweak up. Sanity-check the implied $ per event against what the owner says brides actually spend."],
     ["Don't \"Walterize\" too fast","Flipping every package to standard at close can lose the brides that venue attracts. Test and attach slowly — never assume catering is 100% on day one."],
-  ],2700),
-
-  new Paragraph({children:[new PageBreak()]}),
-
-  ...h1("5. Current vs. new market","Current market = within 90 minutes of our hubs"),
-  img("market.png",6.4),
-  kv([
-    ["Dallas hubs","The Olana (bakery + floral) · one of our three catering hubs, whichever is closest"],
-    ["Rule","Model each ancillary against its own hub. 30 min from catering but 1–2 hrs from bakery → catering yes, bakery $0."],
-    ["New market","Think further out. Needs to be a venue that already does well on its own; ancillaries may not come for a couple of years, once volume exists."],
-  ],2700),
+  ],2900),
 
   ...h1("6. Expenses","A mix of what they do today and what we can and should do post-close"),
   tiles([
-    {head:"COGS",lines:["Venue-rental-only → little COGS today","Add COGS for each ancillary we attach","Required caterer? Carry their per-head cost on every OC event; set what we charge going forward"]},
-    {head:"Payroll",lines:["Don't assume big cuts — they're likely staffed about where we'd be","Overstaffed or understaffed?","Owner's pay and replacement cost → see 7"]},
+    {head:"COGS",lines:["Venue-rental-only → little COGS today","Add COGS for each vendor service we attach","Required caterer? Carry their per-head cost on every OC event; set what we charge going forward"]},
+    {head:"Payroll",lines:["Don't assume big cuts — they're likely staffed about where we'd be","Overstaffed or understaffed?","Owner: how involved today? What do they pay themselves? If they walk, who replaces them and at what cost?"]},
     {head:"Operating expenses",lines:["Multiple lines","Start from what they spend today","Adjust to how we'd run it post-close"]},
   ],{headSize:22,lineSize:18}),
-  spacer(60),
-
-  ...h1("7. The owner question"),
-  tiles([
-    {head:"How involved are they today?",lines:["Day-to-day operations, sales, or both?"],fill:PALE,headColor:INK},
-    {head:"What do they pay themselves?",lines:["Is it in payroll — or not?"],fill:PALE,headColor:INK},
-    {head:"If they walk away…",lines:["Who replaces them, and at what cost?"],fill:PALE,headColor:INK},
-  ],{headSize:20,lineSize:18}),
 ];
 
 const doc=new Document({

@@ -40,7 +40,7 @@ vals=[0.35,0.7,1.0]
 bars=a1.bar(yrs,vals,width=0.55,color=[LIGHT,"#9dbfe9",BLUE],edgecolor="none")
 a1.axhline(1.0,color=INK2,lw=1.5,ls=(0,(4,3)))
 a1.text(2.35,1.02,"Walters avg\nattachment",ha="right",va="bottom",fontsize=9,color=INK2)
-a1.set_ylim(0,1.35); a1.set_title("Most ancillaries: ramp up to\nWalters average by Year 3",fontsize=10.5,color=INK,loc="left",pad=8)
+a1.set_ylim(0,1.35); a1.set_title("Most vendor services: ramp up to\nWalters average by Year 3",fontsize=10.5,color=INK,loc="left",pad=8)
 # bar step
 import numpy as np
 x=np.array([0,1.2,1.2,3]); y=np.array([0,0,1,1])
@@ -80,9 +80,9 @@ for (x,y) in [(-0.7,0.3),(0.55,-0.55)]:
 ax.add_patch(Circle((3.1,0.55),0.09,fc=ORANGE,ec="none"))
 ax.text(-1.55,-1.3,"Venue",fontsize=9,color=INK2,va="center"); ax.add_patch(Circle((-1.85,-1.3),0.07,fc=ORANGE,ec="none"))
 ax.text(1.75,0.05,"CURRENT MARKET",fontsize=10.5,fontweight="bold",color=BLUE,va="bottom")
-ax.text(1.75,-0.02,"Inside the ring → model ancillaries in Y1–Y3",fontsize=9.5,color=INK2,va="top")
+ax.text(1.75,-0.02,"Inside the ring → model vendor services in Y1–Y3",fontsize=9.5,color=INK2,va="top")
 ax.text(1.75,-0.75,"NEW MARKET",fontsize=10.5,fontweight="bold",color=INK2,va="bottom")
-ax.text(1.75,-0.82,"Outside the ring → venue must stand on its own;\nancillaries come later, once volume exists",fontsize=9.5,color=INK2,va="top")
+ax.text(1.75,-0.82,"Outside the ring → venue must stand on its own;\nvendor services come later, once volume exists",fontsize=9.5,color=INK2,va="top")
 ax.text(3.1,0.72,"too far → $0 for that hub's service",fontsize=9,color=INK2,ha="center",va="bottom")
 save(fig,"market.png")
 print("charts done")
