@@ -42,9 +42,12 @@
     {% if not anc.has_detail %}
     <div class="flash error" style="margin:14px 0 0;background:var(--warn-bg);
          color:var(--warn);border-color:#f0dcb4">
-      No per-category attachment reported yet. Enter attached-event counts and revenue
-      by category on the <a href="{{ url_for('postclose.data', slug=slug, year=year) }}">Data</a>
-      tab and this table fills in. Until then only the proforma column is real.
+      <b>Proforma assumptions only — no attachment reported yet.</b>
+      The PF columns below are what we underwrote for Y{{ view.year }} and are live now.
+      The Actual columns fill in once per-category attachment arrives: either an event
+      list with a column per category (Data tab), or the general ledger coding each
+      ancillary posting to its department. Revenue alone is not enough — attachment
+      rate needs to know how many events bought each category.
     </div>
     {% endif %}
   </div>

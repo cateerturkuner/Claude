@@ -18,6 +18,21 @@
 
 {% if not view.n_reported %}{{ m.nodata(view) }}{% endif %}
 
+{% if view.n_reported and view.ytd.actual.get('events') is none %}
+<div class="card" style="border-color:var(--warn)">
+  <div class="body" style="display:flex;align-items:center;gap:14px">
+    <div style="flex:1">
+      <b style="color:var(--navy)">Financials are in; event counts are not.</b>
+      <span class="note">Revenue per event, the revenue bridge and the by-venue-space
+      table all need them. The general ledger has no event-level data — it can say
+      what was earned, never how many events earned it — so counts come from
+      Tripleseat or by hand.</span>
+    </div>
+    <a class="btn" href="{{ url_for('postclose.data', slug=slug, year=year) }}">Enter event counts →</a>
+  </div>
+</div>
+{% endif %}
+
 <div class="card">
   <h2>Year {{ view.year }} position{% if segment %} · {{ view.segment_label }}{% endif %}
     <span class="sub">{% if segment %}events and contracts for
@@ -81,8 +96,14 @@
          neither, so nothing is shown rather than implying a nil plan. #}
       {{ posrow(view.profit_key, view.profit_label, 'usd', none, true) }}
       {{ posrow('profit_margin', view.profit_label ~ ' Margin', 'pct') }}
-      {% if 'rent' in view.line_keys %}
+      {% if 'rent' in view.line_keys or view.ytd.actual.get('rent') %}
         {{ posrow('rent', 'Rent', 'usd') }}
+        {% if 'rent' not in view.line_keys %}
+        <tr><td class="lbl" colspan="6" style="text-align:left;white-space:normal;
+            background:var(--warn-bg);color:var(--warn);font-size:11.5px;padding:6px 9px">
+          Rent is being paid but the proforma carried none, so there is no plan to
+          compare against. It sits below {{ view.profit_label }} and does not affect it.</td></tr>
+        {% endif %}
         {% if 'ebitda' in view.line_keys %}{{ posrow('ebitda', 'EBITDA', 'usd', none, true) }}{% endif %}
       {% endif %}
       {% if view.fy.plan.get('total_other_adj') or view.ytd.actual.get('total_other_adj') %}

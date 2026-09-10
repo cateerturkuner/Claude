@@ -119,7 +119,10 @@ def _ctx(slug):
             "segment": segment,
             "multi_segment": len(segs) > 1,
             "show_signals": n_reported >= signals.PERSISTENT_MONTHS,
-            "show_attachment": analysis.has_attachment(slug, year),
+            # The tab shows proforma assumptions with or without actuals, so it
+            # is available as soon as the venue has attachment drivers at all.
+            "show_attachment": bool(analysis.attachment_segments(slug)),
+            "has_attachment_actuals": analysis.has_attachment(slug, year),
             "show_portfolio": len(vs) > 1}
 
 
@@ -141,8 +144,9 @@ def index():
 def overview(slug):
     ctx = _ctx(slug)
     view = analysis.build(slug, ctx["year"])
+    # The overview card is a variance card, so it still waits for actuals.
     anc = None
-    if ctx["show_attachment"]:
+    if ctx["has_attachment_actuals"]:
         anc = analysis.ancillary(slug, ctx["year"], ctx["segment"])
         if anc:
             anc["top"] = signals.headline_categories(anc)

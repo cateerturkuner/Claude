@@ -250,7 +250,14 @@ def build(slug, year, segment=None):
     closed = [m for m in months if m["has_actual"]]
     open_months = [m for m in months if not m["has_actual"]]
 
-    roll_keys = keys + ["contracts", "events_oc", "events_new", "events"]
+    # Keys the proforma carries, the funnel roles, plus anything actually
+    # reported that the proforma has no line for -- Firefly's rent, for
+    # instance. Without that last part a line we never underwrote would be
+    # dropped rather than flagged as unplanned.
+    reported_keys = {k for m in months for k in (m["actual"] or {})}
+    roll_keys = list(dict.fromkeys(
+        keys + ["contracts", "events_oc", "events_new", "events", "rent"]
+        + sorted(reported_keys)))
 
     # Year to date: plan restated over exactly the months that have reported.
     ytd_plan = add_derived({k: _sum(m["plan"].get(k) for m in closed)
