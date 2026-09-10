@@ -292,6 +292,10 @@ def build(slug, year, segment=None):
         "lines": base["lines"],
         "months": months,
         "reported_months": [m["ym"] for m in closed],
+        # Where each reported month came from, so a figure entered as a stand-in
+        # is not read as measured.
+        "provenance": [{"ym": m["ym"], "label": m["label"], "source": m["source"],
+                        "note": m["note"]} for m in closed],
         "n_reported": len(closed),
         "n_months": len(months),
         "ytd": {
