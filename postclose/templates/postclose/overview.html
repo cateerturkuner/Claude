@@ -76,12 +76,19 @@
       {{ posrow('gross_margin', 'Gross Margin', 'usd', none, true) }}
       {{ posrow('total_payroll', 'Total Payroll', 'usd', 'payroll') }}
       {{ posrow('total_opex', 'Total Operating Expenses', 'usd', 'opex') }}
-      {% if 'rent' in view.line_keys %}{{ posrow('rent', 'Rent', 'usd') }}{% endif %}
-      {% if view.fy.plan.get('total_other_adj') or view.ytd.actual.get('total_other_adj') %}
-        {{ posrow('total_other_adj', 'Total Other Adjustments', 'usd', 'adjust') }}
-      {% endif %}
+      {# EBITDAR is the comparison line. What sits below it differs by venue:
+         Hadden's proforma carries rent and therefore an EBITDA; Firefly's carries
+         neither, so nothing is shown rather than implying a nil plan. #}
       {{ posrow(view.profit_key, view.profit_label, 'usd', none, true) }}
       {{ posrow('profit_margin', view.profit_label ~ ' Margin', 'pct') }}
+      {% if 'rent' in view.line_keys %}
+        {{ posrow('rent', 'Rent', 'usd') }}
+        {% if 'ebitda' in view.line_keys %}{{ posrow('ebitda', 'EBITDA', 'usd', none, true) }}{% endif %}
+      {% endif %}
+      {% if view.fy.plan.get('total_other_adj') or view.ytd.actual.get('total_other_adj') %}
+        {{ posrow('total_other_adj', 'Total Other Adjustments', 'usd', 'adjust') }}
+        {{ posrow('adjusted_ebitdar', 'Adjusted EBITDAR', 'usd', none, true) }}
+      {% endif %}
       </tbody>
     </table>
     <p class="note" style="margin:10px 0 0">Click a block to open its lines. Costs are

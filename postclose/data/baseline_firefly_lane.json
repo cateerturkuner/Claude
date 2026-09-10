@@ -2,11 +2,11 @@
  "slug": "firefly_lane",
  "venue": "Firefly Lane",
  "units": "thousands",
- "source_file": "Firefly_Monthly_Forecast_v2026.07.01_v2.xlsx",
+ "source_file": "Firefly_Monthly_Forecast_vF.xlsx",
  "source_sheet": "Adj. P&L",
- "extracted_at": "2026-09-05T14:47:19Z",
+ "extracted_at": "2026-09-10T20:27:49Z",
  "close_month": "2026-06",
- "profit_key": "adjusted_ebitdar",
+ "profit_key": "ebitdar",
  "lines": [
   {
    "key": "leads",

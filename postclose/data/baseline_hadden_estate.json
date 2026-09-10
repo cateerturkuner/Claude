@@ -4,9 +4,9 @@
  "units": "thousands",
  "source_file": "Hadden_Monthly_Forecast_vF.xlsx",
  "source_sheet": "Detailed P&L",
- "extracted_at": "2026-09-05T14:47:16Z",
+ "extracted_at": "2026-09-10T20:27:51Z",
  "close_month": "2026-09",
- "profit_key": "ebitda",
+ "profit_key": "ebitdar",
  "lines": [
   {
    "key": "leads",

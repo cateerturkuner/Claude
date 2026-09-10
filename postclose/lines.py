@@ -108,9 +108,11 @@ SUBTOTAL_SUMS = [
     ("adjusted_ebitdar", ["ebitdar", "total_other_adj"]),
 ]
 
-# The bottom line, most-adjusted first. Whichever a venue actually carries is
-# the one the tiles and bridges are built on.
-PROFIT_PREFERENCE = ["adjusted_ebitdar", "ebitda", "ebitdar"]
+# The comparison line. EBITDAR first, deliberately: rent is negotiated per deal
+# and is not always underwritten -- Hadden's proforma carries it, Firefly's does
+# not -- so comparing before rent is the only basis that holds across venues.
+# Rent and the lines below it are still shown where a venue has them.
+PROFIT_PREFERENCE = ["ebitdar", "adjusted_ebitdar", "ebitda"]
 
 # Section headers in the label column. They mark a group boundary rather than a
 # line, so they are skipped rather than matched.
