@@ -139,21 +139,21 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
 </div>
 <div class="cols lanes">
 <div><div class="lab" style="margin-top:0">What we buy: three lanes</div>
-<h4>Traditionally Walters (rural and suburban)</h4><ul><li>Estates, chapels, barns, gardens; 75 to 200 events</li><li>Owned real estate priced on earnings</li><li>Caney Creek, Hadden, Meadows</li></ul>
+<h4>Traditionally Walters (rural and suburban)</h4><ul><li>Estates, chapels, barns, gardens; 75 to 200 events</li><li>Owned real estate priced on earnings</li><li>Firefly Lane, Davis &amp; Grey, Caney Creek</li></ul>
 <h4>Urban</h4><ul><li>Industrial, loft, and historic venues with a corporate mix; usually leased</li><li>Engine Room, West Midtown, VisionLoft, Wilburn Street</li></ul>
-<h4>Platforms</h4><ul><li>Multi-venue groups: density in one deal</li><li>D'Amico (12), BTTS (7 to 8), Spaces in the City (5), LM (5), Little River Farms (4), Holly Vault (4)</li></ul></div>
+<h4>Platforms</h4><ul><li>Multi-venue groups: density in one deal</li><li>D'Amico (12), BTTS (8), Cescaphe (8), Spaces in the City (5)</li></ul></div>
 <div><div class="lab" style="margin-top:0">Three acquisition models</div>
-<h4>Buy the business and the real estate</h4><ul><li>Leading venues; land priced on earnings</li><li>EPRT sale-leaseback recycles the capital</li><li>Firefly Lane, Hadden, Caney Creek</li></ul>
-<h4>Lease the real estate, buy the business</h4><ul><li>When the seller values land above our number, or for urban sites</li><li>Under 1x in; exits after years 1 and 2; FMV option; ROFR</li><li>Engine Room, Meadows</li></ul>
-<h4>Manage or partner</h4><ul><li>Owner keeps the asset; we run sales, planning, and ancillary for a fee plus service exclusivity</li><li>Little River Farms (2 venues), LM</li></ul></div>
+<h4>Buy the business and the real estate</h4><ul><li>Leading venues; land priced on earnings</li><li>EPRT sale-leaseback recycles the capital</li><li>Firefly Lane, Davis &amp; Grey, Caney Creek</li></ul>
+<h4>Lease the real estate, buy the business</h4><ul><li>When the seller values land above our number, or for urban sites</li><li>Under 1x in; exits after years 1 and 2; FMV option; ROFR</li><li>Engine Room, Hadden Estate</li></ul>
+<h4>Manage or partner</h4><ul><li>Owner keeps the asset; we run sales, planning, and ancillary for a fee plus service exclusivity</li><li>Little River Farms (2 of 4), LM (5 of 7)</li></ul></div>
 </div>
 <div class="lab">Where we're focused and why</div>
 <table>
 <tr><th style="width:19%">Tier</th><th style="width:44%">Markets</th><th>Why</th></tr>
-<tr><td class="k">Home markets (43 venues)</td><td>DFW ~18, Houston ~10, Hill Country ~10, Atlanta 2 (+ Engine Room), Nashville 1</td><td>Hubs built; every infill adds ancillary on day one; 58 of the 95 uncontacted top-tier venues are here</td></tr>
-<tr><td class="k">Focused expansion (10)</td><td>Nashville, Atlanta, Cleveland, Indianapolis, Chicago, Orlando, Detroit, Cincinnati, Minneapolis, Columbus</td><td>A platform or leading-venue candidate in dialogue; the MSA score; owners answer</td></tr>
-<tr><td class="k">Next wave (8)</td><td>Phoenix, Greenville, Memphis, Louisville, Pittsburgh, Birmingham, Buffalo, Hartford; Knoxville in dialogue</td><td>One region a week to Jan 18; fragmented supply, cheap to test</td></tr>
-<tr><td class="k">Paused</td><td>Miami (land $2.8M/acre), Salt Lake (few venues), NC and CO (Wedgewood), Kansas City, New Orleans, Tyler</td><td>High score is not enough without a path to 5 venues</td></tr>
+<tr><td class="k">Home markets (43 venues)</td><td>DFW ~18, Houston ~10 (+ Caney Creek), Hill Country ~10, Atlanta 2 (+ Engine Room), Nashville 2</td><td>Hubs built; every infill adds ancillary on day one; 58 of the 95 uncontacted top-tier venues are here</td></tr>
+<tr><td class="k">Focused expansion (10)</td><td>Nashville, Atlanta, Phoenix, Orlando, Chicago, Minneapolis, Indianapolis, Cincinnati, Cleveland, Columbus, Knoxville, Greenville</td><td>A platform or leading-venue candidate in dialogue; the MSA score; owners answer</td></tr>
+<tr><td class="k">Next wave (8)</td><td>Memphis, Louisville, Pittsburgh, Birmingham, Buffalo, Hartford</td><td>One region a week to Jan 18; fragmented supply, cheap to test</td></tr>
+<tr><td class="k">Paused</td><td>Miami (land $2.8M/acre), Salt Lake (few venues), Charlotte, Raleigh, Denver (Wedgewood), Kansas City, New Orleans, Charleston, Tyler</td><td>High score is not enough without a path to 5 venues</td></tr>
 <tr><td class="k">Broker-led</td><td>DC, Philadelphia, New Jersey, Baltimore, Virginia Beach, Richmond</td><td>Direct outreach fell short; brokers bring the deals</td></tr>
 </table>
 <p class="muted small" style="margin-top:6px">Markets are scored on eight weighted criteria, less 3% per Wedgewood venue (DFW 4.08, Houston 4.04, Austin 3.54, Orlando 3.48, Atlanta 3.39, Nashville 3.22). Full ranking and the qualitative factors on page 4.</p>
@@ -473,8 +473,9 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
     document.querySelectorAll('[data-pc]').forEach(function(el){ el.textContent=pct(v[el.getAttribute('data-pc')],v.contacted); });
     document.querySelectorAll('[data-prior]').forEach(function(el){ var k=el.getAttribute('data-prior'); var i=CHAIN.indexOf(k); var prev=i>0?v[CHAIN[i-1]]:v.ownpath; el.textContent=pct(v[k],prev)+(i===0?'*':''); });
     var top=Math.log(v.scored||1);
-    document.querySelectorAll('[data-bar]').forEach(function(el){ var n=v[el.getAttribute('data-bar')]; if(n>0&&top>0) el.style.width=Math.max(2,Math.round(100*Math.log(n)/top))+'%'; });
+    document.querySelectorAll('[data-bar]').forEach(function(el){ var k=el.getAttribute('data-bar'); var n=v[k]; if(n>0&&top>0&&v0[k]!==n) el.style.width=Math.max(2,Math.round(100*Math.log(n)/top))+'%'; });
   }
+  var v0=src();
   var t=null; document.addEventListener('input',function(e){ if(e.target.closest&&e.target.closest('.page')){ clearTimeout(t); t=setTimeout(sync,400); } });
   sync();
 })();
