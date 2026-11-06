@@ -167,17 +167,17 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
 <div class="cols">
 <div>
 <div class="lab" style="margin-top:0">2026 funnel through Nov 4</div>
-<div class="funnel">
-<div class="row" style="width:100%;background:#c4dad5;color:#1b2a2a">Contacted: 1,202</div>
-<div class="row" style="width:92%;background:#acccc7;color:#1b2a2a">Responded: 653 · 54%</div>
-<div class="row" style="width:84%;background:#93beb6;color:#1b2a2a">Confirmed interest: 140 · 12%</div>
-<div class="row" style="width:76%;background:#6fa89f">Shared data: 112 · 9%</div>
-<div class="row" style="width:68%;background:#4f9389">Reviewed / offered: 87 · 7%</div>
-<div class="row" style="width:60%;background:#2e7d73">LOIs sent (2026): 19 · 1.6%</div>
-<div class="row" style="width:52%;background:#1f5f58">Accepted: 5</div>
-<div class="row" style="width:44%;background:#0e3c3a">Closed: 2</div>
+<div class="funnel" id="funnel-src">
+<div class="row" style="width:100%;background:#c4dad5;color:#1b2a2a">Contacted: <span data-n="contacted" data-src>1,202</span></div>
+<div class="row" style="width:92%;background:#acccc7;color:#1b2a2a">Responded: <span data-n="responded" data-src>653</span> · <span data-pct="responded">54%</span></div>
+<div class="row" style="width:84%;background:#93beb6;color:#1b2a2a">Confirmed interest: <span data-n="confirmed" data-src>140</span> · <span data-pct="confirmed">12%</span></div>
+<div class="row" style="width:76%;background:#6fa89f">Shared data: <span data-n="shared" data-src>112</span> · <span data-pct="shared">9%</span></div>
+<div class="row" style="width:68%;background:#4f9389">Reviewed / offered: <span data-n="reviewed" data-src>87</span> · <span data-pct="reviewed">7%</span></div>
+<div class="row" style="width:60%;background:#2e7d73">LOIs sent (2026): <span data-n="lois" data-src>19</span> · <span data-pct="lois">1.6%</span></div>
+<div class="row" style="width:52%;background:#1f5f58">Accepted: <span data-n="accepted" data-src>5</span></div>
+<div class="row" style="width:44%;background:#0e3c3a">Closed: <span data-n="closed" data-src>2</span></div>
 </div>
-<p class="muted small">Hub universe: 8,748 venues scored, 4,866 own-path targets. 95 top-tier (80+) venues in the 20 target MSAs not yet contacted.</p>
+<p class="muted small" id="universe-src">Hub universe: <span data-n="scored" data-src>8,748</span> venues scored, <span data-n="ownpath" data-src>4,866</span> own-path targets. 95 top-tier (80+) venues in the 20 target MSAs not yet contacted.</p>
 <div class="box orange" style="margin-top:8px"><h3>Where it leaks: valuation, not interest</h3><ul>
 <li>Of 87 venues reviewed or offered, we passed on 59 and sellers declined 23</li>
 <li>Nearly every decline was price: owners anchored on real-estate value or a prior offer (Canyonwood, Videre, Emerson, Edible Ideas, Westwood and Sixpence)</li>
@@ -185,8 +185,8 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
 <li>Through October, 29 real offers produced 4 acceptances; only 1 deal has died after an LOI</li>
 <li><b>The fix: earlier and clearer valuation conversations, not more volume at the top</b></li></ul></div>
 <div class="box white"><h3>2027 Goals <span class="pill">placeholder, decide 11/13</span></h3><ul>
-<li>LOIs: 20+ (2026: 19 through October; 9 planned November to March)</li>
-<li>Closes: 4 to 6 single venues plus one platform (2026: 2 closed, 2 closing by mid-December)</li>
+<li>LOIs: 20+ (2026: <span data-n="lois">19</span> through October; 9 planned November to March)</li>
+<li>Closes: 4 to 6 single venues plus one platform (2026: <span data-n="closed">2</span> closed, 2 closing by mid-December)</li>
 <li>Density: every market shows a credible path to 5 venues within 18 months, or we stop spending there</li>
 <li>New markets: 8 outreach waves by Jan 18; 18 region overviews to Wildcat by Nov 23; 2 to 3 new markets reach a leading-venue conversation by Q2</li>
 <li>Middle of funnel: confirmed interest to data shared above 80%; offers accepted above 1 in 3</li></ul></div>
@@ -200,8 +200,8 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
 <div class="bar" style="height:19%"></div><div class="bar" style="height:24%"></div><div class="bar" style="height:33%"><i>105</i></div><div class="bar" style="height:33%"><i>104</i></div><div class="bar" style="height:32%"><i>101</i></div><div class="bar" style="height:32%"><i>102</i></div><div class="bar" style="height:35%"><i>112</i></div><div class="bar" style="height:29%"></div><div class="bar" style="height:27%"></div><div class="bar" style="height:24%"></div><div class="bar" style="height:23%"></div><div class="bar" style="height:23%"></div><div class="bar" style="height:33%"><i>104</i></div><div class="bar" style="height:36%"><i>116</i></div><div class="bar" style="height:32%"><i>103</i></div><div class="bar" style="height:39%"><i>126</i></div><div class="bar" style="height:48%"><i>152</i></div><div class="bar" style="height:22%"></div><div class="bar" style="height:36%"><i>116</i></div><div class="bar" style="height:28%"></div><div class="bar" style="height:39%"><i>124</i></div><div class="bar" style="height:25%"></div><div class="bar hi" style="height:93%"><i><b>298</b></i></div><div class="bar" style="height:23%"></div>
 </div></div>
 <div class="xl"><span>5/25</span><span>6/8</span><span>6/22</span><span>7/6</span><span>7/20</span><span>8/3</span><span>8/17</span><span>8/31</span><span>9/14</span><span>9/28</span><span>10/12</span><span>10/26</span></div>
-<p class="small" style="margin:6px 0 10px">3,757 touchpoints YTD (662 new, 1,559 follow-ups, 1,536 active). 70+ venues toured; 14 of 16 market visits done.</p>
-<div class="lab">LOIs sent in 2026 by market (19)</div>
+<p class="small" style="margin:6px 0 10px"><span data-n="touch" data-src>3,757</span> touchpoints YTD (662 new, 1,559 follow-ups, 1,536 active). 70+ venues toured; 14 of 16 market visits done.</p>
+<div class="lab">LOIs sent in 2026 by market (<span data-n="lois">19</span>)</div>
 <div class="legend"><span><i class="c1"></i>Closed</span><span><i class="c2"></i>Signed</span><span><i class="c5"></i>Re-engaging</span><span><i class="c3"></i>Declined</span><span><i class="c6"></i>Died post-LOI</span></div>
 <div class="loi">
 <span>Nashville</span><div class="seg"><span class="c1" style="width:25%">1</span><span class="c3" style="width:75%">3</span></div><span>4</span>
@@ -274,33 +274,40 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
 <div class="rule"></div>
 <table class="stage small">
 <tr><th style="width:14%">Stage</th><th style="width:13%">As of Nov 4</th><th style="width:22%">Tool</th><th>What happens here</th></tr>
-<tr><td class="k">1 · Identify and score</td><td><div class="n">8,748</div><div class="d">venues scored</div></td><td>Venue Prioritization hub; owner enrichment; Market Intel brief</td><td>8,069 operating venues plus 679 conversion candidates, scored on ten criteria; 4,866 on the own path, 1,827 partner, 1,073 refer; owner email verified on 3,070. MSA scoring ranks 56 markets; the map shows 90-minute reach from our hubs; the Monday brief flags news and listings on the top 1,000.</td></tr>
-<tr><td class="k">2 · Contact</td><td><div class="n">3,757</div><div class="d">touchpoints YTD</div></td><td>Pipedrive; funnel tracker (Touchpoints, Response Sources)</td><td>1,202 venues contacted all time, 421 active, 662 new this year; one new region a week through Jan 18. Calls get answered 24 times per 100 vs 17 for email; responders answer by the second touch, so low-tier email stops at touch 2 and the phone goes to top and mid tier.</td></tr>
-<tr><td class="k">3 · Engage</td><td><div class="n">140</div><div class="d">confirmed interest</div></td><td>Funnel tracker stages; mid-funnel program; Deal Factors</td><td>653 responded, 140 confirmed, 112 shared data. Trends one-pager (67% open), Coffee Chat cards (80% open), seller references, announcements, Value Snapshot. Deal Factors tests every Saturday which factors predict a response and an LOI.</td></tr>
-<tr><td class="k">4 · Evaluate and offer</td><td><div class="n">19</div><div class="d">LOIs sent in 2026</div></td><td>Active Pipeline; LOI ledger; data books; region overviews; Review Intel</td><td>55 live targets scored 0 to 10 with LTM and PF-Y2 economics; every offer with terms and outcome; 18 region overviews to Wildcat by Nov 23; public reviews compiled before any LOI; Wildcat reviews before signature.</td></tr>
+<tr><td class="k">1 · Identify and score</td><td><div class="n" data-n="scored">8,748</div><div class="d">venues scored</div></td><td>Venue Prioritization hub; owner enrichment; Market Intel brief</td><td>8,069 operating venues plus 679 conversion candidates, scored on ten criteria; <span data-n="ownpath">4,866</span> on the own path, 1,827 partner, 1,073 refer; owner email verified on 3,070. MSA scoring ranks 56 markets; the map shows 90-minute reach from our hubs; the Monday brief flags news and listings on the top 1,000.</td></tr>
+<tr><td class="k">2 · Contact</td><td><div class="n" data-n="touch">3,757</div><div class="d">touchpoints YTD</div></td><td>Pipedrive; funnel tracker (Touchpoints, Response Sources)</td><td><span data-n="contacted">1,202</span> venues contacted all time, 421 active, 662 new this year; one new region a week through Jan 18. Calls get answered 24 times per 100 vs 17 for email; responders answer by the second touch, so low-tier email stops at touch 2 and the phone goes to top and mid tier.</td></tr>
+<tr><td class="k">3 · Engage</td><td><div class="n" data-n="confirmed">140</div><div class="d">confirmed interest</div></td><td>Funnel tracker stages; mid-funnel program; Deal Factors</td><td><span data-n="responded">653</span> responded, <span data-n="confirmed">140</span> confirmed, <span data-n="shared">112</span> shared data. Trends one-pager (67% open), Coffee Chat cards (80% open), seller references, announcements, Value Snapshot. Deal Factors tests every Saturday which factors predict a response and an LOI.</td></tr>
+<tr><td class="k">4 · Evaluate and offer</td><td><div class="n" data-n="lois">19</div><div class="d">LOIs sent in 2026</div></td><td>Active Pipeline; LOI ledger; data books; region overviews; Review Intel</td><td>55 live targets scored 0 to 10 with LTM and PF-Y2 economics; every offer with terms and outcome; 18 region overviews to Wildcat by Nov 23; public reviews compiled before any LOI; Wildcat reviews before signature.</td></tr>
 <tr><td class="k">5 · Diligence and close</td><td><div class="n">2</div><div class="d">under contract</div></td><td>Deal Command Center; Daily Deal Status email</td><td>Legal, diligence, and integration workstreams per deal with third parties on point (Quarles, Whitley Penn, WTW, BL, Matthews). Caney Creek: 8 streams running, close week of Nov 30. Engine Room: 5 running, close Dec 15.</td></tr>
-<tr><td class="k">6 · Integrate and measure</td><td><div class="n">2</div><div class="d">closed in 2026</div></td><td>120-day tracker; integration dashboard; post-close vs underwriting slide; post-mortem scorecard</td><td>Firefly Lane Q3: contracts 118% of goal. Hadden September: contracts 140%, revenue 97%; 92 contracts against a 190 goal, 15 ahead of pace; vendor packages booked within weeks of launch. Every deal measured against its underwriting at 100 days and 12 months.</td></tr>
+<tr><td class="k">6 · Integrate and measure</td><td><div class="n" data-n="closed">2</div><div class="d">closed in 2026</div></td><td>120-day tracker; integration dashboard; post-close vs underwriting slide; post-mortem scorecard</td><td>Firefly Lane Q3: contracts 118% of goal. Hadden September: contracts 140%, revenue 97%; 92 contracts against a 190 goal, 15 ahead of pace; vendor packages booked within weeks of launch. Every deal measured against its underwriting at 100 days and 12 months.</td></tr>
 </table>
 <div class="lab">The numbers through the machine</div>
 <div class="cols">
 <div class="hbars">
-<div class="r"><span>Hub records scored</span><span><span class="b" style="width:100%"></span></span></div>
-<div class="r"><span>Own-path targets</span><span><span class="b" style="width:91%"></span><span class="v">4,866</span></span></div>
-<div class="r"><span>Contacted (all time)</span><span><span class="b" style="width:69%"></span><span class="v">1,202</span></span></div>
-<div class="r"><span>Responded</span><span><span class="b" style="width:59%"></span><span class="v">653</span></span></div>
-<div class="r"><span>Confirmed interest</span><span><span class="b" style="width:35%"></span><span class="v">140</span></span></div>
-<div class="r"><span>Shared data</span><span><span class="b" style="width:32%"></span><span class="v">112</span></span></div>
-<div class="r"><span>Reviewed / offered</span><span><span class="b" style="width:28%"></span><span class="v">87</span></span></div>
-<div class="r"><span>LOIs sent in 2026</span><span><span class="b" style="width:16%"></span><span class="v">19</span></span></div>
-<div class="r"><span>Accepted</span><span><span class="b" style="width:9%"></span><span class="v">5</span></span></div>
-<div class="r"><span>Closed</span><span><span class="b" style="width:4%"></span><span class="v">2</span></span></div>
+<div class="r"><span>Hub records scored</span><span><span class="b" data-bar="scored" style="width:100%"></span><span class="v" data-n="scored">8,748</span></span></div>
+<div class="r"><span>Own-path targets</span><span><span class="b" data-bar="ownpath" style="width:91%"></span><span class="v" data-n="ownpath">4,866</span></span></div>
+<div class="r"><span>Contacted (all time)</span><span><span class="b" data-bar="contacted" style="width:69%"></span><span class="v" data-n="contacted">1,202</span></span></div>
+<div class="r"><span>Responded</span><span><span class="b" data-bar="responded" style="width:59%"></span><span class="v" data-n="responded">653</span></span></div>
+<div class="r"><span>Confirmed interest</span><span><span class="b" data-bar="confirmed" style="width:35%"></span><span class="v" data-n="confirmed">140</span></span></div>
+<div class="r"><span>Shared data</span><span><span class="b" data-bar="shared" style="width:32%"></span><span class="v" data-n="shared">112</span></span></div>
+<div class="r"><span>Reviewed / offered</span><span><span class="b" data-bar="reviewed" style="width:28%"></span><span class="v" data-n="reviewed">87</span></span></div>
+<div class="r"><span>LOIs sent in 2026</span><span><span class="b" data-bar="lois" style="width:16%"></span><span class="v" data-n="lois">19</span></span></div>
+<div class="r"><span>Accepted</span><span><span class="b" data-bar="accepted" style="width:9%"></span><span class="v" data-n="accepted">5</span></span></div>
+<div class="r"><span>Closed</span><span><span class="b" data-bar="closed" style="width:4%"></span><span class="v" data-n="closed">2</span></span></div>
 <p class="muted small" style="margin-top:6px">Bar length on a log scale so the bottom of the funnel stays visible; labels are the actual counts as of Nov 4.</p>
 </div>
 <div><table class="small"><tr><th>Stage</th><th>Count</th><th>Of prior</th><th>Of contacted</th></tr>
-<tr><td class="k">Contacted (all time)</td><td>1,202</td><td>25%*</td><td>100%</td></tr><tr><td class="k">Responded</td><td>653</td><td>54%</td><td>54%</td></tr><tr><td class="k">Confirmed interest</td><td>140</td><td>21%</td><td>12%</td></tr><tr><td class="k">Shared data</td><td>112</td><td>80%</td><td>9%</td></tr><tr><td class="k">Reviewed or offered</td><td>87</td><td>78%</td><td>7%</td></tr><tr><td class="k">LOIs sent in 2026</td><td>19</td><td>22%</td><td>1.6%</td></tr><tr><td class="k">Accepted</td><td>5</td><td>26%</td><td>0.4%</td></tr><tr><td class="k">Closed (+2 under contract)</td><td>2</td><td>40%</td><td>0.2%</td></tr></table>
+<tr><td class="k">Contacted (all time)</td><td data-n="contacted">1,202</td><td data-prior="contacted">25%*</td><td data-pc="contacted">100%</td></tr>
+<tr><td class="k">Responded</td><td data-n="responded">653</td><td data-prior="responded">54%</td><td data-pc="responded">54%</td></tr>
+<tr><td class="k">Confirmed interest</td><td data-n="confirmed">140</td><td data-prior="confirmed">21%</td><td data-pc="confirmed">12%</td></tr>
+<tr><td class="k">Shared data</td><td data-n="shared">112</td><td data-prior="shared">80%</td><td data-pc="shared">9%</td></tr>
+<tr><td class="k">Reviewed or offered</td><td data-n="reviewed">87</td><td data-prior="reviewed">78%</td><td data-pc="reviewed">7%</td></tr>
+<tr><td class="k">LOIs sent in 2026</td><td data-n="lois">19</td><td data-prior="lois">22%</td><td data-pc="lois">1.6%</td></tr>
+<tr><td class="k">Accepted</td><td data-n="accepted">5</td><td data-prior="accepted">26%</td><td data-pc="accepted">0.4%</td></tr>
+<tr><td class="k">Closed (+2 under contract)</td><td data-n="closed">2</td><td data-prior="closed">40%</td><td data-pc="closed">0.2%</td></tr></table>
 <p class="muted tiny" style="margin-top:4px">*Of the 4,866 own-path targets.</p></div>
 </div>
-<div class="box" style="margin-top:8px"><b>Where the pace is set.</b> The two steps that depend on price are the weak ones: reviewed to LOI (22%) and LOI to accepted (26%). Everything above them converts at 54% or better, so the fix is valuation conversations earlier, not more outreach.</div>
+<div class="box" style="margin-top:8px"><b>Where the pace is set.</b> The two steps that depend on price are the weak ones: reviewed to LOI (<span data-prior="lois">22%</span>) and LOI to accepted (<span data-prior="accepted">26%</span>). Everything above them converts at <span data-pct="responded">54%</span> or better, so the fix is valuation conversations earlier, not more outreach.</div>
 </section>
 
 <!-- ===== PAGE 6 DASHBOARDS & AGENTS ===== -->
@@ -309,10 +316,10 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
 <div class="rule"></div>
 <div class="lab">Dashboards</div>
 <table><tr><th style="width:22%">Stage</th><th style="width:26%">Dashboard</th><th>What it shows</th></tr>
-<tr><td>1 · Identify</td><td class="k">Venue Prioritization hub</td><td>8,748 venues scored and ranked; MSA scoring; map with hub rings; operator census; owner contacts; live Pipedrive stage</td></tr>
-<tr><td>2 to 3 · Contact, engage</td><td class="k">M&amp;A Pipeline tracker</td><td>Full and regional funnels (1,202 contacted, 653 responded, 140 confirmed), venue lists by stage, map, Wedgewood tracker; the page Wildcat sees</td></tr>
-<tr><td>2 · Contact</td><td class="k">Outreach analytics</td><td>3,757 touchpoints by week and market; which channel gets answered (calls 36%, email 29%, broker 19%)</td></tr>
-<tr><td>4 · Evaluate, offer</td><td class="k">LOI ledger and Active Pipeline</td><td>All 19 offers with terms and outcomes; 55 live targets scored 0 to 10 with LTM and PF-Y2 economics</td></tr>
+<tr><td>1 · Identify</td><td class="k">Venue Prioritization hub</td><td><span data-n="scored">8,748</span> venues scored and ranked; MSA scoring; map with hub rings; operator census; owner contacts; live Pipedrive stage</td></tr>
+<tr><td>2 to 3 · Contact, engage</td><td class="k">M&amp;A Pipeline tracker</td><td>Full and regional funnels (<span data-n="contacted">1,202</span> contacted, <span data-n="responded">653</span> responded, <span data-n="confirmed">140</span> confirmed), venue lists by stage, map, Wedgewood tracker; the page Wildcat sees</td></tr>
+<tr><td>2 · Contact</td><td class="k">Outreach analytics</td><td><span data-n="touch">3,757</span> touchpoints by week and market; which channel gets answered (calls 36%, email 29%, broker 19%)</td></tr>
+<tr><td>4 · Evaluate, offer</td><td class="k">LOI ledger and Active Pipeline</td><td>All <span data-n="lois">19</span> offers with terms and outcomes; 55 live targets scored 0 to 10 with LTM and PF-Y2 economics</td></tr>
 <tr><td>5 · Diligence, close</td><td class="k">Deal Command Center</td><td>Every deal under contract: workstreams, milestones, third parties, seller questions, permanent change log</td></tr>
 <tr><td>All</td><td class="k">Priorities workplan</td><td>Seven workstreams from now to March: LOIs, regions, overviews, conversion ideas, trips</td></tr>
 <tr><td>1 and 4</td><td class="k">Region overviews and operator intel</td><td>Market by market evidence and buckets; 18 overview packs for Wildcat; census of 67 multi-venue groups</td></tr></table>
@@ -333,7 +340,7 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
 <div class="sub g">Venue Prioritization hub · password-gated web app · Pipedrive refreshed live</div>
 <div class="rule"></div>
 <div class="shot"><img src="img/s-000.jpg"></div><p class="cap">Atlanta, sorted by score: the market's leading venues are already in the pipeline.</p>
-<div class="dcols"><div><div class="shot"><img src="img/s-001.jpg"></div><p class="cap">Atlanta map: our venues (gold), the 90-minute hub ring, every target by strength.</p></div><div><h3>What it is</h3><p>Every venue we could own, partner with, or refer: 8,748 records, 4,866 on the own path, owner email verified on 3,070. Each row carries the ten-factor score, reviews, capacity, MSA, path, and live Pipedrive stage. Tabs for venue criteria (weights editable), MSA scoring, the operator census, and a map with our venues and the 90-minute hub rings. A Develop lens tags lodges, churches, warehouses, and banquet halls that could become venues.</p></div></div>
+<div class="dcols"><div><div class="shot"><img src="img/s-001.jpg"></div><p class="cap">Atlanta map: our venues (gold), the 90-minute hub ring, every target by strength.</p></div><div><h3>What it is</h3><p>Every venue we could own, partner with, or refer: <span data-n="scored">8,748</span> records, <span data-n="ownpath">4,866</span> on the own path, owner email verified on 3,070. Each row carries the ten-factor score, reviews, capacity, MSA, path, and live Pipedrive stage. Tabs for venue criteria (weights editable), MSA scoring, the operator census, and a map with our venues and the 90-minute hub rings. A Develop lens tags lodges, churches, warehouses, and banquet halls that could become venues.</p></div></div>
 <div class="dcols"><div><h3>Why it matters</h3><p>Density is planned here. Filtered to Atlanta, the top of the list is the market's leading venues (Grant Hill Farms 94, Little River Farms 93, Meadows 91), all already in the pipeline, and the map shows which of the 208 Atlanta venues sit inside the hub ring.</p></div><div><h3>How we use it</h3><p>Laura and Karlee work each market's list from the top, drafting intro emails from the row. Before an LOI, the Reviews button compiles every public review. Before a visit, the map and Groups tab set the itinerary.</p></div></div>
 <div class="built">Built by Charlie and Cate with Claude Code; deployed from a shared repo with automatic front-end deploys. Weights revised with Cate in August.</div>
 </section>
@@ -342,7 +349,7 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
 <div class="sub g">M&amp;A Pipeline tracker · the page Wildcat sees · Pipedrive export refreshed daily</div>
 <div class="rule"></div>
 <div class="shot"><img src="img/s-002.jpg"></div><p class="cap">Total funnel with every exit labeled.</p>
-<div class="dcols"><div><div class="shot"><img src="img/s-003.jpg"></div><p class="cap">Atlanta: 122 contacted, 51% response, 18 confirmed interest.</p></div><div><h3>What it is</h3><p>Cate's live Pipedrive export: 1,202 contacted, 421 active, 54% response, every stage with its exits labeled (234 paused, 276 not selling, 186 we passed early, 23 declined our offer, 59 we passed after review). The Active funnel shows live work only: 315 awaiting response, 51 determining interest, 28 yet to share data, 25 under review. Regional Funnel cuts the same view for 44 regions with every venue listed under its stage.</p></div></div>
+<div class="dcols"><div><div class="shot"><img src="img/s-003.jpg"></div><p class="cap">Atlanta: 122 contacted, 51% response, 18 confirmed interest.</p></div><div><h3>What it is</h3><p>Cate's live Pipedrive export: <span data-n="contacted">1,202</span> contacted, 421 active, <span data-pct="responded">54%</span> response, every stage with its exits labeled (234 paused, 276 not selling, 186 we passed early, 23 declined our offer, 59 we passed after review). The Active funnel shows live work only: 315 awaiting response, 51 determining interest, 28 yet to share data, 25 under review. Regional Funnel cuts the same view for 44 regions with every venue listed under its stage.</p></div></div>
 <div class="dcols"><div><h3>Why it matters</h3><p>This is the scoreboard for the strategy: whether a market produces conversations and where they stall. Atlanta: 122 contacted, 51% response, 18 confirmed, 10 reviewed, 2 accepted, 1 closed. Nashville responds at 69%, Minneapolis at 65%. The 95 top-tier venues not yet contacted are listed by market.</p></div><div><h3>How we use it</h3><p>Anchors the Tuesday M&amp;A Update to Wildcat and the Thursday deal review. The stage lists drive the two-week sweeps of stuck venues.</p></div></div>
 <div class="built">Built by Cate with Claude Code. The October analytics (call first, screen valuation early, sweep the stuck 'responded' venues, run groups on their own cadence) became the mid-funnel program.</div>
 </section>
@@ -350,8 +357,8 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
 <h1 class="dash"><b>Dashboard 3</b> · Outreach analytics: touchpoints and how sellers reach us</h1>
 <div class="sub g">M&amp;A Pipeline tracker, Touchpoints and Response Sources tabs · refreshed daily</div>
 <div class="rule"></div>
-<div class="shot"><img src="img/s-004.jpg"></div><p class="cap">Weekly touchpoints by type; YTD 3,757.</p>
-<div class="dcols"><div><div class="shot"><img src="img/s-005.jpg"></div><p class="cap">First-response channel for 621 responding venues.</p></div><div><h3>What it is</h3><p>Touchpoints by week since May, split into new outreach, follow-ups on silence, and active conversations: 3,757 YTD (662, 1,559, 1,536). The week of Oct 26 hit 298. Below the chart, where the touchpoints went by market. Response Sources shows how 621 responding venues first connected: calls 36%, email 29%, broker 19%, inbound 6%.</p></div></div>
+<div class="shot"><img src="img/s-004.jpg"></div><p class="cap">Weekly touchpoints by type; YTD <span data-n="touch">3,757</span>.</p>
+<div class="dcols"><div><div class="shot"><img src="img/s-005.jpg"></div><p class="cap">First-response channel for 621 responding venues.</p></div><div><h3>What it is</h3><p>Touchpoints by week since May, split into new outreach, follow-ups on silence, and active conversations: <span data-n="touch">3,757</span> YTD (662, 1,559, 1,536). The week of Oct 26 hit 298. Below the chart, where the touchpoints went by market. Response Sources shows how 621 responding venues first connected: calls 36%, email 29%, broker 19%, inbound 6%.</p></div></div>
 <div class="dcols"><div><h3>Why it matters</h3><p>Outreach is the input we control, so this page proves the machine is running and tells us where to point it. Calls are answered 24 times per 100 vs 17 for email, and responders answer by the second touch, so the team calls first and stops chasing low-tier venues by email after touch 2.</p></div><div><h3>How we use it</h3><p>Thursday call sets next week's market focus; monthly check that new-region waves land on schedule; quarterly board trend (+36% Q2 to Q3).</p></div></div>
 <div class="built">Response attribution uses Claude to read each logged touchpoint and judge whether it was answered, giving a true response rate rather than a logged-activity count.</div>
 </section>
@@ -359,8 +366,8 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
 <h1 class="dash"><b>Dashboard 4</b> · LOI ledger and Active Pipeline: every offer and every live target</h1>
 <div class="sub g">M&amp;A Pipeline tracker, LOIs Sent and Active Pipeline tabs · deal terms shown; internal only</div>
 <div class="rule"></div>
-<div class="shot"><img src="img/s-006.jpg"></div><p class="cap">All 19 LOIs with terms and outcomes.</p>
-<div class="dcols"><div><div class="shot"><img src="img/s-007.jpg"></div><p class="cap">55 live targets scored 0 to 10 with economics.</p></div><div><h3>What it is</h3><p>The ledger lists all 19 offers with dates, market, LTM events, asking price, our price, rent, EBITDA, and outcome: 2 closed, 2 signed, 2 declined but re-engaging, 12 declined, 1 died after signing; 11 Texas, 8 outside. The Active Pipeline scores the 55 live targets 0 to 10 with LTM and pro-forma year-2 revenue and EBITDA, future bookings, and the latest note.</p></div></div>
+<div class="shot"><img src="img/s-006.jpg"></div><p class="cap">All <span data-n="lois">19</span> LOIs with terms and outcomes.</p>
+<div class="dcols"><div><div class="shot"><img src="img/s-007.jpg"></div><p class="cap">55 live targets scored 0 to 10 with economics.</p></div><div><h3>What it is</h3><p>The ledger lists all <span data-n="lois">19</span> offers with dates, market, LTM events, asking price, our price, rent, EBITDA, and outcome: 2 closed, 2 signed, 2 declined but re-engaging, 12 declined, 1 died after signing; 11 Texas, 8 outside. The Active Pipeline scores the 55 live targets 0 to 10 with LTM and pro-forma year-2 revenue and EBITDA, future bookings, and the latest note.</p></div></div>
 <div class="dcols"><div><h3>Why it matters</h3><p>This is where valuation discipline shows. The commentary records why deals die: Canyonwood declined ~$10M, Videre priced business plus land far above earnings, Emerson needed $3.5M against $1.5M, Edible Ideas called $16M '100%+ off'. One lost to an all-cash buyer (Elle). Next LOIs in order: Meadows, D'Amico, Lillian Gardens, The Revere, Tuscany Falls (210 events, score 9.6).</p></div><div><h3>How we use it</h3><p>Before every offer, the ledger sets comparables and the pipeline score frames the data book. It feeds the quarterly board slide and the Saturday scorecard (LOIs vs the 20 goal).</p></div></div>
 <div class="built">The 0 to 10 pipeline score is Cate's rubric on quality, economics, and fit, built in September alongside the venue scoring rubric reported to the board.</div>
 </section>
@@ -434,7 +441,7 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
 <tr><td class="k">Wildcat hears</td><td>Judgment and selectivity; a slower unit count.</td><td>Pace and density; more structure questions on every LOI.</td></tr></table>
 <div class="need"><b>We need:</b> the default. Decisions 2 to 5 follow from it.</div>
 <h3 style="font-size:9.4pt;color:var(--teal);margin:0 0 3px">2. 2027 target acquisitions and capital availability</h3>
-<p>2026 pace: 19 LOIs, 2 closed, 2 closing by mid-December, roughly $9M of purchase price across the four; 9 more LOIs planned by March. This number sets headcount and capital in the 2027 budget (Dec 4).</p>
+<p>2026 pace: <span data-n="lois">19</span> LOIs, <span data-n="closed">2</span> closed, 2 closing by mid-December, roughly $9M of purchase price across the four; 9 more LOIs planned by March. This number sets headcount and capital in the 2027 budget (Dec 4).</p>
 <div class="cols3"><div class="opt"><b>Hold the 2026 pace</b>4 closes, 20 LOIs; capital from EPRT sale-leasebacks and the MidCap delayed draw.</div><div class="opt"><b>Step up</b>6 to 8 closes including one platform (D'Amico 12, BTTS 7 to 8); needs an equity or platform-financing answer.</div><div class="opt"><b>Platform-led</b>One platform plus 2 to 3 singles; fewer transactions, more capital in one place.</div></div>
 <div class="need"><b>We need:</b> the close and LOI count by structure (buy, lease, manage, platform) and the capital line behind it.</div>
 <h3 style="font-size:9.4pt;color:var(--teal);margin:0 0 3px">3. What makes a target MSA</h3>
@@ -451,7 +458,28 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
 </section>
 </div>
 <div id="bar"><b>M&amp;A Strategy Packet</b><span id="st">Click any text to edit it. Save publishes a new version for everyone with the link.</span><span class="sp"></span><button class="sec" id="btnPrint" type="button">Print / PDF</button><button id="btnSave" type="button" disabled>Save</button></div>
-<script>
+<script id="sync-js">
+(function(){
+  var KEYS=['scored','ownpath','contacted','responded','confirmed','shared','reviewed','lois','accepted','closed','touch'];
+  var CHAIN=['contacted','responded','confirmed','shared','reviewed','lois','accepted','closed'];
+  function num(t){ var m=String(t).replace(/[^0-9.]/g,''); return m?parseFloat(m):NaN; }
+  function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+  function pct(a,b){ if(!(b>0)||isNaN(a)) return ''; var p=100*a/b; return (p<2?p.toFixed(1):Math.round(p))+'%'; }
+  function src(){ var o={}; KEYS.forEach(function(k){ var el=document.querySelector('[data-n="'+k+'"][data-src]'); if(el) o[k]=num(el.textContent); }); return o; }
+  function sync(){
+    var v=src();
+    document.querySelectorAll('[data-n]').forEach(function(el){ if(el.hasAttribute('data-src')) return; var k=el.getAttribute('data-n'); if(!isNaN(v[k])) el.textContent=fmt(v[k]); });
+    document.querySelectorAll('[data-pct]').forEach(function(el){ el.textContent=pct(v[el.getAttribute('data-pct')],v.contacted); });
+    document.querySelectorAll('[data-pc]').forEach(function(el){ el.textContent=pct(v[el.getAttribute('data-pc')],v.contacted); });
+    document.querySelectorAll('[data-prior]').forEach(function(el){ var k=el.getAttribute('data-prior'); var i=CHAIN.indexOf(k); var prev=i>0?v[CHAIN[i-1]]:v.ownpath; el.textContent=pct(v[k],prev)+(i===0?'*':''); });
+    var top=Math.log(v.scored||1);
+    document.querySelectorAll('[data-bar]').forEach(function(el){ var n=v[el.getAttribute('data-bar')]; if(n>0&&top>0) el.style.width=Math.max(2,Math.round(100*Math.log(n)/top))+'%'; });
+  }
+  var t=null; document.addEventListener('input',function(e){ if(e.target.closest&&e.target.closest('.page')){ clearTimeout(t); t=setTimeout(sync,400); } });
+  sync();
+})();
+</script>
+<script id="pkt-js">
 (function(){
   var TITLE='M&A Strategy Packet';
   var pages=document.getElementById('pages'), st=document.getElementById('st'), btn=document.getElementById('btnSave'), dirty=false, art=null;
@@ -470,7 +498,7 @@ td.k,td b.k{font-weight:700;color:var(--teal)}
     return '<head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">'+(s?s.outerHTML:'')+'</head>';
   }
   function render(){
-    var style=document.getElementById('pkt-css').outerHTML, bar=document.getElementById('bar').outerHTML, sc=document.getElementById('pkt-js').outerHTML;
+    var style=document.getElementById('pkt-css').outerHTML, bar=document.getElementById('bar').outerHTML, sc=document.getElementById('sync-js').outerHTML+document.getElementById('pkt-js').outerHTML;
     return '<!doctype html><html>'+headHTML()+'<body><title>'+TITLE+'</title>'+style+cleanPages()+bar+sc+'</body></html>';
   }
   btn.addEventListener('click',function(){
