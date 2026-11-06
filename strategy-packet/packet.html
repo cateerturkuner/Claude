@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>M&A Strategy Session Packet</title>
+<style>
+@page { size: Letter; margin: 0; }
+:root{--ink:#1b2a2a;--teal:#0f3d3a;--teal2:#2e7d74;--grey:#5b6b69;--rule:#d5dedb;--fill:#e7f1ef;--fill2:#f2f6f5;--orange:#b85c2b;--ofill:#faf2ec;--oline:#e8c9b3;--gold:#e2b96a}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#fff;color:var(--ink);font-family:Inter,"Inter Display",system-ui,sans-serif;font-size:8.6pt;line-height:1.35;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:8.5in;height:11in;padding:0.5in 0.5in 0.45in;page-break-after:always;position:relative;overflow:hidden}
+.page:last-child{page-break-after:auto}
+h1{font-size:18.8pt;font-weight:700;color:var(--teal);margin:0 0 6px;line-height:1.15;letter-spacing:-0.01em}
+h1.dash{color:var(--teal2);font-size:17.2pt}
+h1.dash b{color:var(--teal2)}
+.rule{border-bottom:1.5px solid #0e3c3a;margin:6px 0 10px}
+.sub{color:var(--teal2);font-weight:600;font-size:9pt;margin:-2px 0 8px}
+.sub.g{color:var(--grey);font-weight:500}
+.lab{font-size:7.6pt;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);border-bottom:1.2px solid #0e3c3a;padding-bottom:3px;margin:10px 0 6px}
+p{margin:0 0 5px}
+ul{margin:0;padding-left:12px}
+li{margin:0 0 2.5px}
+b,strong{font-weight:700}
+.box{background:var(--fill);border-radius:3px;padding:9px 12px;margin:0 0 8px}
+.box.white{background:#fff;border:1px solid var(--rule)}
+.box.orange{background:var(--ofill);border:1px solid var(--oline)}
+.box.light{background:var(--fill2)}
+.box h3{margin:0 0 4px;font-size:9.4pt;color:var(--teal)}
+.box.orange h3{color:var(--orange)}
+.muted{color:var(--grey)}
+.small{font-size:8pt}
+.tiny{font-size:7.4pt}
+table{border-collapse:collapse;width:100%}
+th{background:var(--fill);color:var(--teal);font-weight:700;text-align:left;padding:5px 7px;border-bottom:1.2px solid #0e3c3a;font-size:8.2pt;vertical-align:bottom}
+td{padding:5px 7px;border-bottom:1px solid var(--rule);vertical-align:top}
+td.k,td b.k{font-weight:700;color:var(--teal)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 10px}
+.tile{border:1px solid var(--rule);border-radius:3px;padding:8px 10px}
+.tile .n{font-size:15.5pt;font-weight:700;color:var(--teal);line-height:1.1}
+.tile .d{color:var(--grey);font-size:7.8pt;margin:2px 0 4px}
+.tile .t{font-size:8pt}
+.pill{display:inline-block;background:var(--ofill);color:var(--orange);font-size:7.2pt;font-weight:600;padding:1px 6px;border-radius:9px;margin-left:5px;vertical-align:middle}
+.need{background:var(--ofill);padding:5px 10px;margin:6px 0 8px;font-size:8.2pt}
+.need b{color:var(--orange)}
+.opt{background:var(--fill2);padding:7px 9px;border-radius:3px;font-size:8.2pt}
+.opt b{display:block;color:var(--teal);margin-bottom:2px}
+.lanes h4{margin:6px 0 2px;font-size:8.6pt;color:var(--ink)}
+.lanes h4:first-child{margin-top:0}
+/* funnel */
+.funnel{margin:4px 0 6px}
+.funnel .row{height:26px;margin:0 auto 1px;color:#fff;font-weight:600;font-size:8.2pt;display:flex;align-items:center;justify-content:center;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,10px 100%)}
+.funnel .row.dk{color:#fff}
+/* bars */
+.chart{position:relative;height:118px;margin:4px 0 2px}
+.chart .y{position:absolute;left:0;width:100%;border-top:1px solid var(--rule);font-size:6.4pt;color:var(--grey)}
+.chart .y span{position:absolute;left:0;top:-9px}
+.bars{position:absolute;left:24px;right:0;bottom:0;top:0;display:flex;align-items:flex-end;gap:2px}
+.bar{flex:1;background:var(--teal2);position:relative;border-radius:1px 1px 0 0}
+.bar.hi{background:#0e3c3a}
+.bar i{position:absolute;top:-9px;left:0;right:0;text-align:center;font-style:normal;font-size:6pt;color:var(--ink)}
+.xl{display:flex;margin-left:24px;font-size:6.4pt;color:var(--grey);justify-content:space-between;margin-top:2px}
+/* LOI stacked */
+.loi{display:grid;grid-template-columns:62px 1fr 14px;gap:4px 6px;align-items:center;font-size:8pt}
+.loi .seg{display:flex;height:14px}
+.loi .seg span{color:#fff;font-size:7.2pt;font-weight:600;display:flex;align-items:center;justify-content:center;margin-right:1px}
+.c1{background:#0e3c3a}.c2{background:#2e7d74}.c3{background:#c8d5d3;color:#1b2a2a!important}.c4{background:var(--gold);color:#1b2a2a!important}
+.legend{display:flex;gap:10px;font-size:7.4pt;margin:2px 0 6px}
+.legend i{display:inline-block;width:9px;height:9px;margin-right:3px;vertical-align:-1px}
+/* dashboards */
+.shot{border:1px solid var(--rule);border-radius:3px;overflow:hidden;background:#fff;margin:0 0 3px}
+.shot img{display:block;width:100%}
+.cap{color:var(--grey);font-size:8pt;margin:0 0 9px}
+.dcols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:8px}
+.dcols h3{margin:0 0 3px;font-size:9.4pt;color:var(--teal)}
+.built{background:var(--fill);padding:8px 12px;border-radius:3px;font-size:8.2pt;margin-top:4px}
+.stage td .n{font-size:15pt;font-weight:700;color:var(--teal);line-height:1}
+.stage td .d{font-size:6.4pt;letter-spacing:.06em;text-transform:uppercase;color:var(--grey);margin-top:2px}
+.hbars{font-size:7.6pt}
+.hbars .r{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:6px;margin:0 0 3px}
+.hbars .b{height:10px;background:var(--teal2);border-radius:1px;display:inline-block;vertical-align:middle}
+.hbars .v{margin-left:4px;font-weight:600}
+.agenda td{padding:9px 7px}
+.agenda .pg{color:var(--grey);font-size:8pt;display:block;margin-top:2px}
+.agenda{font-size:9.8pt}
+.agenda th{font-size:9.5pt}
+.agenda ul{padding-left:0;list-style:none}
+.p4 td,.p4 th{padding:3.5px 6px;font-size:7.9pt}.p4 th{font-size:7.8pt}
+.p15 td{padding:3.5px 6px}.p15 .opt{padding:5px 8px}.p15 p{margin-bottom:4px}.p15 .need{padding:4px 9px;margin:5px 0 7px}.p15 h3{margin-top:2px!important}
+</style></head><body>
+
+<!-- ===== PAGE 1 AGENDA ===== -->
+<section class="page" style="font-size:9.8pt">
+<h1 style="font-size:19.5pt">M&amp;A Strategy Session: Agenda</h1>
+<div class="rule" style="margin-top:8px"></div>
+<div class="box" style="padding:12px 16px;margin:10px 0 18px">
+<p style="font-weight:700;color:var(--teal);font-size:10.5pt;margin-bottom:6px">Thursday, November 13, 2026 · 12:00 to 2:00 pm CT · Alyssa, Charlie, Cate</p>
+<p style="margin:0">Two hours on the whole M&amp;A program: the strategy, the markets, the targets, the machine that finds and converts them, and the five key decisions that will guide 2027. We walk the dashboards live; the pages behind this one are the reference copy.</p>
+</div>
+<table class="agenda">
+<tr><th style="width:9%">Time</th><th style="width:7%">Min</th><th style="width:34%">Block</th><th style="width:16%">Owner</th><th>Outcomes Desired</th></tr>
+<tr><td class="k">12:00</td><td>10</td><td><b>Goals for the session and for Wildcat</b><span class="pg">This page</span></td><td>Charlie</td><td>Session goals agreed: align on the strategy, see the targets and the machine, make five decisions. Wildcat goals agreed: get Wildcat behind the 2027 pace and capital; show the machine well enough to earn more room between updates.</td></tr>
+<tr><td class="k">12:10</td><td>20</td><td><b>Strategy Overview</b><span class="pg">Pages 2 to 3</span></td><td>Charlie</td><td>Strategy statement confirmed or edited; edits captured for the Wildcat version.</td></tr>
+<tr><td class="k">12:30</td><td>30</td><td><b>Markets: where we are focused and how we score them</b><span class="pg">Page 4; hub MSA Scoring</span></td><td>Cate</td><td>Four market tiers and the qualitative factors beside the score agreed.</td></tr>
+<tr><td class="k">1:00</td><td>30</td><td><b>Venue Targets + Our Machine</b><span class="pg">Pages 5 to 13; live dashboards</span></td><td>Cate, Charlie</td><td>You know what each stage measures, which targets are closest, and where conversion leaks.</td></tr>
+<tr><td class="k">1:30</td><td>15</td><td><b>Current Initiatives</b><span class="pg">Page 14</span></td><td>Cate</td><td>Plan and timing aligned; your view on what to pull forward.</td></tr>
+<tr><td class="k">1:45</td><td>15</td><td><b>Decisions Required</b></td><td>All</td><td>Each decision made, or given an owner and a date.</td></tr>
+</table>
+</section>
+
+<!-- ===== PAGE 2 STRATEGY 1 ===== -->
+<section class="page">
+<h1>M&amp;A Strategy Overview</h1>
+<div class="sub">Enter markets with attractive fundamentals and 5-15+ venue potential · 1 of 2</div>
+<div class="rule"></div>
+<div class="box" style="padding:10px 14px">
+<p><b>Goal: 5 to 15+ venues in every market we enter,</b> so each venue shares our catering, floral, and bakery hubs, one regional sales and planning team, and one marketing engine.</p>
+<ul><li>Pick markets where density is possible: strong wedding demand, fragmented ownership, sensible land cost.</li>
+<li>Pursue the market's leading venues and the infill venues together; owners sell when they are ready, so we take the best of what comes available.</li>
+<li>Enter three ways (buy, lease, manage), in the rural and suburban estates we know and the urban venues we do not.</li></ul>
+</div>
+<div class="lab">Why density pays</div>
+<div class="tiles">
+<div class="tile"><div class="n">$6,370</div><div class="d">ancillary revenue per event, +15% Y/Y, 76% attach</div><div class="t">Hubs make the margin; one venue cannot fill a hub, five to fifteen can</div></div>
+<div class="tile"><div class="n">~90 min</div><div class="d">hub reach for catering, floral, and bakery</div><div class="t">Infill venues get the full product on day one (Hadden: vendor packages within weeks)</div></div>
+<div class="tile"><div class="n">37</div><div class="d">contracts per salesperson, +39% Y/Y; $1,487 CAC</div><div class="t">Sales, marketing, and overhead scale by market, not by venue</div></div>
+<div class="tile"><div class="n">1 + N</div><div class="d">a leading venue plus infill</div><div class="t">The best venue sets the brand and the price ladder; infill sells off it</div></div>
+</div>
+<div class="cols lanes">
+<div><div class="lab" style="margin-top:0">What we buy: three lanes</div>
+<h4>Traditionally Walters (rural and suburban)</h4><ul><li>Estates, chapels, barns, gardens; 75 to 200 events</li><li>Owned real estate priced on earnings</li><li>Caney Creek, Hadden, Meadows</li></ul>
+<h4>Urban</h4><ul><li>Industrial, loft, and historic venues with a corporate mix; usually leased</li><li>Engine Room, West Midtown, VisionLoft, Wilburn Street</li></ul>
+<h4>Platforms</h4><ul><li>Multi-venue groups: density in one deal</li><li>D'Amico (12), BTTS (7 to 8), Spaces in the City (5), LM (5), Little River Farms (4), Holly Vault (4)</li></ul></div>
+<div><div class="lab" style="margin-top:0">Three acquisition models</div>
+<h4>Buy the business and the real estate</h4><ul><li>Leading venues; land priced on earnings</li><li>EPRT sale-leaseback recycles the capital</li><li>Firefly Lane, Hadden, Caney Creek</li></ul>
+<h4>Lease the real estate, buy the business</h4><ul><li>When the seller values land above our number, or for urban sites</li><li>Under 1x in; exits after years 1 and 2; FMV option; ROFR</li><li>Engine Room, Meadows</li></ul>
+<h4>Manage or partner</h4><ul><li>Owner keeps the asset; we run sales, planning, and ancillary for a fee plus service exclusivity</li><li>Little River Farms (2 venues), LM</li></ul></div>
+</div>
+<div class="lab">Where we're focused and why</div>
+<table>
+<tr><th style="width:19%">Tier</th><th style="width:44%">Markets</th><th>Why</th></tr>
+<tr><td class="k">Home markets (43 venues)</td><td>DFW ~18, Houston ~10, Hill Country ~10, Atlanta 2 (+ Engine Room), Nashville 1</td><td>Hubs built; every infill adds ancillary on day one; 58 of the 95 uncontacted top-tier venues are here</td></tr>
+<tr><td class="k">Focused expansion (10)</td><td>Nashville, Atlanta, Cleveland, Indianapolis, Chicago, Orlando, Detroit, Cincinnati, Minneapolis, Columbus</td><td>A platform or leading-venue candidate in dialogue; the MSA score; owners answer</td></tr>
+<tr><td class="k">Next wave (8)</td><td>Phoenix, Greenville, Memphis, Louisville, Pittsburgh, Birmingham, Buffalo, Hartford; Knoxville in dialogue</td><td>One region a week to Jan 18; fragmented supply, cheap to test</td></tr>
+<tr><td class="k">Paused</td><td>Miami (land $2.8M/acre), Salt Lake (few venues), NC and CO (Wedgewood), Kansas City, New Orleans, Tyler</td><td>High score is not enough without a path to 5 venues</td></tr>
+<tr><td class="k">Broker-led</td><td>DC, Philadelphia, New Jersey, Baltimore, Virginia Beach, Richmond</td><td>Direct outreach fell short; brokers bring the deals</td></tr>
+</table>
+<p class="muted small" style="margin-top:6px">Markets are scored on eight weighted criteria, less 3% per Wedgewood venue (DFW 4.08, Houston 4.04, Austin 3.54, Orlando 3.48, Atlanta 3.39, Nashville 3.22). Full ranking and the qualitative factors on page 4.</p>
+</section>
+
+<!-- ===== PAGE 3 STRATEGY 2 ===== -->
+<section class="page">
+<h1>M&amp;A Strategy Overview</h1>
+<div class="sub">The funnel, the activity behind it, and where it leaks · 2 of 2</div>
+<div class="rule"></div>
+<div class="cols">
+<div>
+<div class="lab" style="margin-top:0">2026 funnel through Nov 4</div>
+<div class="funnel">
+<div class="row" style="width:100%;background:#c4dad5;color:#1b2a2a">Contacted: 1,202</div>
+<div class="row" style="width:92%;background:#acccc7;color:#1b2a2a">Responded: 653 · 54%</div>
+<div class="row" style="width:84%;background:#93beb6;color:#1b2a2a">Confirmed interest: 140 · 12%</div>
+<div class="row" style="width:76%;background:#6fa89f">Shared data: 112 · 9%</div>
+<div class="row" style="width:68%;background:#4f9389">Reviewed / offered: 87 · 7%</div>
+<div class="row" style="width:60%;background:#2e7d73">LOIs sent (2026): 19 · 1.6%</div>
+<div class="row" style="width:52%;background:#1f5f58">Accepted: 5</div>
+<div class="row" style="width:44%;background:#0e3c3a">Closed: 2</div>
+</div>
+<p class="muted small">Hub universe: 8,748 venues scored, 4,866 own-path targets. 95 top-tier (80+) venues in the 20 target MSAs not yet contacted.</p>
+<div class="box orange" style="margin-top:8px"><h3>Where it leaks: valuation, not interest</h3><ul>
+<li>Of 87 venues reviewed or offered, we passed on 59 and sellers declined 23</li>
+<li>Nearly every decline was price: owners anchored on real-estate value or a prior offer (Canyonwood, Videre, Emerson, Edible Ideas, Westwood and Sixpence)</li>
+<li>One lost to an all-cash buyer (Elle); one wanted an offer before sharing data</li>
+<li>Through October, 29 real offers produced 4 acceptances; only 1 deal has died after an LOI</li>
+<li><b>The fix: earlier and clearer valuation conversations, not more volume at the top</b></li></ul></div>
+<div class="box white"><h3>2027 Goals <span class="pill">placeholder, decide 11/13</span></h3><ul>
+<li>LOIs: 20+ (2026: 19 through October; 9 planned November to March)</li>
+<li>Closes: 4 to 6 single venues plus one platform (2026: 2 closed, 2 closing by mid-December)</li>
+<li>Density: every market shows a credible path to 5 venues within 18 months, or we stop spending there</li>
+<li>New markets: 8 outreach waves by Jan 18; 18 region overviews to Wildcat by Nov 23; 2 to 3 new markets reach a leading-venue conversation by Q2</li>
+<li>Middle of funnel: confirmed interest to data shared above 80%; offers accepted above 1 in 3</li></ul></div>
+</div>
+<div>
+<div class="lab" style="margin-top:0">Outreach activity, 2026</div>
+<p class="muted small">Touchpoints per week (new, follow-up, active)</p>
+<div class="chart">
+<div class="y" style="bottom:100%"><span>320</span></div><div class="y" style="bottom:75%"><span>240</span></div><div class="y" style="bottom:50%"><span>160</span></div><div class="y" style="bottom:25%"><span>80</span></div>
+<div class="bars">
+<div class="bar" style="height:19%"></div><div class="bar" style="height:24%"></div><div class="bar" style="height:33%"><i>105</i></div><div class="bar" style="height:33%"><i>104</i></div><div class="bar" style="height:32%"><i>101</i></div><div class="bar" style="height:32%"><i>102</i></div><div class="bar" style="height:35%"><i>112</i></div><div class="bar" style="height:29%"></div><div class="bar" style="height:27%"></div><div class="bar" style="height:24%"></div><div class="bar" style="height:23%"></div><div class="bar" style="height:23%"></div><div class="bar" style="height:33%"><i>104</i></div><div class="bar" style="height:36%"><i>116</i></div><div class="bar" style="height:32%"><i>103</i></div><div class="bar" style="height:39%"><i>126</i></div><div class="bar" style="height:48%"><i>152</i></div><div class="bar" style="height:22%"></div><div class="bar" style="height:36%"><i>116</i></div><div class="bar" style="height:28%"></div><div class="bar" style="height:39%"><i>124</i></div><div class="bar" style="height:25%"></div><div class="bar hi" style="height:93%"><i><b>298</b></i></div><div class="bar" style="height:23%"></div>
+</div></div>
+<div class="xl"><span>5/25</span><span>6/8</span><span>6/22</span><span>7/6</span><span>7/20</span><span>8/3</span><span>8/17</span><span>8/31</span><span>9/14</span><span>9/28</span><span>10/12</span><span>10/26</span></div>
+<p class="small" style="margin:6px 0 10px">3,757 touchpoints YTD (662 new, 1,559 follow-ups, 1,536 active). 70+ venues toured; 14 of 16 market visits done.</p>
+<div class="lab">LOIs sent in 2026 by market (19)</div>
+<div class="legend"><span><i class="c1"></i>Closed</span><span><i class="c2"></i>Signed</span><span><i class="c3"></i>Declined</span><span><i class="c4"></i>Other</span></div>
+<div class="loi">
+<span>Nashville</span><div class="seg"><span class="c1" style="width:25%">1</span><span class="c3" style="width:75%">3</span></div><span>4</span>
+<span>Houston</span><div class="seg"><span class="c2" style="width:25%">1</span><span class="c3" style="width:50%">2</span><span class="c4" style="width:25%">1</span></div><span>4</span>
+<span>DFW</span><div class="seg"><span class="c3" style="width:50%">2</span><span class="c4" style="width:50%">2</span></div><span>4</span>
+<span>Hill Country</span><div class="seg" style="width:75%"><span class="c3" style="width:100%">3</span></div><span>3</span>
+<span>Atlanta</span><div class="seg" style="width:50%"><span class="c1" style="width:50%">1</span><span class="c2" style="width:50%">1</span></div><span>2</span>
+<span>Indianapolis</span><div class="seg" style="width:25%"><span class="c3" style="width:100%">1</span></div><span>1</span>
+<span>Orlando</span><div class="seg" style="width:25%"><span class="c4" style="width:100%">1</span></div><span>1</span>
+</div>
+<p class="muted small" style="margin:6px 0 8px">11 Texas, 8 outside. 2 closed (Firefly Lane, Hadden), 2 signed (Caney Creek, Engine Room), 11 declined, 4 other.</p>
+<div class="box white"><h3>Middle of the funnel: the program and early results</h3><ul>
+<li>Quarterly Venue Trends one-pager to 145 venues: <b>67% open, 6% reply and counting</b></li>
+<li>Coffee Chat gift cards to 40 top-priority targets: <b>80% open, 3% reply</b></li>
+<li>Seller references from the Firefly Lane and Hadden owners; Hadden referral program proposed Nov 4</li>
+<li>Value Snapshot and Deal Options two-pager after every first meeting</li>
+<li>Next: acquisition announcements (Nov 30), Alyssa video (Dec), holiday gift test (ship Dec 11), CPA and advisor channel (Jan), WIPA (Feb), two-week sweep of the 48 venues stuck at "responded"</li></ul></div>
+<div class="box"><h3>Decisions required on Nov 13</h3><ul>
+<li>Fewer, better deals or more market deals (we cannot have both)</li><li>2027 target acquisitions and capital availability</li><li>What makes a target MSA</li><li>Wildcat involvement and sign-off rules</li><li>Alyssa's go-forward involvement</li></ul></div>
+</div></div>
+</section>
+
+<!-- ===== PAGE 4 CRITERIA ===== -->
+<section class="page p4">
+<h1>How we pick markets and venues: the selection criteria behind the funnel</h1>
+<div class="rule"></div>
+<div class="cols">
+<div><div class="lab" style="margin-top:0">MSA score (1 to 5): eight weighted criteria, less 3% per Wedgewood venue</div>
+<table class="small"><tr><th>Criterion</th><th style="width:14%">Weight</th><th style="width:48%">What it measures</th></tr>
+<tr><td class="k">Weddings per 1,000 residents</td><td>18</td><td>Wedding intensity, including destination pull</td></tr>
+<tr><td class="k">Revenue pool</td><td>16</td><td>Annual venue dollars in the market</td></tr>
+<tr><td class="k">Growth rate</td><td>16</td><td>Population growth</td></tr>
+<tr><td class="k">Walters fit</td><td>16</td><td>Strategic fit with our expansion plans</td></tr>
+<tr><td class="k">Competition</td><td>14</td><td>Venues per 100k residents, inverted</td></tr>
+<tr><td class="k">Land $ per acre</td><td>8</td><td>Crexi land value; lower is better</td></tr>
+<tr><td class="k">Median wedding spend</td><td>6</td><td>The Wedding Report metro median</td></tr>
+<tr><td class="k">Population</td><td>6</td><td>Metro size</td></tr></table></div>
+<div><div class="lab" style="margin-top:0">Venue score (0 to 100): ten criteria, observable before contact</div>
+<table class="small"><tr><th>Criterion</th><th style="width:14%">Weight</th><th style="width:48%">What it measures</th></tr>
+<tr><td class="k">Physical-plant fit</td><td>18</td><td>150+ seated, rain plan, multi-room</td></tr>
+<tr><td class="k">Review rating</td><td>16</td><td>Google, The Knot, WeddingWire, Zola average</td></tr>
+<tr><td class="k">Recent reviews, 12 months</td><td>16</td><td>Recency and momentum</td></tr>
+<tr><td class="k">Capacity fit</td><td>12</td><td>150 to 250 seated scores highest</td></tr>
+<tr><td class="k">MSA / market score</td><td>12</td><td>From the table at left</td></tr>
+<tr><td class="k">Events per year</td><td>8</td><td>Actual throughput where known</td></tr>
+<tr><td class="k">Venue-type fit</td><td>8</td><td>Barn, estate, ballroom over restaurant, hotel</td></tr>
+<tr><td class="k">Ancillary hub coverage</td><td>6</td><td>Catering, floral, bakery within ~90 min</td></tr>
+<tr><td class="k">Lodging nearby</td><td>5</td><td>Guest lodging within 5 miles</td></tr>
+<tr><td class="k">Review volume</td><td>4</td><td>Lifetime reviews, log-scaled</td></tr></table></div>
+</div>
+<div class="lab">The ranking today (56 MSAs scored; top 24 shown)</div>
+<div class="cols">
+<table class="small"><tr><th>#</th><th>MSA</th><th>Score</th><th>Venues</th><th>Status</th></tr>
+<tr><td>1</td><td class="k">Dallas-Fort Worth</td><td>4.08</td><td>653</td><td>Home</td></tr><tr><td>2</td><td class="k">Houston</td><td>4.04</td><td>531</td><td>Home</td></tr><tr><td>3</td><td class="k">Miami-Ft. Lauderdale</td><td>3.86</td><td>164</td><td>Paused</td></tr><tr><td>4</td><td class="k">Tampa</td><td>3.54</td><td>134</td><td>Future</td></tr><tr><td>5</td><td class="k">Austin</td><td>3.54</td><td>271</td><td>Home</td></tr><tr><td>6</td><td class="k">Orlando</td><td>3.48</td><td>148</td><td>Focused</td></tr><tr><td>7</td><td class="k">Atlanta</td><td>3.39</td><td>422</td><td>Home</td></tr><tr><td>8</td><td class="k">San Antonio</td><td>3.38</td><td>263</td><td>Home</td></tr><tr><td>9</td><td class="k">Nashville</td><td>3.22</td><td>263</td><td>Home</td></tr><tr><td>10</td><td class="k">Salt Lake City</td><td>3.18</td><td>107</td><td>Paused</td></tr><tr><td>11</td><td class="k">Washington DC</td><td>3.16</td><td>304</td><td>Broker-led</td></tr><tr><td>12</td><td class="k">Raleigh</td><td>3.10</td><td>142</td><td>Paused</td></tr></table>
+<table class="small"><tr><th>#</th><th>MSA</th><th>Score</th><th>Venues</th><th>Status</th></tr>
+<tr><td>13</td><td class="k">Jacksonville</td><td>3.10</td><td>99</td><td>Future</td></tr><tr><td>14</td><td class="k">Charlotte</td><td>2.99</td><td>201</td><td>Paused</td></tr><tr><td>15</td><td class="k">Charleston</td><td>2.98</td><td>130</td><td>Active</td></tr><tr><td>16</td><td class="k">Minneapolis</td><td>2.96</td><td>138</td><td>Focused</td></tr><tr><td>17</td><td class="k">Seattle</td><td>2.88</td><td>129</td><td>Future</td></tr><tr><td>18</td><td class="k">Columbus</td><td>2.82</td><td>110</td><td>Focused</td></tr><tr><td>19</td><td class="k">Cleveland</td><td>2.82</td><td>118</td><td>Focused</td></tr><tr><td>20</td><td class="k">New York</td><td>2.80</td><td>373</td><td>Not pursued</td></tr><tr><td>21</td><td class="k">New Jersey</td><td>2.80</td><td>109</td><td>Broker-led</td></tr><tr><td>22</td><td class="k">Indianapolis</td><td>2.78</td><td>131</td><td>Focused</td></tr><tr><td>23</td><td class="k">Virginia Beach</td><td>2.78</td><td>95</td><td>Broker-led</td></tr><tr><td>24</td><td class="k">Greenville</td><td>2.76</td><td>75</td><td>Next wave</td></tr></table>
+</div>
+<p class="muted small" style="margin:8px 0 10px">Score 80+ puts a venue in the top tier for outreach. Pipedrive then adjusts rank within each market: a Top deal tier lifts a venue to the upper quartile, Low caps it at the bottom, WH Passed drops out of the top 25.</p>
+<div class="box"><h3>Qualitative considerations that sit beside the score</h3><ul>
+<li><b>Path to 5+ venues.</b> Fragmented ownership, owners who answer, and several venues of the quality we would own.</li>
+<li><b>A leading venue we could own.</b> One top-15% venue plausibly for sale within 24 months; without it, infill has nothing to infill around.</li>
+<li><b>Hub economics.</b> A catering, floral, and bakery hub reachable within about 90 minutes, or buildable soon.</li>
+<li><b>Who else is at the table.</b> Wedgewood (Phoenix 9, Denver 8, Charlotte 4), PE-backed caterers that manage venues, regional groups buying the same targets.</li>
+<li><b>Operability.</b> Liquor licensing and permitting timelines, labor market, travel from Texas leadership, and whether our lead engine already pulls couples from the metro.</li></ul></div>
+</section>
+
+<!-- ===== PAGE 5 MACHINE ===== -->
+<section class="page">
+<h1>Our Machine: how we identify targets and drive the funnel</h1>
+<div class="rule"></div>
+<table class="stage small">
+<tr><th style="width:14%">Stage</th><th style="width:13%">As of Nov 4</th><th style="width:22%">Tool</th><th>What happens here</th></tr>
+<tr><td class="k">1 · Identify and score</td><td><div class="n">8,748</div><div class="d">venues scored</div></td><td>Venue Prioritization hub; owner enrichment; Market Intel brief</td><td>8,069 operating venues plus 679 conversion candidates, scored on ten criteria; 4,866 on the own path, 1,827 partner, 1,073 refer; owner email verified on 3,070. MSA scoring ranks 56 markets; the map shows 90-minute reach from our hubs; the Monday brief flags news and listings on the top 1,000.</td></tr>
+<tr><td class="k">2 · Contact</td><td><div class="n">3,757</div><div class="d">touchpoints YTD</div></td><td>Pipedrive; funnel tracker (Touchpoints, Response Sources)</td><td>1,202 venues contacted all time, 421 active, 662 new this year; one new region a week through Jan 18. Calls get answered 24 times per 100 vs 17 for email; responders answer by the second touch, so low-tier email stops at touch 2 and the phone goes to top and mid tier.</td></tr>
+<tr><td class="k">3 · Engage</td><td><div class="n">140</div><div class="d">confirmed interest</div></td><td>Funnel tracker stages; mid-funnel program; Deal Factors</td><td>653 responded, 140 confirmed, 112 shared data. Trends one-pager (67% open), Coffee Chat cards (80% open), seller references, announcements, Value Snapshot. Deal Factors tests every Saturday which factors predict a response and an LOI.</td></tr>
+<tr><td class="k">4 · Evaluate and offer</td><td><div class="n">19</div><div class="d">LOIs sent in 2026</div></td><td>Active Pipeline; LOI ledger; data books; region overviews; Review Intel</td><td>55 live targets scored 0 to 10 with LTM and PF-Y2 economics; every offer with terms and outcome; 18 region overviews to Wildcat by Nov 23; public reviews compiled before any LOI; Wildcat reviews before signature.</td></tr>
+<tr><td class="k">5 · Diligence and close</td><td><div class="n">2</div><div class="d">under contract</div></td><td>Deal Command Center; Daily Deal Status email</td><td>Legal, diligence, and integration workstreams per deal with third parties on point (Quarles, Whitley Penn, WTW, BL, Matthews). Caney Creek: 8 streams running, close week of Nov 30. Engine Room: 5 running, close Dec 15.</td></tr>
+<tr><td class="k">6 · Integrate and measure</td><td><div class="n">2</div><div class="d">closed in 2026</div></td><td>120-day tracker; integration dashboard; post-close vs underwriting slide; post-mortem scorecard</td><td>Firefly Lane Q3: contracts 118% of goal. Hadden September: contracts 140%, revenue 97%; 92 contracts against a 190 goal, 15 ahead of pace; vendor packages booked within weeks of launch. Every deal measured against its underwriting at 100 days and 12 months.</td></tr>
+</table>
+<div class="lab">The numbers through the machine</div>
+<div class="cols">
+<div class="hbars">
+<div class="r"><span>Hub records scored</span><span><span class="b" style="width:100%"></span></span></div>
+<div class="r"><span>Own-path targets</span><span><span class="b" style="width:91%"></span><span class="v">4,866</span></span></div>
+<div class="r"><span>Contacted (all time)</span><span><span class="b" style="width:69%"></span><span class="v">1,202</span></span></div>
+<div class="r"><span>Responded</span><span><span class="b" style="width:59%"></span><span class="v">653</span></span></div>
+<div class="r"><span>Confirmed interest</span><span><span class="b" style="width:35%"></span><span class="v">140</span></span></div>
+<div class="r"><span>Shared data</span><span><span class="b" style="width:32%"></span><span class="v">112</span></span></div>
+<div class="r"><span>Reviewed / offered</span><span><span class="b" style="width:28%"></span><span class="v">87</span></span></div>
+<div class="r"><span>LOIs sent in 2026</span><span><span class="b" style="width:16%"></span><span class="v">19</span></span></div>
+<div class="r"><span>Accepted</span><span><span class="b" style="width:9%"></span><span class="v">5</span></span></div>
+<div class="r"><span>Closed</span><span><span class="b" style="width:4%"></span><span class="v">2</span></span></div>
+<p class="muted small" style="margin-top:6px">Bar length on a log scale so the bottom of the funnel stays visible; labels are the actual counts as of Nov 4.</p>
+</div>
+<div><table class="small"><tr><th>Stage</th><th>Count</th><th>Of prior</th><th>Of contacted</th></tr>
+<tr><td class="k">Contacted (all time)</td><td>1,202</td><td>25%*</td><td>100%</td></tr><tr><td class="k">Responded</td><td>653</td><td>54%</td><td>54%</td></tr><tr><td class="k">Confirmed interest</td><td>140</td><td>21%</td><td>12%</td></tr><tr><td class="k">Shared data</td><td>112</td><td>80%</td><td>9%</td></tr><tr><td class="k">Reviewed or offered</td><td>87</td><td>78%</td><td>7%</td></tr><tr><td class="k">LOIs sent in 2026</td><td>19</td><td>22%</td><td>1.6%</td></tr><tr><td class="k">Accepted</td><td>5</td><td>26%</td><td>0.4%</td></tr><tr><td class="k">Closed (+2 under contract)</td><td>2</td><td>40%</td><td>0.2%</td></tr></table>
+<p class="muted tiny" style="margin-top:4px">*Of the 4,866 own-path targets.</p></div>
+</div>
+<div class="box" style="margin-top:8px"><b>Where the pace is set.</b> The two steps that depend on price are the weak ones: reviewed to LOI (22%) and LOI to accepted (26%). Everything above them converts at 54% or better, so the fix is valuation conversations earlier, not more outreach.</div>
+</section>
+
+<!-- ===== PAGE 6 DASHBOARDS & AGENTS ===== -->
+<section class="page" style="font-size:9pt">
+<h1>Dashboards and Agents Overview</h1>
+<div class="rule"></div>
+<div class="lab">Dashboards</div>
+<table><tr><th style="width:22%">Stage</th><th style="width:26%">Dashboard</th><th>What it shows</th></tr>
+<tr><td>1 · Identify</td><td class="k">Venue Prioritization hub</td><td>8,748 venues scored and ranked; MSA scoring; map with hub rings; operator census; owner contacts; live Pipedrive stage</td></tr>
+<tr><td>2 to 3 · Contact, engage</td><td class="k">M&amp;A Pipeline tracker</td><td>Full and regional funnels (1,202 contacted, 653 responded, 140 confirmed), venue lists by stage, map, Wedgewood tracker; the page Wildcat sees</td></tr>
+<tr><td>2 · Contact</td><td class="k">Outreach analytics</td><td>3,757 touchpoints by week and market; which channel gets answered (calls 36%, email 29%, broker 19%)</td></tr>
+<tr><td>4 · Evaluate, offer</td><td class="k">LOI ledger and Active Pipeline</td><td>All 19 offers with terms and outcomes; 55 live targets scored 0 to 10 with LTM and PF-Y2 economics</td></tr>
+<tr><td>5 · Diligence, close</td><td class="k">Deal Command Center</td><td>Every deal under contract: workstreams, milestones, third parties, seller questions, permanent change log</td></tr>
+<tr><td>All</td><td class="k">Priorities workplan</td><td>Seven workstreams from now to March: LOIs, regions, overviews, conversion ideas, trips</td></tr>
+<tr><td>1 and 4</td><td class="k">Region overviews and operator intel</td><td>Market by market evidence and buckets; 18 overview packs for Wildcat; census of 67 multi-venue groups</td></tr></table>
+<div class="lab" style="margin-top:18px">Agents</div>
+<table><tr><th style="width:22%">Agent</th><th>What it does</th></tr>
+<tr><td class="k">Owner enrichment</td><td>Finds owner name, phone, and verified email for a target on demand from the hub (Hunter, Intelius, NeverBounce); 3,070 verified</td></tr>
+<tr><td class="k">Market Intel</td><td>Every Monday: news, for-sale listings, and rates matched to the top 1,000 hub venues and the watchlist; reports only what changed; Wedgewood tracked every run</td></tr>
+<tr><td class="k">Daily Deal Status</td><td>Every weekday morning: what moved on every deal under contract, from the Command Center log</td></tr>
+<tr><td class="k">Action Triage</td><td>Every morning: turns open threads into the day's M&amp;A actions</td></tr>
+<tr><td class="k">Deal Factors</td><td>Every Saturday: tests which measurable factors predict a response, an LOI, and an acceptance; scores open targets for the week; grades its own predictions</td></tr>
+<tr><td class="k">CFO Scorecard</td><td>Every Saturday: 4-week funnel trend of touchpoints, pre-LOI deals, LOIs submitted vs the 20 goal, and closes YTD</td></tr>
+<tr><td class="k">Review Intel</td><td>Every Sunday and on demand: every public review of our venues and 65 nearby competitors, tagged on 25 themes; one-click pre-LOI review screen for any target</td></tr></table>
+</section>
+
+<!-- ===== DASHBOARD PAGES ===== -->
+<section class="page" style="font-size:9pt">
+<h1 class="dash"><b>Dashboard 1</b> · Venue Prioritization hub: the universe, scored</h1>
+<div class="sub g">Venue Prioritization hub · password-gated web app · Pipedrive refreshed live</div>
+<div class="rule"></div>
+<div class="shot"><img src="img/s-000.jpg"></div><p class="cap">Atlanta, sorted by score: the market's leading venues are already in the pipeline.</p>
+<div class="dcols"><div><div class="shot"><img src="img/s-001.jpg"></div><p class="cap">Atlanta map: our venues (gold), the 90-minute hub ring, every target by strength.</p></div><div><h3>What it is</h3><p>Every venue we could own, partner with, or refer: 8,748 records, 4,866 on the own path, owner email verified on 3,070. Each row carries the ten-factor score, reviews, capacity, MSA, path, and live Pipedrive stage. Tabs for venue criteria (weights editable), MSA scoring, the operator census, and a map with our venues and the 90-minute hub rings. A Develop lens tags lodges, churches, warehouses, and banquet halls that could become venues.</p></div></div>
+<div class="dcols"><div><h3>Why it matters</h3><p>Density is planned here. Filtered to Atlanta, the top of the list is the market's leading venues (Grant Hill Farms 94, Little River Farms 93, Meadows 91), all already in the pipeline, and the map shows which of the 208 Atlanta venues sit inside the hub ring.</p></div><div><h3>How we use it</h3><p>Laura and Karlee work each market's list from the top, drafting intro emails from the row. Before an LOI, the Reviews button compiles every public review. Before a visit, the map and Groups tab set the itinerary.</p></div></div>
+<div class="built">Built by Charlie and Cate with Claude Code; deployed from a shared repo with automatic front-end deploys. Weights revised with Cate in August.</div>
+</section>
+<section class="page" style="font-size:9pt">
+<h1 class="dash"><b>Dashboard 2</b> · M&amp;A Pipeline tracker: the funnel, by market</h1>
+<div class="sub g">M&amp;A Pipeline tracker · the page Wildcat sees · Pipedrive export refreshed daily</div>
+<div class="rule"></div>
+<div class="shot"><img src="img/s-002.jpg"></div><p class="cap">Total funnel with every exit labeled.</p>
+<div class="dcols"><div><div class="shot"><img src="img/s-003.jpg"></div><p class="cap">Atlanta: 122 contacted, 51% response, 18 confirmed interest.</p></div><div><h3>What it is</h3><p>Cate's live Pipedrive export: 1,202 contacted, 421 active, 54% response, every stage with its exits labeled (234 paused, 276 not selling, 186 we passed early, 23 declined our offer, 59 we passed after review). The Active funnel shows live work only: 315 awaiting response, 51 determining interest, 28 yet to share data, 25 under review. Regional Funnel cuts the same view for 44 regions with every venue listed under its stage.</p></div></div>
+<div class="dcols"><div><h3>Why it matters</h3><p>This is the scoreboard for the strategy: whether a market produces conversations and where they stall. Atlanta: 122 contacted, 51% response, 18 confirmed, 10 reviewed, 2 accepted, 1 closed. Nashville responds at 69%, Minneapolis at 65%. The 95 top-tier venues not yet contacted are listed by market.</p></div><div><h3>How we use it</h3><p>Anchors the Tuesday M&amp;A Update to Wildcat and the Thursday deal review. The stage lists drive the two-week sweeps of stuck venues.</p></div></div>
+<div class="built">Built by Cate with Claude Code. The October analytics (call first, screen valuation early, sweep the stuck 'responded' venues, run groups on their own cadence) became the mid-funnel program.</div>
+</section>
+<section class="page" style="font-size:9pt">
+<h1 class="dash"><b>Dashboard 3</b> · Outreach analytics: touchpoints and how sellers reach us</h1>
+<div class="sub g">M&amp;A Pipeline tracker, Touchpoints and Response Sources tabs · refreshed daily</div>
+<div class="rule"></div>
+<div class="shot"><img src="img/s-004.jpg"></div><p class="cap">Weekly touchpoints by type; YTD 3,757.</p>
+<div class="dcols"><div><div class="shot"><img src="img/s-005.jpg"></div><p class="cap">First-response channel for 621 responding venues.</p></div><div><h3>What it is</h3><p>Touchpoints by week since May, split into new outreach, follow-ups on silence, and active conversations: 3,757 YTD (662, 1,559, 1,536). The week of Oct 26 hit 298. Below the chart, where the touchpoints went by market. Response Sources shows how 621 responding venues first connected: calls 36%, email 29%, broker 19%, inbound 6%.</p></div></div>
+<div class="dcols"><div><h3>Why it matters</h3><p>Outreach is the input we control, so this page proves the machine is running and tells us where to point it. Calls are answered 24 times per 100 vs 17 for email, and responders answer by the second touch, so the team calls first and stops chasing low-tier venues by email after touch 2.</p></div><div><h3>How we use it</h3><p>Thursday call sets next week's market focus; monthly check that new-region waves land on schedule; quarterly board trend (+36% Q2 to Q3).</p></div></div>
+<div class="built">Response attribution uses Claude to read each logged touchpoint and judge whether it was answered, giving a true response rate rather than a logged-activity count.</div>
+</section>
+<section class="page" style="font-size:9pt">
+<h1 class="dash"><b>Dashboard 4</b> · LOI ledger and Active Pipeline: every offer and every live target</h1>
+<div class="sub g">M&amp;A Pipeline tracker, LOIs Sent and Active Pipeline tabs · deal terms shown; internal only</div>
+<div class="rule"></div>
+<div class="shot"><img src="img/s-006.jpg"></div><p class="cap">All 19 LOIs with terms and outcomes.</p>
+<div class="dcols"><div><div class="shot"><img src="img/s-007.jpg"></div><p class="cap">55 live targets scored 0 to 10 with economics.</p></div><div><h3>What it is</h3><p>The ledger lists all 19 offers with dates, market, LTM events, asking price, our price, rent, EBITDA, and outcome: 2 closed, 2 signed, 11 declined, 4 other; 11 Texas, 8 outside. The Active Pipeline scores the 55 live targets 0 to 10 with LTM and pro-forma year-2 revenue and EBITDA, future bookings, and the latest note.</p></div></div>
+<div class="dcols"><div><h3>Why it matters</h3><p>This is where valuation discipline shows. The commentary records why deals die: Canyonwood declined ~$10M, Videre priced business plus land far above earnings, Emerson needed $3.5M against $1.5M, Edible Ideas called $16M '100%+ off'. One lost to an all-cash buyer (Elle). Next LOIs in order: Meadows, D'Amico, Lillian Gardens, The Revere, Tuscany Falls (210 events, score 9.6).</p></div><div><h3>How we use it</h3><p>Before every offer, the ledger sets comparables and the pipeline score frames the data book. It feeds the quarterly board slide and the Saturday scorecard (LOIs vs the 20 goal).</p></div></div>
+<div class="built">The 0 to 10 pipeline score is Cate's rubric on quality, economics, and fit, built in September alongside the venue scoring rubric reported to the board.</div>
+</section>
+<section class="page" style="font-size:9pt">
+<h1 class="dash"><b>Dashboard 5</b> · Deal Command Center: from signed LOI to close</h1>
+<div class="sub g">Deal Command Center · shared board, edits save for everyone · feeds the 7 am Daily Deal Status email</div>
+<div class="rule"></div>
+<div class="shot"><img src="img/s-008.jpg"></div><p class="cap">Home: 2 active deals, 0 at risk, next close in 17 days.</p>
+<div class="dcols"><div><div class="shot"><img src="img/s-009.jpg"></div><p class="cap">Per deal: workstreams, milestones, owners, open questions.</p></div><div><h3>What it is</h3><p>Autumn's board for every deal under contract: LOI and close dates, days to close, status with the board's own read beside ours, legal, diligence, and integration workstreams, next milestones with the third party on point, what is waiting on whom, and open seller questions. Schedule, Requests, and Library hold the calendar, request lists, and documents. Every change is logged.</p></div></div>
+<div class="dcols"><div><h3>Why it matters</h3><p>Closing is where strategy becomes venues. Caney Creek: LOI Sept 23, legal 2 of 9, 8 streams running, close week of Nov 30, subdivision approval the open risk. Engine Room: LOI Oct 23, close Dec 15, alcohol license handled in the lease. Integration starts here, not at close.</p></div><div><h3>How we use it</h3><p>The 7 am email comes from this log; the counsel all-hands works off the milestones; at close the integration workstream hands to Abigail with the history intact.</p></div></div>
+<div class="built">Built by Autumn in October with Claude Code, replacing threads and a spreadsheet. The board's own 'watch' read comes from milestone aging, so a deal cannot drift quietly.</div>
+</section>
+<section class="page" style="font-size:9pt">
+<h1 class="dash"><b>Dashboard 6</b> · Priorities workplan: what the team does from now to March</h1>
+<div class="sub g">Priorities workplan · M&amp;A team · updated weekly</div>
+<div class="rule"></div>
+<div class="shot"><img src="img/s-010.jpg"></div><p class="cap">Timeline: seven workstreams to March 2027.</p>
+<div class="dcols"><div><div class="shot"><img src="img/s-011.jpg"></div><p class="cap">This week and next week: venues in play, overviews, conversion steps.</p></div><div><h3>What it is</h3><p>Seven workstreams on one timeline to March 2027: two deals under contract, 9 LOIs planned from 19 venues with data in hand, 8 new regions (one a week to Jan 18), 18 region overviews for Wildcat (by Nov 23), 11 conversion ideas, 5 site visits, and 7 other items. This-week and next-week cards list the venues and tasks; each deal carries a status.</p></div></div>
+<div class="dcols"><div><h3>Why it matters</h3><p>The strategy with dates on it. Capacity and priority are visible before they collide, and the trade-off is explicit: pushing conversion ideas forward slows data packs or new-region outreach.</p></div><div><h3>How we use it</h3><p>Cate sets the week on Monday; the 'LOIs sent' list is Thursday's agenda; monthly, Charlie and Cate check the timeline against the 2027 targets.</p></div></div>
+<div class="built">Built by Cate in early November after Charlie asked for one view of everything the team carries. Nothing under 50 events gets analysis time.</div>
+</section>
+<section class="page" style="font-size:9pt">
+<h1 class="dash"><b>Dashboard 7</b> · Region overviews and operator intelligence</h1>
+<div class="sub g">Region Review (Cate, Oct 2026) · overview packs (Autumn) · hub Groups tab</div>
+<div class="rule"></div>
+<div class="shot"><img src="img/s-012.jpg"></div><p class="cap">Region Review: where we're focused, ranked by top-tier venues not yet responding.</p>
+<div class="dcols"><div><div class="shot"><img src="img/s-013.jpg"></div><p class="cap">Groups census: 67 multi-venue operators, owned vs leased.</p></div><div><h3>What it is</h3><p>The Region Review ranks every market by top-tier venues not yet responding, with contacted, responded, confirmed interest, and touches for each, plus the paused and broker-led lists with reasons. Each focused market gets an overview pack for Wildcat: what owners are telling us, what offsets the negatives, weddings per 1,000, a county map, and the competitive set with ratings and drive times. The Groups tab is the census of 67 multi-venue operators (Wedgewood 91: about 82 owned, 9 leased) and the caterers and planners who open doors.</p></div></div>
+<div class="dcols"><div><h3>Why it matters</h3><p>This keeps the market list honest: each market carries its own evidence, and the census shows who else is consolidating and which groups are platforms we could buy.</p></div><div><h3>How we use it</h3><p>Before the Wildcat packet (Nov 23) and before every market visit; the Region Review's team questions are the agenda for decision 3.</p></div></div>
+<div class="built">Built by Cate and Autumn with Claude from Pipedrive, the hub, The Wedding Report, and owner-call transcripts. Columbus is done; 17 more by Nov 23.</div>
+</section>
+
+<!-- ===== PAGE 14 INITIATIVES ===== -->
+<section class="page" style="font-size:8.2pt">
+<h1 style="font-size:16.5pt">Current initiatives: November 2026 to March 2027</h1>
+<div class="rule"></div>
+<div class="lab">Middle-of-funnel conversion program (11 ideas) and early results</div>
+<table><tr><th style="width:20%">Initiative</th><th style="width:33%">What it is</th><th style="width:32%">Status and results</th><th>Done by</th></tr>
+<tr><td class="k">Quarterly Venue Trends one-pager</td><td>Key market trends sent to target owners as a reason to talk</td><td>Sent to 145 venues in October: 67% open, 6% reply and counting. Next edition Q1.</td><td>Running</td></tr>
+<tr><td class="k">Coffee Chat email</td><td>$10 Starbucks card to top-priority non-responders</td><td>40 top-tier venues over two weeks: 80% open, 3% reply and counting.</td><td>Running</td></tr>
+<tr><td class="k">Prior seller references</td><td>Firefly Lane and Hadden owners as references and intro sources in their markets</td><td>Both engaged; Hadden referral program proposed Nov 4 (paid reference and intro calls, success fee on a close).</td><td>Week of Nov 2</td></tr>
+<tr><td class="k">Acquisition announcements</td><td>Hadden to GA venues, Firefly Lane to TN venues, with an offer to speak to the seller</td><td>Drafts with marketing.</td><td>Week of Nov 30</td></tr>
+<tr><td class="k">Updated outreach PDFs</td><td>Owner brochure and partner flyer refreshed</td><td>v2 built Nov 4; website acquisitions page gains owner quotes.</td><td>Week of Dec 7</td></tr>
+<tr><td class="k">Value Snapshot + Deal Options</td><td>Two-pager after the first meeting: what is in it for them, multiples, how our process and valuation work</td><td>Drafting; moves the valuation conversation earlier.</td><td>Set date</td></tr>
+<tr><td class="k">Alyssa video</td><td>Short CEO message embedded in invites and announcements</td><td>Record in December.</td><td>Set date</td></tr>
+<tr><td class="k">Holiday gift A/B test</td><td>25 watercolors or hats, ship by Dec 11, follow-up calls in January</td><td>Readout in February.</td><td>Week of Dec 7</td></tr>
+<tr><td class="k">Quarterly owner note</td><td>Marketing produces, M&amp;A reviews; January, April, July, October</td><td>Draft by mid-December.</td><td>Week of Dec 14</td></tr>
+<tr><td class="k">CPA and advisor channel</td><td>2 to 3 firms each in Atlanta and Nashville, then Houston and Dallas in March</td><td>January.</td><td>Week of Jan 4</td></tr>
+<tr><td class="k">Association meetings</td><td>WIPA pilot in Atlanta and Nashville</td><td>February.</td><td>Week of Feb 1</td></tr></table>
+<p style="margin:8px 0 10px"><b>Also running from the October pipeline analysis:</b> call-first outreach with email stopping at touch 2 for low-tier venues; a two-week sweep of the 48 venues stuck at "responded" and the 16 confirmed-interest venues older than 60 days, one specific ask each; a multi-venue operator track with Charlie or Cate on the call (121 groups, 423 venues in the funnel, 57% response).</p>
+<div class="lab">The rest of the workplan</div>
+<table><tr><th style="width:20%">Workstream</th><th style="width:60%">Scope</th><th>Timing</th></tr>
+<tr><td class="k">Deals under contract</td><td>Caney Creek (subdivision approval, EPRT update, inspection costs); The Engine Room (APA and lease with Quarles, alcohol license, environmental, inspection)</td><td>Close week of Nov 30 and Dec 15</td></tr>
+<tr><td class="k">LOIs sent</td><td>19 venues with data in hand; next most likely Meadows at Mossy Creek, Lillian Gardens, The Revere, D'Amico; also VisionLoft, Tuscany Falls, LM, Grand Pines, Holly Vault, BTTS, Little River Farms</td><td>9 planned, November to March</td></tr>
+<tr><td class="k">Region overviews for Wildcat</td><td>Minneapolis, Cincinnati, Indianapolis, Detroit, Chicago, Cleveland this month; Greenville, Orlando, Phoenix, Knoxville, Louisville, Pittsburgh, Birmingham, Buffalo, Memphis, Hartford next; packet finalized</td><td>18 by the week of Nov 23</td></tr>
+<tr><td class="k">New-region outreach</td><td>Phoenix (sent), Greenville, Memphis, Louisville, Pittsburgh, Birmingham, Buffalo, Hartford: rank the venues, confirm the owners, load Pipedrive, send</td><td>One a week, last Jan 18</td></tr>
+<tr><td class="k">Site visits</td><td>Atlanta (Nov 9: West Midtown, Little River Farms, The Revere, Engine Room), Knoxville (Nov 30), then January, February, March</td><td>About one a month</td></tr>
+<tr><td class="k">Other</td><td>Nashville vendor-partner outreach; contact the 58 top-priority venues in existing markets; venue database (every data book side by side); Pipedrive clean-up; post-close dashboard (projections vs actuals); improve the Atlanta response rate (51%)</td><td>November to Jan 4</td></tr></table>
+</section>
+
+<!-- ===== PAGE 15 DECISIONS ===== -->
+<section class="page p15" style="font-size:8pt;padding-top:0.33in">
+<h1 style="font-size:16.5pt">Decisions required</h1>
+<div class="rule"></div>
+<h3 style="font-size:9.4pt;color:var(--teal);margin:0 0 4px">1. Fewer, better deals, or more market deals? We cannot have both.</h3>
+<table><tr><th style="width:17%"></th><th style="width:41.5%">Fewer, better deals</th><th>More market deals</th></tr>
+<tr><td class="k">What it means</td><td>The market's leading venues at full price: top-15% quality, 100+ events, owned real estate where it makes sense. Two to four closes a year.</td><td>Density fast: mid-tier infill, leases, platforms, conversions at earnings value. Six to ten closes a year across several structures.</td></tr>
+<tr><td class="k">Density</td><td>Slower to 5 per market; each venue pulls the market's lead pool and sets the price ladder.</td><td>Faster to 5 per market; hub economics arrive sooner; brand set by the best of a mixed portfolio.</td></tr>
+<tr><td class="k">Capital and risk</td><td>More capital per deal, more real estate, higher multiples (Firefly Lane 6.3x LTM). Fewer, larger bets.</td><td>Less capital per deal, more leases and earnouts, more integration load. More, smaller bets; more can go wrong at once.</td></tr>
+<tr><td class="k">The team</td><td>Deep work on 20 to 30 named targets; less new-region outreach; Charlie and Cate on every owner call.</td><td>Outreach at full pace; standard lease and management terms; integration capacity added before deal capacity.</td></tr>
+<tr><td class="k">We stop</td><td>Chasing sub-$500k EBITDA venues and most lease-only urban product.</td><td>Paying up for anchors when infill is available at earnings value.</td></tr>
+<tr><td class="k">Wildcat hears</td><td>Judgment and selectivity; a slower unit count.</td><td>Pace and density; more structure questions on every LOI.</td></tr></table>
+<div class="need"><b>We need:</b> the default. Decisions 2 to 5 follow from it.</div>
+<h3 style="font-size:9.4pt;color:var(--teal);margin:0 0 3px">2. 2027 target acquisitions and capital availability</h3>
+<p>2026 pace: 19 LOIs, 2 closed, 2 closing by mid-December, roughly $9M of purchase price across the four; 9 more LOIs planned by March. This number sets headcount and capital in the 2027 budget (Dec 4).</p>
+<div class="cols3"><div class="opt"><b>Hold the 2026 pace</b>4 closes, 20 LOIs; capital from EPRT sale-leasebacks and the MidCap delayed draw.</div><div class="opt"><b>Step up</b>6 to 8 closes including one platform (D'Amico 12, BTTS 7 to 8); needs an equity or platform-financing answer.</div><div class="opt"><b>Platform-led</b>One platform plus 2 to 3 singles; fewer transactions, more capital in one place.</div></div>
+<div class="need"><b>We need:</b> the close and LOI count by structure (buy, lease, manage, platform) and the capital line behind it.</div>
+<h3 style="font-size:9.4pt;color:var(--teal);margin:0 0 3px">3. What makes a target MSA</h3>
+<p>Today: the hub's eight-factor score with the Wedgewood haircut, plus the five qualitative factors on page 4.</p>
+<div class="cols3"><div class="opt"><b>Score only</b>Rank by the composite; work the list top down.</div><div class="opt"><b>Score plus gates</b>A leading-venue candidate in sight, a path to 5+, hub reach within 90 minutes, a 60-day response test before more spend.</div><div class="opt"><b>Gates plus a cap</b>The gates, plus a maximum number of new markets open at once (the team's own question).</div></div>
+<div class="need"><b>We need:</b> which gates apply, whether high-score paused markets (Miami 3.86, Raleigh 3.10) stay paused, and the cap.</div>
+<h3 style="font-size:9.4pt;color:var(--teal);margin:0 0 3px">4. Wildcat involvement and sign-off rules</h3>
+<p>Today: weekly update email and call; Wildcat comments on LOIs before they go out. Meadows moved after Wildcat's last look; a written rule is expected.</p>
+<div class="cols3"><div class="opt"><b>Pre-signature review</b>Every LOI to Wildcat before signature; material changes after their last look go back (thresholds on price, rent, obligations).</div><div class="opt"><b>Threshold-based</b>Deals under a size or structure threshold proceed on our sign-off; above it, Wildcat pre-signature.</div><div class="opt"><b>Cadence</b>Update call every other week instead of weekly; one named owner of the Wildcat M&amp;A relationship.</div></div>
+<div class="need"><b>We need:</b> the rule and thresholds in writing before the Nov 12 call, and who owns the relationship day to day.</div>
+<h3 style="font-size:9.4pt;color:var(--teal);margin:0 0 3px">5. Alyssa's go-forward involvement</h3>
+<div class="cols3"><div class="opt"><b>Own the Wildcat M&amp;A relationship</b>The update cadence and the board M&amp;A section; Charlie and Cate present the deals.</div><div class="opt"><b>Join market visits and closing calls</b>One trip a quarter (Knoxville, week of Nov 30, is next); the seller meeting on every LOI-stage deal.</div><div class="opt"><b>Sponsor integration</b>Own the 120-day plan with Abigail; the deal team hands off at close.</div></div>
+<div class="need"><b>We need:</b> which of these you take on, and from when.</div>
+</section>
+</body></html>
